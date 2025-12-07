@@ -14,14 +14,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EPS EMUSAP ABANCAY SA</title>
+  <title>SISTRAMITE DOC</title>
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
   <!-- Font Awesome Icons -->
   <link rel="stylesheet" href="../plantilla/plugins//fontawesome-free/css/all.min.css">
   <!-- Theme style -->
-  <link rel="icon" href="../img/emusap.jpg" type="image/jpg">
+  <link rel="icon" href="../img/empre.jpg" type="image/jpg">
 
   <link rel="stylesheet" href="../plantilla/dist//css/adminlte.min.css">
   <link href="../utilitario/DataTables/datatables.min.css" type="text/css" rel="stylesheet" />
@@ -144,7 +144,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
       <!-- Brand Logo -->
       <a href="index.php" class="brand-link">
-        <img src="../img/emusap.jpg" alt="<?php echo $_SESSION['S_RAZON']; ?>" width="100%" height="auto">
+        <img src="../img/empre.jpg" alt="<?php echo $_SESSION['S_RAZON']; ?>" width="100%" height="auto">
       </a>
 
       <!-- Sidebar -->
@@ -653,7 +653,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                           </tr>
                         </thead>
                       </table>
-                <img src="../img/emusap.jpg" width="100%"><br>
+                <img src="../img/empre.jpg" width="100%"><br>
 
                     </div>
                   </div>

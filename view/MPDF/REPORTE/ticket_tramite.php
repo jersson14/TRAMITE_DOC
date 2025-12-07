@@ -208,8 +208,8 @@ while($row = $resultado2->fetch_assoc()){
     
     <!-- Header -->
     <div class="header">
-        <img src="../../../img/emusap.jpg" alt="Logo">
-        <div class="company-name">EPS EMUSAP ABANCAY SA</div>
+        <img src="../../../img/empre.jpg" alt="Logo">
+        <div class="company-name">JMC ABANCAY SA</div>
         <div class="ticket-title">Ticket de Trámite Documentario</div>
     </div>
     

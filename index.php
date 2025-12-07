@@ -9,7 +9,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Iniciar Sesión | EPS EMUSAP ABANCAY</title>
+    <title>Iniciar Sesión | SISTRAMITE DOC</title>
     
     <!-- Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- AdminLTE -->
     <link rel="stylesheet" href="plantilla/dist/css/adminlte.min.css">
-    <link rel="icon" href="img/emusap.jpg" type="image/jpg">
+    <link rel="icon" href="img/empre.jpg" type="image/jpg">
     
     <style>
         * {
@@ -442,7 +442,7 @@
         <!-- Left Side - Branding -->
         <div class="login-brand">
             <div class="brand-logo">
-                <img src="img/emusap.jpg" alt="EPS EMUSAP Logo">
+                <img src="img/empre.jpg" alt="JERSSON LOGO">
             </div>
             <h1 class="brand-title">Sistema de Trámite Documentario Web</h1>
             <p class="brand-subtitle">Gestión eficiente y moderna de documentos administrativos</p>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Mesa de Partes Virtual | EPS EMUSAP ABANCAY</title>
+    <title>Mesa de Partes Virtual | JMC ABANCAY</title>
     
     <!-- Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="plantilla/dist/css/adminlte.min.css">
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link rel="icon" href="img/emusap.jpg" type="image/jpg">
+    <link rel="icon" href="img/empre.jpg" type="image/jpg">
     
     <style>
         * {
@@ -371,7 +371,7 @@
     <div class="header-banner">
         <div class="container text-center">
             <div class="logo-container">
-                <img src="img/emusap.jpg" alt="EPS EMUSAP Logo">
+                <img src="img/empre.jpg" alt="JERSSON Logo">
             </div>
         </div>
     </div>
@@ -407,7 +407,7 @@
                         Mesa de Partes Virtual
                     </h1>
                     <p class="welcome-subtitle">
-                        La EPS EMUSAP ABANCAY pone a su disposición la <strong>Mesa de Partes Virtual</strong> 
+                        La EMPRESA JMC pone a su disposición la <strong>Mesa de Partes Virtual</strong> 
                         para la recepción de documentos y solicitudes. Los documentos serán atendidos y recepcionados 
                         de manera eficiente. Es obligatorio registrar su correo electrónico para dar respuesta a su solicitud.
                     </p>
@@ -648,7 +648,7 @@
                     <strong>Copyright © 2025 
                         <a href="" target="_blank" 
                            style="color: #667eea; text-decoration: none;">
-                            EPS EMUSAP ABANCAY SA
+                            JMC ABANCAY SA
                         </a>
                     </strong>
                 </p>

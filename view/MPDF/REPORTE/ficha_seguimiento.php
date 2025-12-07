@@ -55,7 +55,7 @@ documento_id = '".$codigo."'";
     <table style="  font-size: 12px;width:100%;border-collapse:collapse; border-color:#FF0080; margin: 0;" >
     <thead>
     <tr>
-    <td align="left"> <img src="../../../img/emusap.jpg" alt="Girl in a jacket" width="150" height="60" align="left"></td>
+    <td align="left"> <img src="../../../img/empre.jpg" alt="Girl in a jacket" width="150" height="60" align="left"></td>
     </tr>
     </thead>
     </table><br>

@@ -248,7 +248,7 @@ while($filas = $resultado->fetch_assoc()) {
         <div class="container">
             <!-- Header -->
             <div class="header">
-                <div class="company-name">EPS EMUSAP ABANCAY SA</div>
+                <div class="company-name">JMC ABANCAY SA</div>
                 <div class="document-title">HOJA DE ENVÍO DE TRÁMITE</div>
                 <div class="document-subtitle">Sistema de Trámite Documentario Web</div>
             </div>
@@ -402,7 +402,7 @@ while($filas = $resultado->fetch_assoc()) {
             
             <!-- Footer -->
             <div class="footer">
-                <div><strong>EPS EMUSAP ABANCAY SA</strong> | Central: (083) 321117 | www.emusapabancay.gob.pe</div>
+                <div><strong>JMC ABANCAY SA</strong> | Central: (083) 321119 </div>
                 <div style="margin-top: 2px;">Documento generado el '.date("d/m/Y H:i:s").' | Validez oficial verificable en el sistema</div>
             </div>
         </div>
@@ -420,7 +420,7 @@ $mpdf = new \Mpdf\Mpdf([
 ]);
 
 $mpdf->SetTitle('Seguimiento de Trámite - '.$codigo);
-$mpdf->SetAuthor('EPS EMUSAP ABANCAY');
+$mpdf->SetAuthor('JMC ABANCAY');
 $mpdf->WriteHTML($html);
 $mpdf->Output('Seguimiento_'.$codigo.'.pdf', 'I');
 ?>

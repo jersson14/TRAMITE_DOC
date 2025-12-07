@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Seguimiento de Trámite | EPS EMUSAP ABANCAY</title>
+    <title>Seguimiento de Trámite | JMC ABANCAY</title>
     
     <!-- Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- AdminLTE -->
     <link rel="stylesheet" href="plantilla/dist/css/adminlte.min.css">
-    <link rel="icon" href="img/emusap.jpg" type="image/jpg">
+    <link rel="icon" href="img/empre.jpg" type="image/jpg">
     
     <style>
         * {
@@ -484,7 +484,7 @@
     <div class="header-banner">
         <div class="container text-center">
             <div class="logo-container">
-                <img src="img/emusap.jpg" alt="EPS EMUSAP Logo">
+                <img src="img/empre.jpg" alt="JMC Logo">
             </div>
         </div>
     </div>
@@ -528,7 +528,7 @@
                 <div class="info-card">
                     <div class="info-text">
                         <i class="fas fa-info-circle" style="color: #667eea; margin-right: 0.5rem;"></i>
-                        La <strong>EPS EMUSAP ABANCAY SA</strong> pone a su disposición el <strong>Sistema de Seguimiento de Documentos</strong>, 
+                        La <strong>EMPRESA JMC ABANCAY SA</strong> pone a su disposición el <strong>Sistema de Seguimiento de Documentos</strong>, 
                         para realizar la búsqueda y rastreo de los diferentes documentos registrados en la plataforma. 
                         Debe ingresar correctamente el <strong>CÓDIGO DE SEGUIMIENTO</strong> y el <strong>DNI del remitente</strong> 
                         sin espacios en blanco para realizar la búsqueda correcta de su documento.
@@ -626,7 +626,7 @@
                     <strong>Copyright © 2025
                         <a href="" target="_blank" 
                            style="color: #667eea; text-decoration: none;">
-                            EPS EMUSAP ABANCAY SA
+                            JMC ABANCAY SA
 
                         </a>
                     </strong>
