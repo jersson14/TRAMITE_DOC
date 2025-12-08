@@ -255,10 +255,7 @@
                             <label for="" style="font-size:small;">Observaciónes / Motivo de Archivo:</label>
                             <textarea class="form-control" id="txt_observacion" rows="3" style="resize:none"></textarea>
                         </div>
-                        <div class="col-12 form-group" style="text-align:center">
-                            <label for="" style="font-size:16px;color:red">Para realizar la firma digital debe ingresar al siguiente manual para realizar los pasos por el APP ReFirma PDF de la RENIEC.</label><br>
-                            <a class='btn btn-primary btn-lg' href='../manual_usuario.pdf' target='_blank'><i class='fas fa-file-pdf'></i> VER MANUAL DE USUARIO REFIRMA PDF Versión 1.6</a>
-                        </div>
+
                         <div class="col-12">
                             <div class="form-group clearfix">
                                 <div class="icheck-success d-inline">

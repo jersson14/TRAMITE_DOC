@@ -111,38 +111,66 @@
 
     <!-- /.content -->
 <div class="modal fade" id="modal_seguimiento" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="lb_titulo">Seguimiento del Tramite</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <h5 class="modal-title" id="lb_titulo"><i class="fas fa-route"></i> Seguimiento del Trámite</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" style="background-color: #f8f9fa;">
         <div class="row">
-          <div class="col-12" style="text-align:center">
-          <div class="table-responsive" style="text-align:center">
-            <div class="card-body"> 
-            <table id="tabla_seguimiento" class="display compact" style="width:100%" style="text-align:center">
-                <thead style="background-color:#0A5D86;color:#FFFFFF; ">
-                  <tr style="text-align:center">
-                      <th style="text-align:center">PROCEDENCIA</th>
-                      <th style="text-align:center">FECHA</th>
-                      <th style="text-align:center">DESCRIPCION</th>
-                      <th style="text-align:center">ESTADO</th>
-                      <th style="text-align:center">ACCIONES</th>
-                      <th style="text-align:center">ARCHIVO ANEXADO</th>
-                   </tr>
-                  </thead>
-                </table>     
+          <div class="col-12">
+            <!-- Leyenda de colores -->
+            <div class="alert alert-info mb-3" style="border-left: 4px solid #17a2b8;">
+              <div class="row">
+                <div class="col-md-12">
+                  <strong><i class="fas fa-info-circle"></i> Leyenda:</strong>
+                  <span class="badge badge-primary ml-2"><i class="fas fa-map-marker-alt"></i> Origen</span>
+                  <span class="badge badge-success ml-2"><i class="fas fa-flag-checkered"></i> Destino</span>
+                  <span class="badge badge-warning ml-2">PENDIENTE</span>
+                  <span class="badge badge-success ml-2">ACEPTADO</span>
+                  <span class="badge badge-danger ml-2">RECHAZADO</span>
+                  <span class="badge badge-dark ml-2">DERIVADO</span>
+                  <span class="badge badge-info ml-2">FINALIZADO</span>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Tabla de seguimiento mejorada -->
+            <div class="card shadow-sm">
+              <div class="card-header" style="background-color: #0A5D86; color: white;">
+                <h6 class="mb-0"><i class="fas fa-list-alt"></i> Historial de Movimientos</h6>
+              </div>
+              <div class="card-body p-0">
+                <div class="table-responsive">
+                  <table id="tabla_seguimiento" class="table table-hover table-striped mb-0" style="width:100%">
+                    <thead style="background-color: #0A5D86; color: #FFFFFF;">
+                      <tr style="text-align:center">
+                        <th style="text-align:center; width: 15%;"><i class="fas fa-map-marker-alt"></i> ORIGEN</th>
+                        <th style="text-align:center; width: 15%;"><i class="fas fa-flag-checkered"></i> DESTINO</th>
+                        <th style="text-align:center; width: 12%;"><i class="far fa-calendar-alt"></i> FECHA</th>
+                        <th style="text-align:center; width: 25%;"><i class="fas fa-comment-alt"></i> DESCRIPCIÓN</th>
+                        <th style="text-align:center; width: 10%;"><i class="fas fa-info-circle"></i> ESTADO</th>
+                        <th style="text-align:center; width: 15%;"><i class="fas fa-tasks"></i> ACCIONES</th>
+                        <th style="text-align:center; width: 8%;"><i class="fas fa-paperclip"></i> ARCHIVO</th>
+                      </tr>
+                    </thead>
+                    <tbody style="font-size: 14px;">
+                      <!-- Los datos se cargarán aquí via DataTables -->
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        </div>
-        </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-arrow-right-from-bracket"></i>Cerrar</button>
+      <div class="modal-footer" style="background-color: #f8f9fa;">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          <i class="fas fa-times"></i> Cerrar
+        </button>
       </div>
     </div>
   </div>

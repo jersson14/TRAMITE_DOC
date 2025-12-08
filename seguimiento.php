@@ -745,31 +745,45 @@
                                 let statusText = "";
                                 let actionText = "";
                                 
+                                // Detectar si es una copia
+                                let isCopy = datadetalle[i][6] && datadetalle[i][6].toUpperCase().includes('COPIA');
+                                let copyBadge = isCopy ? '<span class="badge badge-danger ml-2" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;"><i class="fas fa-copy"></i> COPIA</span>' : '';
+                                
                                 if(datadetalle[i][7] == "DERIVADO") {
                                     iconClass = "fas fa-share";
                                     gradientColor = "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);";
                                     statusColor = "#667eea";
                                     actionText = "DERIVADO";
-                                    statusText = "El documento fue derivado al área de: <strong>" + datadetalle[i][3] + "</strong>";
+                                    statusText = "El documento fue derivado";
                                 } else if(datadetalle[i][7] == "RECHAZADO") {
                                     iconClass = "fas fa-times-circle";
                                     gradientColor = "background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);";
                                     statusColor = "#f5576c";
                                     actionText = "RECHAZADO";
-                                    statusText = "El documento fue rechazado en el área de: <strong>" + datadetalle[i][3] + "</strong>";
+                                    statusText = "El documento fue rechazado";
                                 } else if(datadetalle[i][7] == "FINALIZADO") {
                                     iconClass = "fas fa-check-circle";
                                     gradientColor = "background: linear-gradient(135deg, #10b981 0%, #059669 100%);";
                                     statusColor = "#10b981";
                                     actionText = "FINALIZADO";
-                                    statusText = "El documento fue finalizado en el área de: <strong>" + datadetalle[i][3] + "</strong>";
+                                    statusText = "El documento fue finalizado";
+                                } else if(datadetalle[i][7] == "ACEPTADO") {
+                                    iconClass = "fas fa-check";
+                                    gradientColor = "background: linear-gradient(135deg, #10b981 0%, #059669 100%);";
+                                    statusColor = "#10b981";
+                                    actionText = "ACEPTADO";
+                                    statusText = "El documento fue aceptado";
                                 } else {
                                     iconClass = "fas fa-clock";
                                     gradientColor = "background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);";
                                     statusColor = "#f59e0b";
                                     actionText = datadetalle[i][7];
-                                    statusText = "El documento se encuentra en el área de: <strong>" + datadetalle[i][3] + "</strong>";
+                                    statusText = "El documento está pendiente";
                                 }
+                                
+                                // Obtener origen y destino
+                                let areaOrigen = datadetalle[i][2] || 'EXTERNO';
+                                let areaDestino = datadetalle[i][3] || 'N/A';
                                 
                                 cadena += '<div class="timeline-item">' +
                                           '<div class="timeline-icon" style="' + gradientColor + '">' +
@@ -778,12 +792,22 @@
                                           '<div class="timeline-content" style="border-left-color: ' + statusColor + ';">' +
                                           '<div class="timeline-date"><i class="fas fa-clock"></i> ' + datadetalle[i][4] + '</div>' +
                                           '<div class="timeline-title" style="color: ' + statusColor + ';">' +
-                                          '<i class="fas fa-info-circle"></i> Estado: ' + actionText +
+                                          '<i class="fas fa-info-circle"></i> Estado: ' + actionText + copyBadge +
                                           '</div>' +
                                           '<div class="timeline-description">' +
-                                          '<p style="margin-bottom: 0.5rem;">' + statusText + '</p>' +
+                                          '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">' +
+                                          '<div style="background: white; padding: 0.75rem; border-radius: 8px; border-left: 3px solid #3b82f6;">' +
+                                          '<div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;"><i class="fas fa-map-marker-alt"></i> ORIGEN</div>' +
+                                          '<div style="font-weight: 600; color: #1f2937;">' + areaOrigen + '</div>' +
+                                          '</div>' +
+                                          '<div style="background: white; padding: 0.75rem; border-radius: 8px; border-left: 3px solid #10b981;">' +
+                                          '<div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;"><i class="fas fa-flag-checkered"></i> DESTINO</div>' +
+                                          '<div style="font-weight: 600; color: #1f2937;">' + areaDestino + '</div>' +
+                                          '</div>' +
+                                          '</div>' +
+                                          '<p style="margin-bottom: 0.5rem; font-weight: 500;">' + statusText + '</p>' +
                                           '<p style="margin: 0; padding: 1rem; background: white; border-radius: 8px; border-left: 3px solid ' + statusColor + ';">' +
-                                          '<i class="fas fa-comment-alt"></i> <strong>Observación:</strong><br>' +
+                                          '<i class="fas fa-comment-alt"></i> <strong>Descripción:</strong><br>' +
                                           datadetalle[i][6] +
                                           '</p>' +
                                           '</div>' +

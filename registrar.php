@@ -581,16 +581,7 @@
                                         </textarea>
                                     </div>
 
-                                    <div class="col-12">
-                                        <div class="info-box">
-                                            <i class="fas fa-signature"></i>
-                                            <strong>Firma Digital:</strong> 
-                                            <a href="" target="_blank" style="color: #667eea; text-decoration: none;">
-                                                Descargue el manual para realizar la firma digital con ReFirma PDF
-                                            </a>
-                                        </div>
-                                    </div>
-
+            
                                     <div class="col-md-8 form-group">
                                         <label>Adjuntar Documento <span class="required">(*)</span></label>
                                         <div class="file-upload-wrapper" onclick="document.getElementById('txt_archivo').click()">
@@ -615,6 +606,7 @@
                                         <input type="text" class="form-control" id="txt_folio" maxlength="3"
                                                placeholder="000" onkeypress="return soloNumeros(event)">
                                     </div>
+
 
                                     <div class="col-12">
                                         <div class="checkbox-custom">

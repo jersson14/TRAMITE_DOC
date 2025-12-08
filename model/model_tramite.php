@@ -31,7 +31,7 @@
             conexionBD::cerrar_conexion();
         }
         public function Registrar_Tramite($dni,$nom,$apt,$apm,$cel,$ema,$dir,$vpresentacion,$ruc,$raz,$arp,$ard,$tip
-        ,$ndo,$asu,$ruta,$fol,$idusu,$acc,$obs,$tre){
+        ,$ndo,$asu,$ruta,$fol,$idusu,$acc,$obs,$tre,$copias=array()){
             $c = conexionBD::conexionPDO();
             $sql = "CALL SP_REGISTRAR_TRAMITE(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             $arreglo = array();
@@ -59,13 +59,32 @@
             $query ->bindParam(21,$tre);
 
             $query ->execute();
+            $documento_id = null;
             if($row=$query->fetchColumn()){
-                return $row;
+                $documento_id = $row;
             }
+            
+            // Cerrar el cursor del stored procedure antes de ejecutar nuevas consultas
+            $query->closeCursor();
+            
+            // Insertar copias si existen
+            if(!empty($copias) && is_array($copias)){
+                foreach($copias as $area_copia_id){
+                    if(!empty($area_copia_id)){
+                        $sql_copia = "INSERT INTO movimiento (documento_id, area_origen_id, areadestino_id, mov_descripcion, mov_estatus, usuario_id, mov_acciones) 
+                                     VALUES (?, ?, ?, ?, 'PENDIENTE', ?, ?)";
+                        $query_copia = $c->prepare($sql_copia);
+                        $descripcion_copia = "COPIA - " . $asu;
+                        $query_copia->execute([$documento_id, $arp, $area_copia_id, $descripcion_copia, $idusu, $acc]);
+                    }
+                }
+            }
+            
+            return $documento_id;
             conexionBD::cerrar_conexion();
         }
         public function Registrar_Tramite_ul($documentoFinal,$nom,$apt,$apm,$cel,$ema,$dir,$vpresentacion,$ruc,$raz,$arp,$ard,$tip
-        ,$ndo,$asu,$ruta,$fol,$idusu,$acc,$obs,$tre){
+        ,$ndo,$asu,$ruta,$fol,$idusu,$acc,$obs,$tre,$copias=array()){
             $c = conexionBD::conexionPDO();
             $sql = "CALL SP_REGISTRAR_TRAMITE_UL(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
             $arreglo = array();
@@ -93,9 +112,28 @@
             $query ->bindParam(21,$tre);
 
             $query ->execute();
+            $documento_id = null;
             if($row=$query->fetchColumn()){
-                return $row;
+                $documento_id = $row;
             }
+            
+            // Cerrar el cursor del stored procedure antes de ejecutar nuevas consultas
+            $query->closeCursor();
+            
+            // Insertar copias si existen
+            if(!empty($copias) && is_array($copias)){
+                foreach($copias as $area_copia_id){
+                    if(!empty($area_copia_id)){
+                        $sql_copia = "INSERT INTO movimiento (documento_id, area_origen_id, areadestino_id, mov_descripcion, mov_estatus, usuario_id, mov_acciones) 
+                                     VALUES (?, ?, ?, ?, 'PENDIENTE', ?, ?)";
+                        $query_copia = $c->prepare($sql_copia);
+                        $descripcion_copia = "COPIA - " . $asu;
+                        $query_copia->execute([$documento_id, $arp, $area_copia_id, $descripcion_copia, $idusu, $acc]);
+                    }
+                }
+            }
+            
+            return $documento_id;
             conexionBD::cerrar_conexion();
         }
         public function Registrar_Tramite_Externo($dni,$nom,$apt,$apm,$cel,$ema,$dir,$vpresentacion,$ruc,$raz,$tip,$ndo,$asu,$ruta,$fol){

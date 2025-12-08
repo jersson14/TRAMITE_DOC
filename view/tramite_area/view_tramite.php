@@ -98,7 +98,8 @@
             <table id="tabla_seguimiento" class="display compact" style="width:100%" style="text-align:center">
                 <thead style="background-color:#0A5D86;color:#FFFFFF; ">
                   <tr style="text-align:center">
-                      <th style="text-align:center">PROCEDENCIA</th>
+                      <th style="text-align:center">ORIGEN</th>
+                      <th style="text-align:center">DESTINO</th>
                       <th style="text-align:center">FECHA</th>
                       <th style="text-align:center">DESCRIPCION</th>
                       <th style="text-align:center">ESTADO</th>

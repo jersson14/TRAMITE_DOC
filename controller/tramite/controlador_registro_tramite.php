@@ -26,10 +26,19 @@
     $acc = strtoupper(htmlspecialchars($_POST['acc'],ENT_QUOTES,'UTF-8'));
     $obs = strtoupper(htmlspecialchars($_POST['obs'],ENT_QUOTES,'UTF-8'));
     $tre = strtoupper(htmlspecialchars($_POST['tre'],ENT_QUOTES,'UTF-8'));
+    
+    // Recibir y decodificar las copias
+    $copias = array();
+    if(isset($_POST['copias']) && !empty($_POST['copias'])){
+        $copias = json_decode($_POST['copias'], true);
+        if(!is_array($copias)){
+            $copias = array();
+        }
+    }
 
     $ruta='controller/tramite/documentos/'.$nombrearchivo;
     $consulta = $MTR->Registrar_Tramite($dni,$nom,$apt,$apm,$cel,$ema,$dir,$vpresentacion,$ruc,$raz,$arp,
-    $ard,$tip,$ndo,$asu,$ruta,$fol,$idusu,$acc,$obs,$tre);
+    $ard,$tip,$ndo,$asu,$ruta,$fol,$idusu,$acc,$obs,$tre,$copias);
     if ($consulta) {
         if($nombrearchivo!=""){
             move_uploaded_file($_FILES['achivoobj']['tmp_name'],"documentos/".$nombrearchivo);

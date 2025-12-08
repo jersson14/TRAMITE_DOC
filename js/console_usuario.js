@@ -550,11 +550,14 @@ function Traer_Datos_Seguimiento2(){
     var cadena="";
     if(data.length>0){
       document.getElementById("div_buscador").style.display = "block";
-      document.getElementById('lbl_titulo').innerHTML="<b style='color:white'>Seguimiento del Tramite N°: "+data[0][0]+" - Remitente: "+data[0][2]+"</b>";
-      cadena +='<div class="timeline">'+
-      '<div class="time-label">'+
-        '<span class="bg-red">'+data[0][4]+'</span>'+
-      '</div>';
+      document.getElementById('lbl_titulo').innerHTML="<i class='fas fa-route'></i> Seguimiento del Trámite N°: "+data[0][0]+" - Remitente: "+data[0][2];
+      
+      // Información inicial del documento
+      cadena += '<div class="alert alert-info" style="border-left: 4px solid #17a2b8; margin-bottom: 2rem;">'+
+                '<h5 style="margin-bottom: 1rem;"><i class="far fa-calendar-alt"></i> <strong>Fecha de Registro:</strong> '+data[0][4]+'</h5>'+
+                '<p style="margin: 0;"><i class="fas fa-file-alt"></i> <strong>Documento:</strong> '+data[0][0]+' | <i class="fas fa-user"></i> <strong>Remitente:</strong> '+data[0][2]+'</p>'+
+                '</div>';
+      
       //AJAX PARA EL DETALLE DEL SEGUIMIENTO//
       $.ajax({
         "url":"../controller/usuario/controlador_traer_seguimiento_detalle.php",
@@ -566,60 +569,80 @@ function Traer_Datos_Seguimiento2(){
         let datadetalle=JSON.parse(resp);
         if(datadetalle.length>0){
           for (let i = 0; i < datadetalle.length; i++) {
-            if(datadetalle[i][7]=="DERIVADO")
-            {
-              cadena+='<div>'+
-              '<i class="fas fa-arrow-right bg-blue"></i>'+
-              '<div class="timeline-item">'+
-                '<span class="time"><i class="fas fa-clock"></i>'+datadetalle[i][4]+
-                '</span>'+
-                '<h3 class="timeline-header" style="color:blue"><a href="#" style="color:BLUE">El documento fue DERIVADO al área de: '+datadetalle[i][3]+'</a> - <b>ESTADO: '+datadetalle[i][7]+'</b></h3>'+
-                '<div class="timeline-body">'+
-                datadetalle[i][6]+
-                '</div>'+
-              '</div>'+
-            '</div>';
-              }else if(datadetalle[i][7]=="RECHAZADO")
-              {
-              cadena+='<div>'+
-              '<i class="fas fa-times bg-red"></i>'+
-              '<div class="timeline-item">'+
-                '<span class="time"><i class="fas fa-clock"></i>'+datadetalle[i][4]+
-                '</span>'+
-                '<h3 class="timeline-header" style="color:red"><a href="#" style="color:red">El documento fue RECHAZADO en el área de: '+datadetalle[i][3]+'</a> - <b>ESTADO: '+datadetalle[i][7]+'</b></h3>'+
-                '<div class="timeline-body">'+
-                datadetalle[i][6]+
-                '</div>'+
-              '</div>'+
-            '</div>';
-              }else if(datadetalle[i][7]=="FINALIZADO")
-              {
-              cadena+='<div>'+
-              '<i class="fas fa-check bg-success"></i>'+
-              '<div class="timeline-item">'+
-                '<span class="time"><i class="fas fa-clock"></i>'+datadetalle[i][4]+
-                '</span>'+
-                '<h3 class="timeline-header" style="color:green"><a href="#" style="color:green">El documento fue FINALIZADO en el área de: '+datadetalle[i][3]+'</a> - <b>ESTADO: '+datadetalle[i][7]+'</b></h3>'+
-                '<div class="timeline-body">'+
-                datadetalle[i][6]+
-                '</div>'+
-              '</div>'+
-            '</div>';
-              }else{
-                cadena+='<div>'+
-              '<i class="fas fa-check bg-warning"></i>'+
-              '<div class="timeline-item">'+
-                '<span class="time"><i class="fas fa-clock"></i>'+datadetalle[i][4]+
-                '</span>'+
-                '<h3 class="timeline-header" style="color:orange"><a href="#" style="color:orange">El documento se ENCUENTRA en el área de: '+datadetalle[i][3]+'</a> - <b>ESTADO: '+datadetalle[i][7]+'</b></h3>'+
-                '<div class="timeline-body">'+
-                datadetalle[i][6]+
-                '</div>'+
-              '</div>'+
-            '</div>';
-              }    
+            let iconClass = "fas fa-clock";
+            let cardBg = "linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)";
+            let statusBadge = "badge-warning";
+            let statusText = "PENDIENTE";
+            let statusIcon = "fas fa-clock";
+            
+            // Detectar si es una copia
+            let isCopy = datadetalle[i][7] && datadetalle[i][7].toUpperCase().includes('COPIA');
+            
+            // Obtener origen y destino - ÍNDICES CORREGIDOS
+            let areaOrigen = datadetalle[i][3] || 'EXTERNO';  // area_origen_nombre
+            let areaDestino = datadetalle[i][4] || 'N/A';     // area_destino_nombre
+            
+            if(datadetalle[i][8]=="DERIVADO"){
+              cardBg = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+              statusBadge = "badge-primary";
+              statusText = "DERIVADO";
+              statusIcon = "fas fa-arrow-right";
+            } else if(datadetalle[i][8]=="RECHAZADO"){
+              cardBg = "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)";
+              statusBadge = "badge-danger";
+              statusText = "RECHAZADO";
+              statusIcon = "fas fa-times-circle";
+            } else if(datadetalle[i][8]=="FINALIZADO"){
+              cardBg = "linear-gradient(135deg, #10b981 0%, #059669 100%)";
+              statusBadge = "badge-success";
+              statusText = "FINALIZADO";
+              statusIcon = "fas fa-check-circle";
+            } else if(datadetalle[i][8]=="ACEPTADO"){
+              cardBg = "linear-gradient(135deg, #10b981 0%, #059669 100%)";
+              statusBadge = "badge-success";
+              statusText = "ACEPTADO";
+              statusIcon = "fas fa-check";
+            }
+            
+            // Crear tarjeta de movimiento
+            cadena += '<div class="card mb-3" style="border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 15px; overflow: hidden;">'+
+                      '<div class="card-header" style="background: '+cardBg+'; color: white; padding: 1.25rem;">'+
+                        '<div class="d-flex justify-content-between align-items-center flex-wrap">'+
+                          '<h5 class="mb-0" style="font-weight: 700;">'+
+                            '<i class="'+statusIcon+'"></i> '+statusText+
+                            (isCopy ? ' <span class="badge badge-light text-danger ml-2"><i class="fas fa-copy"></i> COPIA</span>' : '')+
+                          '</h5>'+
+                          '<span style="font-size: 0.9rem;"><i class="far fa-clock"></i> '+datadetalle[i][5]+'</span>'+
+                        '</div>'+
+                      '</div>'+
+                      '<div class="card-body" style="padding: 1.5rem; background: #f8f9fa;">'+
+                        '<div class="row mb-3">'+
+                          '<div class="col-md-6 mb-2">'+
+                            '<div style="background: white; padding: 1rem; border-radius: 10px; border-left: 4px solid #3b82f6;">'+
+                              '<div style="font-size: 0.85rem; color: #6b7280; margin-bottom: 0.25rem;">'+
+                                '<i class="fas fa-map-marker-alt"></i> ORIGEN'+
+                              '</div>'+
+                              '<div style="font-weight: 700; color: #1f2937; font-size: 1.1rem;">'+areaOrigen+'</div>'+
+                            '</div>'+
+                          '</div>'+
+                          '<div class="col-md-6 mb-2">'+
+                            '<div style="background: white; padding: 1rem; border-radius: 10px; border-left: 4px solid #10b981;">'+
+                              '<div style="font-size: 0.85rem; color: #6b7280; margin-bottom: 0.25rem;">'+
+                                '<i class="fas fa-flag-checkered"></i> DESTINO'+
+                              '</div>'+
+                              '<div style="font-weight: 700; color: #1f2937; font-size: 1.1rem;">'+areaDestino+'</div>'+
+                            '</div>'+
+                          '</div>'+
+                        '</div>'+
+                        '<div style="background: white; padding: 1.25rem; border-radius: 10px; border-left: 4px solid #667eea;">'+
+                          '<div style="font-size: 0.85rem; color: #6b7280; margin-bottom: 0.5rem;">'+
+                            '<i class="fas fa-comment-alt"></i> DESCRIPCIÓN'+
+                          '</div>'+
+                          '<div style="color: #2d3748; line-height: 1.6;">'+datadetalle[i][7]+'</div>'+
+                        '</div>'+
+                      '</div>'+
+                    '</div>';
           }
-          cadena+='</div>';
           document.getElementById("div_seguimiento").innerHTML=cadena;
 
         }

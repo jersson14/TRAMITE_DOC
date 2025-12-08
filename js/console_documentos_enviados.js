@@ -672,34 +672,66 @@ function listar_seguimiento_tramite(id){
           }
       },
       "columns":[
-        {"data":"area_nombre"},
-        {"data":"fecha_formateada"},
-        {"data":"mov_descripcion"},
+        {"data":"area_origen_nombre",
+          render: function(data, type, row){
+            if(data == 'EXTERNO' || data == null){
+              return '<span class="badge badge-secondary" style="font-size: 13px; padding: 8px 12px;"><i class="fas fa-building"></i> EXTERNO</span>';
+            } else {
+              return '<span class="badge badge-primary" style="font-size: 13px; padding: 8px 12px;"><i class="fas fa-map-marker-alt"></i> ' + data + '</span>';
+            }
+          }
+        },
+        {"data":"area_destino_nombre",
+          render: function(data, type, row){
+            return '<span class="badge badge-success" style="font-size: 13px; padding: 8px 12px;"><i class="fas fa-flag-checkered"></i> ' + data + '</span>';
+          }
+        },
+        {"data":"fecha_formateada",
+          render: function(data, type, row){
+            return '<small><i class="far fa-calendar-alt"></i> ' + data + '</small>';
+          }
+        },
+        {"data":"mov_descripcion",
+          render: function(data, type, row){
+            // Resaltar si es una copia
+            if(data && data.toUpperCase().includes('COPIA')){
+              return '<span style="color: #e74c3c; font-weight: bold;"><i class="fas fa-copy"></i> ' + data + '</span>';
+            }
+            return '<span>' + data + '</span>';
+          }
+        },
         {"data":"mov_estatus",
         render: function(data,type,row){
                 if(data=='PENDIENTE'){
-                    return '<span class="badge bg-warning">PENDIENTE</span>';
+                    return '<span class="badge bg-warning" style="font-size: 12px; padding: 6px 10px;"><i class="fas fa-clock"></i> PENDIENTE</span>';
                 }else if(data=='RECHAZADO'){
-                    return '<span class="badge bg-danger">RECHAZADO</span>';
+                    return '<span class="badge bg-danger" style="font-size: 12px; padding: 6px 10px;"><i class="fas fa-times-circle"></i> RECHAZADO</span>';
                 }else if(data=='ACEPTADO'){
-                    return '<span class="badge bg-success">ACEPTADO</span>';
+                    return '<span class="badge bg-success" style="font-size: 12px; padding: 6px 10px;"><i class="fas fa-check-circle"></i> ACEPTADO</span>';
                 }else if(data=='FINALIZADO'){
-                  return '<span class="badge bg-primary">FINALIZADO</span>';
+                  return '<span class="badge bg-primary" style="font-size: 12px; padding: 6px 10px;"><i class="fas fa-flag"></i> FINALIZADO</span>';
                 }else if(data=='DERIVADO'){
-                  return '<span class="badge bg-dark">DERIVADO</span>';
+                  return '<span class="badge bg-dark" style="font-size: 12px; padding: 6px 10px;"><i class="fas fa-share"></i> DERIVADO</span>';
                 }
             
             }
              
         },
-        {"data":"mov_acciones"},
+        {"data":"mov_acciones",
+          render: function(data, type, row){
+            if(data && data.trim() != ''){
+              return '<small style="color: #2c3e50;">' + data + '</small>';
+            }
+            return '<small class="text-muted">Sin acciones</small>';
+          }
+        },
 
         {"data":"mov_archivo",
         render: function(data,type,row){
           if(data==''){
-            return "<button class='btn btn-danger btn-sm' disabled title='Ver archivo'><i class='fa fa-file-pdf'></i></button>";
+            return "<button class='btn btn-sm btn-secondary' disabled title='Sin archivo'><i class='fa fa-file-pdf'></i></button>";
             }else{
-              return "<a class='btn btn-primary btn-sm' href='../"+data+"' target='_blank' title='Ver archivo'><i class='fas fa-file-download'></i></a>";
+              return "<a class='btn btn-sm btn-primary' href='../"+data+"' target='_blank' title='Ver archivo'><i class='fas fa-file-download'></i></a>";
             }
             }   
         },         

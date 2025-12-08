@@ -247,6 +247,12 @@
                                 <input type="number" class="form-control" id="txt_tiempo_respuesta" onkeypress="return soloNumeros(event)">
                             </div>
                             <div class="col-12 form-group">
+                                <label for="" style="font-size:small;">Copias a (Opcional):</label>
+                                <select class="js-example-basic-multiple form-control" id="select_area_copias" name="states[]" multiple="multiple" style="width:100%">
+                                </select>
+                                <small class="text-muted">Seleccione las áreas que recibirán copia de este documento</small>
+                            </div>
+                            <div class="col-12 form-group">
                                 <label for="" style="font-size:small;">Asunto(*):</label>
                                 <textarea class="form-control" id="txt_asunto" rows="3" style="resize:none"></textarea>
                             </div>
@@ -254,20 +260,7 @@
                                 <label for="" style="font-size:small;">Observaciónes / Motivo de Archivo:</label>
                                 <textarea class="form-control" id="txt_observacion" rows="3" style="resize:none"></textarea>
                             </div>
-                            <div class="col-12 form-group" style="text-align:center">
-                            <label for="" style="font-size:16px;color:red">Para realizar la firma digital debe ingresar al siguiente manual para realizar los pasos por el APP ReFirma PDF de la RENIEC.</label><br>
-                            <a class='btn btn-primary btn-lg' href='../manual_usuario.pdf' target='_blank'><i class='fas fa-file-pdf'></i> VER MANUAL DE USUARIO REFIRMA PDF Versión 1.6</a>
-                            </div>
-                            <div class="col-12">
-                                <div class="form-group clearfix">
-                                    <div class="icheck-success d-inline">
-                                        <input type="checkbox"  id="checkboxSuccess2" >
-                                        <label for="checkboxSuccess2" style="align:justify;color:red">
-                                            Tiene el documento firmado digitalmente, si es así dale click para habilitar la subida de documentos.
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
+                         
                             <div class="col-12 form-group">
                                 <label for="" style="font-size:small;">Adjuntar Documento(*):</label>
                                 <input class="form-control" type="file" id="txt_archivo" disabled><br>
@@ -300,6 +293,10 @@
         Cargar_Select_DNI_UL();
 
         $('.js-example-basic-single').select2();
+        $('.js-example-basic-multiple').select2({
+            placeholder: 'Seleccione las áreas para copias',
+            allowClear: true
+        });
         $("#rad_presentacion1").on('click', function(){
             document.getElementById('div_juridico').style.display="none";
         });
@@ -310,7 +307,8 @@
             document.getElementById('div_juridico').style.display="block";
         });
         Cargar_Select_Tipo();
-        Cargar_Select_Area();   
+        Cargar_Select_Area();
+        Cargar_Select_Area_Copias();
         TraerNotificacionDocumentos();
         
     });
