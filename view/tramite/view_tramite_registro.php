@@ -243,7 +243,16 @@
                                 <label for="" style="font-size:small;">Observaciónes / Motivo de Archivo:</label>
                                 <textarea class="form-control" id="txt_observacion" rows="3" style="resize:none"></textarea>
                             </div>
-                           
+                                                   <div class="col-12">
+                            <div class="form-group clearfix">
+                                <div class="icheck-success d-inline">
+                                    <input type="checkbox" id="checkboxSuccess2">
+                                    <label for="checkboxSuccess2" style="align:justify;color:red">
+                                        Tiene el documento firmado digitalmente, si es así dale click para habilitar la subida de documentos.
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                             <div class="col-12 form-group">
                                 <label for="" style="font-size:small;">Adjuntar Documento(*):</label>
                                 <input class="form-control" type="file" id="txt_archivo" disabled><br>

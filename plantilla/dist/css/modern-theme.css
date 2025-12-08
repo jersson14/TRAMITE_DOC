@@ -1,0 +1,565 @@
+/*
+ * =====================================================
+ * MODERN THEME - Sistema de Trámite Documentario
+ * =====================================================
+ * Archivo de estilos modernos para mejorar UI/UX
+ * Mantiene funcionalidad 100% intacta
+ * =====================================================
+ */
+
+/* =====================================================
+   1. VARIABLES CSS
+   ===================================================== */
+:root {
+  /* Colores Primarios */
+  --primary-start: #667eea;
+  --primary-end: #764ba2;
+  --secondary-start: #10b981;
+  --secondary-end: #059669;
+  --danger-start: #f093fb;
+  --danger-end: #f5576c;
+  --warning-start: #fbbf24;
+  --warning-end: #f59e0b;
+  --info-start: #3b82f6;
+  --info-end: #2563eb;
+  
+  /* Grises */
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  
+  /* Espaciado */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  
+  /* Bordes */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 15px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+  
+  /* Sombras */
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 15px rgba(0,0,0,0.1);
+  --shadow-lg: 0 6px 20px rgba(0,0,0,0.15);
+  --shadow-xl: 0 10px 30px rgba(0,0,0,0.2);
+  
+  /* Transiciones */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+/* =====================================================
+   2. CARDS MODERNOS
+   ===================================================== */
+.modern-card {
+  border: none !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-md) !important;
+  overflow: hidden;
+  transition: all var(--transition-base);
+}
+
+.modern-card:hover {
+  box-shadow: var(--shadow-lg) !important;
+  transform: translateY(-2px);
+}
+
+.modern-card .card-header {
+  background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
+  color: white;
+  padding: var(--spacing-lg);
+  border: none;
+  font-weight: 700;
+}
+
+.modern-card .card-header h3,
+.modern-card .card-header h4,
+.modern-card .card-header h5 {
+  color: white;
+  margin: 0;
+  font-weight: 700;
+}
+
+.modern-card .card-body {
+  padding: var(--spacing-xl);
+}
+
+/* Variantes de color para headers */
+.card-header-success {
+  background: linear-gradient(135deg, var(--secondary-start) 0%, var(--secondary-end) 100%) !important;
+}
+
+.card-header-danger {
+  background: linear-gradient(135deg, var(--danger-start) 0%, var(--danger-end) 100%) !important;
+}
+
+.card-header-warning {
+  background: linear-gradient(135deg, var(--warning-start) 0%, var(--warning-end) 100%) !important;
+}
+
+.card-header-info {
+  background: linear-gradient(135deg, var(--info-start) 0%, var(--info-end) 100%) !important;
+}
+
+/* =====================================================
+   3. FORMULARIOS MODERNOS
+   ===================================================== */
+.form-group-modern {
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-group-modern label {
+  font-weight: 600;
+  color: var(--gray-700);
+  margin-bottom: var(--spacing-sm);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 0.9rem;
+}
+
+.form-group-modern label i {
+  color: var(--primary-start);
+}
+
+.form-group-modern .required {
+  color: #e53e3e;
+  font-weight: 700;
+}
+
+.form-control-modern {
+  border: 2px solid var(--gray-200) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 0.75rem 1rem !important;
+  transition: all var(--transition-base) !important;
+  font-size: 0.95rem !important;
+}
+
+.form-control-modern:focus {
+  border-color: var(--primary-start) !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+  outline: none !important;
+}
+
+.form-control-modern:disabled {
+  background-color: var(--gray-100) !important;
+  cursor: not-allowed;
+}
+
+/* Select2 Mejorado */
+.select2-container--default .select2-selection--single {
+  border: 2px solid var(--gray-200) !important;
+  border-radius: var(--radius-md) !important;
+  height: auto !important;
+  padding: 0.5rem !important;
+}
+
+.select2-container--default.select2-container--focus .select2-selection--single {
+  border-color: var(--primary-start) !important;
+}
+
+/* =====================================================
+   4. BOTONES MODERNOS
+   ===================================================== */
+.btn-modern {
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  transition: all var(--transition-base);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: 0.95rem;
+}
+
+.btn-modern:hover {
+  transform: translateY(-2px);
+  color: white;
+}
+
+.btn-modern i {
+  font-size: 1rem;
+}
+
+/* Botón Primario */
+.btn-modern-primary {
+  background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-modern-primary:hover {
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  color: white;
+}
+
+/* Botón Éxito */
+.btn-modern-success {
+  background: linear-gradient(135deg, var(--secondary-start) 0%, var(--secondary-end) 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+.btn-modern-success:hover {
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  color: white;
+}
+
+/* Botón Peligro */
+.btn-modern-danger {
+  background: linear-gradient(135deg, var(--danger-start) 0%, var(--danger-end) 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+}
+
+.btn-modern-danger:hover {
+  box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+  color: white;
+}
+
+/* Botón Advertencia */
+.btn-modern-warning {
+  background: linear-gradient(135deg, var(--warning-start) 0%, var(--warning-end) 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(251, 191, 36, 0.3);
+}
+
+.btn-modern-warning:hover {
+  box-shadow: 0 6px 20px rgba(251, 191, 36, 0.4);
+  color: white;
+}
+
+/* Botón Info */
+.btn-modern-info {
+  background: linear-gradient(135deg, var(--info-start) 0%, var(--info-end) 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+}
+
+.btn-modern-info:hover {
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  color: white;
+}
+
+/* Botón Secundario */
+.btn-modern-secondary {
+  background: var(--gray-200);
+  color: var(--gray-700);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-modern-secondary:hover {
+  background: var(--gray-300);
+  color: var(--gray-800);
+  box-shadow: var(--shadow-md);
+}
+
+/* =====================================================
+   5. BADGES MODERNOS
+   ===================================================== */
+.badge-modern {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  border: none;
+}
+
+.badge-modern i {
+  font-size: 0.9rem;
+}
+
+/* Estados de Documentos */
+.badge-pendiente {
+  background: linear-gradient(135deg, var(--warning-start) 0%, var(--warning-end) 100%);
+  color: white;
+}
+
+.badge-aceptado {
+  background: linear-gradient(135deg, var(--secondary-start) 0%, var(--secondary-end) 100%);
+  color: white;
+}
+
+.badge-rechazado {
+  background: linear-gradient(135deg, var(--danger-start) 0%, var(--danger-end) 100%);
+  color: white;
+}
+
+.badge-derivado {
+  background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
+  color: white;
+}
+
+.badge-finalizado {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  color: white;
+}
+
+/* =====================================================
+   6. TABLAS MODERNAS
+   ===================================================== */
+.modern-table {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+
+.modern-table thead {
+  background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
+  color: white;
+}
+
+.modern-table thead th {
+  color: white !important;
+  font-weight: 700;
+  padding: 1rem;
+  border: none;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+.modern-table tbody tr {
+  transition: all var(--transition-fast);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.modern-table tbody tr:hover {
+  background-color: var(--gray-50);
+  transform: scale(1.005);
+  box-shadow: var(--shadow-sm);
+}
+
+.modern-table tbody td {
+  padding: 1rem;
+  vertical-align: middle;
+}
+
+/* DataTables Wrapper */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  border-radius: var(--radius-md) !important;
+  margin: 0 2px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%) !important;
+  color: white !important;
+  border: none !important;
+}
+
+/* =====================================================
+   7. MODALES MODERNOS
+   ===================================================== */
+.modern-modal .modal-content {
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+}
+
+.modern-modal .modal-header {
+  background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
+  color: white;
+  border: none;
+  padding: var(--spacing-lg);
+}
+
+.modern-modal .modal-header .modal-title {
+  color: white;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.modern-modal .modal-header .close {
+  color: white;
+  opacity: 1;
+  text-shadow: none;
+  font-size: 2rem;
+  font-weight: 300;
+}
+
+.modern-modal .modal-header .close:hover {
+  opacity: 0.8;
+}
+
+.modern-modal .modal-body {
+  padding: var(--spacing-xl);
+  background-color: var(--gray-50);
+}
+
+.modern-modal .modal-footer {
+  background-color: var(--gray-50);
+  border-top: 1px solid var(--gray-200);
+  padding: var(--spacing-lg);
+}
+
+/* =====================================================
+   8. ALERTS MODERNOS
+   ===================================================== */
+.alert-modern {
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  border-left: 4px solid;
+  box-shadow: var(--shadow-sm);
+}
+
+.alert-modern-info {
+  background-color: #eff6ff;
+  border-left-color: var(--info-start);
+  color: #1e40af;
+}
+
+.alert-modern-success {
+  background-color: #f0fdf4;
+  border-left-color: var(--secondary-start);
+  color: #166534;
+}
+
+.alert-modern-warning {
+  background-color: #fffbeb;
+  border-left-color: var(--warning-start);
+  color: #92400e;
+}
+
+.alert-modern-danger {
+  background-color: #fef2f2;
+  border-left-color: #ef4444;
+  color: #991b1b;
+}
+
+/* =====================================================
+   9. UTILIDADES
+   ===================================================== */
+.gradient-text-primary {
+  background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 700;
+}
+
+.shadow-modern {
+  box-shadow: var(--shadow-md);
+}
+
+.shadow-modern-lg {
+  box-shadow: var(--shadow-lg);
+}
+
+.rounded-modern {
+  border-radius: var(--radius-lg);
+}
+
+.hover-lift {
+  transition: all var(--transition-base);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* =====================================================
+   10. ANIMACIONES
+   ===================================================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn var(--transition-slow);
+}
+
+.animate-slide-in {
+  animation: slideIn var(--transition-slow);
+}
+
+/* =====================================================
+   11. RESPONSIVE
+   ===================================================== */
+@media (max-width: 768px) {
+  .modern-card .card-body {
+    padding: var(--spacing-lg);
+  }
+  
+  .btn-modern {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+  
+  .modern-table thead th,
+  .modern-table tbody td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.85rem;
+  }
+}
+
+/* =====================================================
+   12. MEJORAS ESPECÍFICAS PARA ADMINLTE
+   ===================================================== */
+.content-wrapper {
+  background-color: var(--gray-50);
+}
+
+.content-header h1 {
+  font-weight: 700;
+  color: var(--gray-800);
+}
+
+.breadcrumb {
+  background-color: transparent;
+  padding: 0;
+}
+
+.breadcrumb-item.active {
+  color: var(--primary-start);
+  font-weight: 600;
+}
+
+/* Sidebar mejorado */
+.main-sidebar {
+  box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+}
+
+/* =====================================================
+   FIN DEL ARCHIVO
+   ===================================================== */

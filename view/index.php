@@ -24,6 +24,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link rel="icon" href="../img/empre.jpg" type="image/jpg">
 
   <link rel="stylesheet" href="../plantilla/dist//css/adminlte.min.css">
+  <!-- Modern Theme CSS -->
+  <link rel="stylesheet" href="../plantilla/dist/css/modern-theme.css">
   <link href="../utilitario/DataTables/datatables.min.css" type="text/css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>

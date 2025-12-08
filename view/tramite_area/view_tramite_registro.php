@@ -22,9 +22,9 @@
     <div class="col-12">
         <div class="row">
             <div class="col-md-12">
-                <div class="card card-primary">
+                <div class="card modern-card">
                     <div class="card-header">
-                        <h3 class="card-title"><b><u>DATOS DEL TRÁMITE</u></b></h3>
+                        <h3 class="card-title"><i class="fas fa-file-signature"></i> <b>DATOS DEL TRÁMITE</b></h3>
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse">
                         <i class="fas fa-minus"></i>
@@ -92,9 +92,9 @@
                 
             </div>
             <div class="col-md-12">
-                <div class="card card-primary">
+                <div class="card modern-card">
                     <div class="card-header">
-                        <h3 class="card-title"><b><u>DATOS DEL REMITENTE</u></b></h3>
+                        <h3 class="card-title"><i class="fas fa-user"></i> <b>DATOS DEL REMITENTE</b></h3>
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse">
                         <i class="fas fa-minus"></i>
@@ -207,9 +207,9 @@
                </div>
             </div>
             <div class="col-md-12">
-                <div class="card card-danger" >
-                    <div class="card-header">
-                        <h3 class="card-title"><b><u>DATOS DEL DOCUMENTO</u></b></h3>
+                <div class="card modern-card">
+                    <div class="card-header card-header-danger">
+                        <h3 class="card-title"><i class="fas fa-file-alt"></i> <b>DATOS DEL DOCUMENTO</b></h3>
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse">
                         <i class="fas fa-minus"></i>
@@ -279,7 +279,9 @@
                                 </div>
                             </div>
                             <div class="col-12" style="text-align:center">
-                                <button class="btn btn-success btn-lg" onclick="Registrar_Tramite()" id="btn_registro"><i class="fas fa-save"></i><b> REGISTRAR TRÁMITE</b></button>
+                                <button class="btn-modern btn-modern-success btn-lg" onclick="Registrar_Tramite()" id="btn_registro">
+                                    <i class="fas fa-save"></i> REGISTRAR TRÁMITE
+                                </button>
                             </div>
                         </div>
                     </div>
