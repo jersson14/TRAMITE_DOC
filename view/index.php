@@ -24,8 +24,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <link rel="icon" href="../img/empre.jpg" type="image/jpg">
 
   <link rel="stylesheet" href="../plantilla/dist//css/adminlte.min.css">
-  <!-- Modern Theme CSS -->
-  <link rel="stylesheet" href="../plantilla/dist/css/modern-theme.css">
+  <!-- Modern Admin Theme CSS -->
+  <link rel="stylesheet" href="../plantilla/dist/css/modern-admin-theme.css">
   <link href="../utilitario/DataTables/datatables.min.css" type="text/css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 </head>
@@ -405,15 +405,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <div class="row">
               <!-- /.col-md-6 -->
               <div class="col-lg-12">
-                <div class="card-primary">
-                  <div class="card-header">
-                    <h5 class="m-0" style="font-family:cooper;text-align:center"><i class="fas fa-list-ol"></i> DATOS IMPORTANTES</b></h5>
+                  <div class="card card-modern">
+                    <div class="card-header">
+                      <h5 class="m-0" style="font-family:cooper;text-align:center"><i class="fas fa-list-ol"></i> DATOS IMPORTANTES</b></h5>
                   </div>
                   <div class="card-body" style="background-color:white">
                     <div class="row">
                       <div class="col-lg-3 col-6">
                         <!-- small box -->
-                        <div class="small-box bg-info">
+                        <div class="small-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                           <div class="inner">
                             <b>Total de empleados</b>
                             <h3 id="total_empleados"><sup style="font-size: 20px"></sup></h3>
@@ -428,7 +428,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                       <!-- ./col -->
                       <div class="col-lg-3 col-6">
                         <!-- small box -->
-                        <div class="small-box bg-warning">
+                        <div class="small-box" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
                           <div class="inner">
                             <b>Nº De Documentos</b>
                             <h3 id="totaldocpendientes"><sup style="font-size: 20px"></sup></h3>
@@ -443,7 +443,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                       <!-- ./col -->
                       <div class="col-lg-3 col-6">
                         <!-- small box -->
-                        <div class="small-box bg-success">
+                        <div class="small-box" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
                           <div class="inner">
 
                             <b>Nº De Documentos</b>
@@ -459,7 +459,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                       <!-- ./col -->
                       <div class="col-lg-3 col-6">
                         <!-- small box -->
-                        <div class="small-box bg-dark">
+                        <div class="small-box" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
                           <div class="inner">
                             <b>Nº De Documentos</b>
                             <h3 id="totaldocfinalizado"><sup style="font-size: 20px"></sup></h3>
@@ -486,14 +486,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <div class="row">
               <!-- /.col-md-6 -->
               <div class="col-lg-12">
-                <div class="card-primary">
-                  <div class="card-header">
-                    <h5 class="m-0" style="font-family:cooper;text-align:center"><i class="fas fa-bullhorn"></i><b> COMUNICADOS</b></h5>
+                  <div class="card card-modern">
+                    <div class="card-header">
+                      <h5 class="m-0" style="font-family:cooper;text-align:center"><i class="fas fa-bullhorn"></i><b> COMUNICADOS</b></h5>
                   </div>
                   <div class="table-responsive" style="text-align:center">
                     <div class="card-body">
-                      <table id="tabla_comunicados_listar" class="table table-striped table-bordered" style="width:100%">
-                        <thead style="background-color:#023D77;color:white;">
+                      <table id="tabla_comunicados_listar" class="table table-modern table-striped table-bordered" style="width:100%">
+                        <thead>
                           <tr>
                             <th style="text-align:center">Título</th>
                             <th style="text-align:center">Descripción</th>
@@ -516,14 +516,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
               <div class="row">
                 <!-- /.col-md-6 -->
                 <div class="col-lg-12">
-                  <div class="card-primary">
+                  <div class="card card-modern">
                     <div class="card-header">
                       <h5 class="m-0" style="font-family:cooper;text-align:center"><i class="fas fa-bullhorn"></i><b> DATOS INSTITUCIÓN</b></h5>
                     </div>
                     <div class="table-responsive" style="text-align:center">
                       <div class="card-body">
-                        <table id="tabla_empresa" class="table table-striped table-bordered" style="width:100%">
-                          <thead style="background-color:#023D77;color:white;">
+                        <table id="tabla_empresa" class="table table-modern table-striped table-bordered" style="width:100%">
+                          <thead>
                             <tr>
                               <th style="text-align:center">Nro.</th>
                               <th style="text-align:center">Logo</th>
@@ -643,8 +643,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   </div>
                   <div class="table-responsive" style="text-align:center">
                     <div class="card-body">
-                      <table id="tabla_comunicados_listar" class="table table-striped table-bordered" style="width:100%">
-                        <thead style="background-color:#023D77;color:white;">
+                      <table id="tabla_comunicados_listar" class="table table-modern table-striped table-bordered" style="width:100%">
+                        <thead>
                           <tr>
                             <th style="text-align:center">Título</th>
                             <th style="text-align:center">Descripción</th>

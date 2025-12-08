@@ -1,5 +1,6 @@
 <script src="../js/console_tramite.js?rev=<?php echo time();?>"></script>
 <link rel="stylesheet" href="../plantilla/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<link rel="stylesheet" href="../plantilla/dist/css/modern-admin-theme.css">
 
 <!-- Content Header (Page header) -->
     <div class="content-header">
@@ -25,10 +26,10 @@
         <div class="row">
           <!-- /.col-md-6 -->
           <div class="col-lg-12">
-            <div class="card">
+            <div class="card card-modern">
               <div class="card-header">
               <h3 class="card-title"><i class="fas fa-file-signature"></i>&nbsp;&nbsp;<b>Listado de Trámites</b></h3>
-                <button class="btn btn-success float-right" onclick="cargar_contenido('contenido_principal','tramite/view_tramite_registro.php')"><i class="fas fa-plus"></i> Nuevo Registro</button>
+                <button class="btn btn-gradient-success float-right" onclick="cargar_contenido('contenido_principal','tramite/view_tramite_registro.php')"><i class="fas fa-plus"></i> Nuevo Registro</button>
               </div>
                 <div class="table-responsive" style="text-align:left">
                   <div class="card-body">
@@ -56,7 +57,7 @@
                 
                 <div class="col-12 col-md-4 form-group" role="document">
                     <label for="">&nbsp;</label><br>
-                    <button onclick="listar_tramite_buscar()" class="btn btn-danger mr-2" style="width:100%" onclick><i class="fas fa-search mr-1"></i>Buscar por Estado de Documento</button>
+                    <button onclick="listar_tramite_buscar()" class="btn btn-gradient-primary mr-2" style="width:100%"><i class="fas fa-search mr-1"></i>Buscar por Estado de Documento</button>
                 </div>
                 </div>
                 <div class="row">

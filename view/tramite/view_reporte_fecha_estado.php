@@ -1,5 +1,6 @@
 <script src="../js/console_buscar_fecha_estado.js?rev=<?php echo time();?>"></script>
 <link rel="stylesheet" href="../plantilla/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<link rel="stylesheet" href="../plantilla/dist/css/modern-admin-theme.css">
 
 <!-- Content Header (Page header) -->
     <div class="content-header">
@@ -25,7 +26,7 @@
         <div class="row">
           <!-- /.col-md-6 -->
           <div class="col-lg-12">
-            <div class="card">
+            <div class="card card-modern">
               <div class="card-header">
               <h3 class="card-title"><i class="fas fa-file-signature"></i>&nbsp;&nbsp;<b>Listado de Trámites</b></h3>
               </div>
@@ -82,14 +83,14 @@
                 </div>
                 <div class="col-12 col-md-3" role="document">
                     <label for="">&nbsp;</label><br>
-                    <button onclick="listar_estado_busqueda()" class="btn btn-danger mr-2" style="width:100%" onclick><i class="fas fa-search mr-1"></i>Buscar Documentos</button>
+                    <button onclick="listar_estado_busqueda()" class="btn btn-gradient-primary btn-modern mr-2" style="width:100%" onclick><i class="fas fa-search mr-1"></i>Buscar Documentos</button>
                 </div>
                 </div>
                 
                 <div class="table-responsive" style="text-align:center">
                   <div class="card-body">
-                    <table id="tabla_tramite" class="table table-striped table-bordered" style="width:100%">
-                        <thead style="background-color:#0A5D86;color:#FFFFFF; ">
+                    <table id="tabla_tramite" class="table table-striped table-bordered table-modern" style="width:100%">
+                        <thead>
                             <tr>
                                 <th style="text-align:center">Nro.</th>
                                 <th style="text-align:center">N° Expediente</th>
@@ -116,7 +117,7 @@
       </div><!-- /.container-fluid -->
 
     <!-- /.content -->
-<div class="modal fade" id="modal_seguimiento" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade modal-modern" id="modal_seguimiento" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -130,8 +131,8 @@
           <div class="col-12" style="text-align:center"> 
           <div class="table-responsive" style="text-align:center">
             <div class="card-body">   
-            <table id="tabla_seguimiento" class="display compact" style="width:100%" style="text-align:center">
-                <thead style="background-color:#0A5D86;color:#FFFFFF; ">
+            <table id="tabla_seguimiento" class="display compact table-modern" style="width:100%" style="text-align:center">
+                <thead>
                   <tr style="text-align:center">
                       <th style="text-align:center">PROCEDENCIA</th>
                       <th style="text-align:center">FECHA</th>
@@ -147,14 +148,14 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-arrow-right-from-bracket"></i>Cerrar</button>
+        <button type="button" class="btn btn-gradient-danger btn-modern" data-dismiss="modal"><i class="fa fa-arrow-right-from-bracket"></i> Cerrar</button>
       </div>
     </div>
   </div>
 </div>
     <!-- /MODAL MAS DATOS -->
 
-<div class="modal fade" id="modal_mas" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade modal-modern" id="modal_mas" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -290,7 +291,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-arrow-right-from-bracket"></i>Cerrar</button>
+        <button type="button" class="btn btn-gradient-danger btn-modern" data-dismiss="modal"><i class="fa fa-arrow-right-from-bracket"></i> Cerrar</button>
       </div>
     </div>
   </div>

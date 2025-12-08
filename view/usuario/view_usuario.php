@@ -1,4 +1,5 @@
 <script src="../js/console_usuario.js?rev=<?php echo time();?>"></script>
+<link rel="stylesheet" href="../plantilla/dist/css/modern-admin-theme.css">
 
 <!-- Content Header (Page header) -->
     <div class="content-header">
@@ -24,10 +25,10 @@
         <div class="row">
           <!-- /.col-md-6 -->
           <div class="col-lg-12">
-            <div class="card">
+            <div class="card card-modern">
               <div class="card-header">
               <h3 class="card-title"><i class="fas fa-user"></i>&nbsp;&nbsp;<b>Listado de Usuarios</b></h3>
-                <button class="btn btn-success float-right" onclick="AbrirRegistro()"><i class="fas fa-plus"></i> Nuevo Registro</button>
+                <button class="btn btn-gradient-success float-right" onclick="AbrirRegistro()"><i class="fas fa-plus"></i> Nuevo Registro</button>
               </div>
                 <div class="table-responsive" style="text-align:center">
                   <div class="card-body">
@@ -55,8 +56,8 @@
 <div class="modal fade" id="modal_registro" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header" style="background-color:#1FA0E0;">
-        <h5 class="modal-title" id="exampleModalLabel" style="color:white; text-align:center"><b>REGISTRO DE USUARIO</b></h5>
+      <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <h5 class="modal-title" id="exampleModalLabel"><b>REGISTRO DE USUARIO</b></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -94,8 +95,8 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-times ml-1"></i> Cerrar</button>
-        <button type="button" class="btn btn-success" onclick="Registrar_Usuario()"><i class="fas fa-save"></i> Registrar</button>
+        <button type="button" class="btn btn-gradient-danger" data-dismiss="modal"><i class="fas fa-times ml-1"></i> Cerrar</button>
+        <button type="button" class="btn btn-gradient-success" onclick="Registrar_Usuario()"><i class="fas fa-save"></i> Registrar</button>
       </div>
     </div>
   </div>
@@ -103,8 +104,8 @@
 <div class="modal fade" id="modal_editar" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header" style="background-color:#1FA0E0;">
-        <h5 class="modal-title" id="exampleModalLabel"  style="color:white; text-align:center"><b>EDITAR DATOS DE USUARIO</b></h5>
+      <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <h5 class="modal-title" id="exampleModalLabel"><b>EDITAR DATOS DE USUARIO</b></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -139,8 +140,8 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-times ml-1"></i> Cerrar</button>
-        <button type="button" class="btn btn-success" onclick="Modificar_Usuario()"><i class="fas fa-times ml-1"></i> Modificar</button>
+        <button type="button" class="btn btn-gradient-danger" data-dismiss="modal"><i class="fas fa-times ml-1"></i> Cerrar</button>
+        <button type="button" class="btn btn-gradient-success" onclick="Modificar_Usuario()"><i class="fas fa-check ml-1"></i> Modificar</button>
       </div>
     </div>
   </div>
@@ -148,8 +149,8 @@
 <div class="modal fade" id="modal_contra" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header" style="background-color:#1FA0E0;">
-        <h5 class="modal-title" id="exampleModalLabel" style="color:white; text-align:center"><b>CAMBIAR CONTRASEÑA</b></h5>
+      <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <h5 class="modal-title" id="exampleModalLabel"><b>CAMBIAR CONTRASEÑA</b></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -167,8 +168,8 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-times ml-1"></i> Cerrar</button>
-        <button type="button" class="btn btn-success" onclick="Modificar_Contra()"><i class="fas fa-check"></i> Modificar</button>
+        <button type="button" class="btn btn-gradient-danger" data-dismiss="modal"><i class="fas fa-times ml-1"></i> Cerrar</button>
+        <button type="button" class="btn btn-gradient-success" onclick="Modificar_Contra()"><i class="fas fa-check"></i> Modificar</button>
       </div>
     </div>
   </div>

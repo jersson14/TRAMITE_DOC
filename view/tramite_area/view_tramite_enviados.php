@@ -1,5 +1,6 @@
 <script src="../js/console_documentos_enviados.js?rev=<?php echo time();?>"></script>
 <link rel="stylesheet" href="../plantilla/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<link rel="stylesheet" href="../plantilla/dist/css/modern-admin-theme.css">
 
 <!-- Content Header (Page header) -->
     <div class="content-header">
@@ -25,10 +26,10 @@
         <div class="row">
           <!-- /.col-md-6 -->
           <div class="col-lg-12">
-            <div class="card">
+            <div class="card card-modern">
               <div class="card-header">
               <h3 class="card-title"><i class="fas fa-file-signature"></i>&nbsp;&nbsp;<b>Listado de Trámites</b></h3>
-                <button class="btn btn-success float-right" onclick="cargar_contenido('contenido_principal','tramite_area/view_tramite_registro.php')"><i class="fas fa-plus"></i> Nuevo Registro</button>
+                <button class="btn btn-gradient-success btn-modern float-right" onclick="cargar_contenido('contenido_principal','tramite_area/view_tramite_registro.php')"><i class="fas fa-plus"></i> Nuevo Registro</button>
               </div>
                 <div class="table-responsive" style="text-align:left">
                   <div class="card-body">
@@ -56,7 +57,7 @@
                 
                 <div class="col-12 col-md-4" role="document">
                     <label for="">&nbsp;</label><br>
-                    <button onclick="listar_tramite_buscar_area()" class="btn btn-danger mr-2" style="width:100%" onclick><i class="fas fa-search mr-1"></i>Buscar por Estado de Documento</button>
+                    <button onclick="listar_tramite_buscar_area()" class="btn btn-gradient-primary btn-modern mr-2" style="width:100%" onclick><i class="fas fa-search mr-1"></i>Buscar por Estado de Documento</button>
                 </div>
                 </div>
                 <div class="row">
@@ -78,8 +79,8 @@
                 </div>
                 <div class="table-responsive" style="text-align:center">
                   <div class="card-body">
-                    <table id="tabla_tramite" class="table table-striped table-bordered" style="width:100%">
-                        <thead style="background-color:#0A5D86;color:#FFFFFF; ">
+                    <table id="tabla_tramite" class="table table-modern table-striped table-bordered" style="width:100%">
+                        <thead>
                             <tr>
                                 <th style="text-align:center">Nro.</th>
                                 <th style="text-align:center">N° Expediente</th>

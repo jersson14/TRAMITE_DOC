@@ -1,5 +1,6 @@
 <script src="../js/console_tramite_area.js?rev=<?php echo time();?>"></script>
 <link rel="stylesheet" href="../plantilla/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<link rel="stylesheet" href="../plantilla/dist/css/modern-admin-theme.css">
 
 
 <!-- Content Header (Page header) -->
@@ -22,7 +23,7 @@
     <div class="col-12">
         <div class="row">
             <div class="col-md-12">
-                <div class="card modern-card">
+                <div class="card card-modern">
                     <div class="card-header">
                         <h3 class="card-title"><i class="fas fa-file-signature"></i> <b>DATOS DEL TRÁMITE</b></h3>
                     <div class="card-tools">
@@ -279,7 +280,7 @@
                                 </div>
                             </div>
                             <div class="col-12" style="text-align:center">
-                                <button class="btn-modern btn-modern-success btn-lg" onclick="Registrar_Tramite()" id="btn_registro">
+                                <button class="btn btn-gradient-success btn-modern btn-lg" onclick="Registrar_Tramite()" id="btn_registro">
                                     <i class="fas fa-save"></i> REGISTRAR TRÁMITE
                                 </button>
                             </div>

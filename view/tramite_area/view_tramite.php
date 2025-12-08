@@ -1,5 +1,6 @@
 <script src="../js/console_tramite_area.js?rev=<?php echo time();?>"></script>
 <link rel="stylesheet" href="../plantilla/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<link rel="stylesheet" href="../plantilla/dist/css/modern-admin-theme.css">
 
 <!-- Content Header (Page header) -->
     <div class="content-header">
@@ -25,10 +26,10 @@
         <div class="row">
           <!-- /.col-md-6 -->
           <div class="col-lg-12">
-            <div class="card">
+            <div class="card card-modern">
               <div class="card-header">
               <h3 class="card-title"><i class="fas fa-file-signature"></i>&nbsp;&nbsp;<b>Listado de Trámites</b></h3>
-                <button class="btn btn-success float-right" onclick="cargar_contenido('contenido_principal','tramite_area/view_tramite_registro.php')"><i class="fas fa-plus"></i> Nuevo Registro</button>
+                <button class="btn btn-gradient-success float-right" onclick="cargar_contenido('contenido_principal','tramite_area/view_tramite_registro.php')"><i class="fas fa-plus"></i> Nuevo Registro</button>
                 
               </div><br>
               <div class="row">
@@ -372,8 +373,8 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-arrow-right-from-bracket"></i>Cerrar</button>
-        <button type="button" class="btn btn-success" onclick="Registrar_Derivacion();">Registrar</button>
+        <button type="button" class="btn btn-gradient-danger" data-dismiss="modal"><i class="fa fa-arrow-right-from-bracket"></i>Cerrar</button>
+        <button type="button" class="btn btn-gradient-success" onclick="Registrar_Derivacion();">Registrar</button>
       </div>
     </div>
   </div>
@@ -409,8 +410,8 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-arrow-right-from-bracket"></i>Cerrar</button>
-        <button type="button" class="btn btn-success" onclick="Rechazar_Tramite();">Rechazar</button>
+        <button type="button" class="btn btn-gradient-danger" data-dismiss="modal"><i class="fa fa-arrow-right-from-bracket"></i>Cerrar</button>
+        <button type="button" class="btn btn-gradient-success" onclick="Rechazar_Tramite();">Rechazar</button>
       </div>
     </div>
   </div>

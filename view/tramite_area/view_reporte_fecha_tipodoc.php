@@ -1,5 +1,6 @@
 <script src="../js/console_tramite_area_buscar_fecha_tipodoc.js?rev=<?php echo time();?>"></script>
 <link rel="stylesheet" href="../plantilla/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<link rel="stylesheet" href="../plantilla/dist/css/modern-admin-theme.css">
 
 <!-- Content Header (Page header) -->
     <div class="content-header">
@@ -25,7 +26,7 @@
         <div class="row">
           <!-- /.col-md-6 -->
           <div class="col-lg-12">
-            <div class="card">
+            <div class="card card-modern">
               <div class="card-header">
               <h3 class="card-title"><i class="fas fa-file-signature"></i>&nbsp;&nbsp;<b>Listado de Trámites</b></h3>
               </div>
@@ -77,7 +78,7 @@
                 </div>
                 <div class="col-12 col-md-3" role="document">
                     <label for="">&nbsp;</label><br>
-                    <button onclick="listar_fechas_busqueda()" class="btn btn-danger mr-2" style="width:100%" onclick><i class="fas fa-search mr-1"></i>Buscar Documentos</button>
+                    <button onclick="listar_fechas_busqueda()" class="btn btn-gradient-primary btn-modern mr-2" style="width:100%" onclick><i class="fas fa-search mr-1"></i>Buscar Documentos</button>
                 </div>
                 </div>
                 

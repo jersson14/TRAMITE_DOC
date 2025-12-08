@@ -1,5 +1,6 @@
 <script src="../js/console_movimiento.js?rev=<?php echo time();?>"></script>
 <link rel="stylesheet" href="../plantilla/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+<link rel="stylesheet" href="../plantilla/dist/css/modern-admin-theme.css">
 
 <!-- Content Header (Page header) -->
     <div class="content-header">
@@ -25,7 +26,7 @@
         <div class="row">
           <!-- /.col-md-6 -->
           <div class="col-lg-12">
-            <div class="card">
+            <div class="card card-modern">
               <div class="card-header">
               <h3 class="card-title"><i class="fas fa-file-signature"></i>&nbsp;&nbsp;<b>Listado de Trámites</b></h3>
               </div>
@@ -55,7 +56,7 @@
                 
                 <div class="col-12 col-md-4" role="document">
                     <label for="">&nbsp;</label><br>
-                    <button onclick="listar_tramite_buscar()" class="btn btn-danger mr-2" style="width:100%" onclick><i class="fas fa-search mr-1"></i>Buscar por Estado de Documento</button>
+                    <button onclick="listar_tramite_buscar()" class="btn btn-gradient-primary mr-2" style="width:100%"><i class="fas fa-search mr-1"></i>Buscar por Estado de Documento</button>
                 </div>
                 </div>
                 <div class="row">
@@ -176,8 +177,8 @@
 <div class="modal fade" id="modal_mas" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-      <h5 class="modal-title" id="lb_titulo_datos">Datos del Trámite</h5>
+      <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+      <h5 class="modal-title" id="lb_titulo_datos"><b>Datos del Trámite</b></h5>
       </div>
       <div class="modal-body">
         <div class="row">
@@ -321,7 +322,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-arrow-right-from-bracket"></i>Cerrar</button>
+        <button type="button" class="btn btn-gradient-danger" data-dismiss="modal"><i class="fa fa-arrow-right-from-bracket"></i>Cerrar</button>
       </div>
     </div>
   </div>
