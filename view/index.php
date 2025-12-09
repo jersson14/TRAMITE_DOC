@@ -158,9 +158,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
           </div>
           <div class="info">
-            <a style="text-align:center;" href="#" class="d-block"><i class="fa fa-circle text-success fa-0x"></i> ¡Hola!<br> <b style="color:white"><?php echo $_SESSION['S_APELLIDOS']; ?></b></a>
-            <a style="text-align:center;margin:5px;color:white;font-size:15px" href="#" class="d-block">&nbsp;&nbsp;<b style="text-align:center"><i class="fa fa-user text-success fa-0x"></i><em> ROL: <?php echo $_SESSION['S_ROL']; ?></em></b></a>
-            <a style="text-align:center;margin:5px;color:white;font-size:13px" href="#" class="d-block">&nbsp;&nbsp;<b style="text-align:center"><i class="fa fa-home text-success fa-0x"></i><em> ÁREA: <?php echo $_SESSION['S_AREA']; ?></em></b></a>
+            <a href="#" class="d-block"><i class="fa fa-circle text-success fa-0x"></i> ¡Hola!<br> <b style="color:white"><?php echo $_SESSION['S_APELLIDOS']; ?></b></a>
+            <a href="#" class="d-block">&nbsp;&nbsp;<b><i class="fa fa-user text-success fa-0x"></i><em> ROL: <?php echo $_SESSION['S_ROL']; ?></em></b></a>
+            <a href="#" class="d-block">&nbsp;&nbsp;<b><i class="fa fa-home text-success fa-0x"></i><em> ÁREA: <?php echo $_SESSION['S_AREA']; ?></em></b></a>
 
           </div>
         </div>

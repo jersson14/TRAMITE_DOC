@@ -661,9 +661,20 @@
     box-shadow: 0 0 15px rgba(102, 126, 234, 0.3) !important;
 }
 
+.main-sidebar .user-panel .info {
+    overflow: visible !important;
+    white-space: normal !important;
+    text-align: center !important;
+}
+
 .main-sidebar .user-panel .info a {
     color: #fff !important;
     transition: all var(--transition-fast);
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    display: block !important;
+    line-height: 1.4 !important;
+    text-align: center !important;
 }
 
 .main-sidebar .user-panel .info a:hover {
@@ -685,7 +696,7 @@
 }
 
 /* Navigation Items */
-.sidebar .nav-sidebar > .nav-item {
+.sidebar .nav-sidebar>.nav-item {
     margin: 0.25rem 0.5rem !important;
 }
 
@@ -731,18 +742,18 @@
     padding-left: 0 !important;
 }
 
-.sidebar .nav-treeview > .nav-item > .nav-link {
+.sidebar .nav-treeview>.nav-item>.nav-link {
     padding-left: 2.5rem !important;
     font-size: 0.9rem !important;
     color: rgba(255, 255, 255, 0.7) !important;
 }
 
-.sidebar .nav-treeview > .nav-item > .nav-link:hover {
+.sidebar .nav-treeview>.nav-item>.nav-link:hover {
     background: rgba(102, 126, 234, 0.15) !important;
     color: rgba(255, 255, 255, 0.95) !important;
 }
 
-.sidebar .nav-treeview > .nav-item > .nav-link.active {
+.sidebar .nav-treeview>.nav-item>.nav-link.active {
     background: rgba(102, 126, 234, 0.3) !important;
     color: white !important;
 }
@@ -752,7 +763,7 @@
     transition: transform var(--transition-base);
 }
 
-.sidebar .nav-sidebar .nav-item.menu-open > .nav-link .right {
+.sidebar .nav-sidebar .nav-item.menu-open>.nav-link .right {
     transform: rotate(-90deg);
 }
 
