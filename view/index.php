@@ -976,3 +976,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
   }
   ?>
 </script>
+
+<!-- Chat Widget CSS -->
+<link rel="stylesheet" href="../plantilla/dist/css/chat_widget.css">
+
+<!-- Chat Widget Component -->
+<?php include 'components/chat_widget.php'; ?>
+
+<!-- Chat Widget JavaScript -->
+<script src="../js/chat_assistant.js"></script>
+
+</body>
+</html>
