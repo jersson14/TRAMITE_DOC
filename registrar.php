@@ -349,17 +349,168 @@
             color: #4a5568;
         }
         
+        
+        /* Tablets (768px - 1024px) */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .main-container {
+                max-width: 95%;
+            }
+            
+            .card-body-custom {
+                padding: 1.75rem;
+            }
+        }
+        
+        /* Móviles (max-width: 768px) */
         @media (max-width: 768px) {
+            .header-banner {
+                padding: 1.5rem 0;
+            }
+            
+            .logo-container {
+                padding: 1rem;
+            }
+            
+            .logo-container img {
+                max-width: 120px;
+            }
+            
+            .navigation-bar {
+                padding: 0.5rem 0;
+            }
+            
+            .nav-link {
+                padding: 0.6rem 1rem !important;
+                font-size: 0.9rem;
+                margin: 0.25rem;
+            }
+            
+            .content-wrapper {
+                padding: 1.5rem 0;
+            }
+            
             .welcome-title {
-                font-size: 1.4rem;
+                font-size: 1.5rem;
+            }
+            
+            .welcome-subtitle {
+                font-size: 0.95rem;
+            }
+            
+            .welcome-card,
+            .form-card {
+                margin-bottom: 1.5rem;
             }
             
             .card-body-custom {
                 padding: 1.5rem;
             }
             
+            .card-header-custom {
+                padding: 1.25rem 1.5rem;
+                font-size: 1rem;
+            }
+            
+            /* Formularios en 1 columna */
+            .row .col-md-6,
+            .row .col-md-4,
+            .row .col-md-8,
+            .row .col-lg-6 {
+                flex: 0 0 100%;
+                max-width: 100%;
+                margin-bottom: 0;
+            }
+            
             .radio-group {
                 flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .radio-item {
+                min-width: 100%;
+            }
+            
+            /* Botones touch-friendly */
+            .btn-submit,
+            .btn-search {
+                padding: 1rem 2rem;
+                font-size: 1rem;
+                min-height: 48px;
+            }
+            
+            .form-control {
+                padding: 0.875rem 1rem;
+                font-size: 1rem;
+                min-height: 48px;
+            }
+            
+            .file-upload-wrapper {
+                padding: 1.5rem;
+            }
+            
+            .alert-box,
+            .info-box,
+            .warning-box {
+                padding: 0.875rem 1.25rem;
+                font-size: 0.9rem;
+            }
+            
+            .select2-container--default .select2-selection--single {
+                height: 48px;
+                padding: 0.75rem;
+            }
+        }
+        
+        /* Móviles pequeños (max-width: 480px) */
+        @media (max-width: 480px) {
+            .header-banner {
+                padding: 1rem 0;
+            }
+            
+            .logo-container {
+                padding: 0.75rem;
+            }
+            
+            .logo-container img {
+                max-width: 100px;
+            }
+            
+            .welcome-title {
+                font-size: 1.3rem;
+            }
+            
+            .welcome-subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .card-body-custom {
+                padding: 1.25rem;
+            }
+            
+            .card-header-custom {
+                padding: 1rem 1.25rem;
+                font-size: 0.95rem;
+            }
+            
+            .btn-submit {
+                padding: 0.875rem 1.5rem;
+                font-size: 0.95rem;
+            }
+            
+            .nav-link {
+                font-size: 0.85rem;
+                padding: 0.5rem 0.75rem !important;
+            }
+            
+            .form-group label {
+                font-size: 0.85rem;
+            }
+            
+            .alert-box,
+            .info-box,
+            .warning-box {
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
             }
         }
         

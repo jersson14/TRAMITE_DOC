@@ -138,7 +138,7 @@ $('#tabla_tramite').on('click','.seguimiento',function(){
       var data = tbl_tramite.row(this).data();
   }
 $("#modal_seguimiento").modal('show');
-  document.getElementById('lb_titulo').innerHTML="SEGUIMIENTO DE TRAMITE Nº: "+data.documento_id;
+  document.getElementById('nro_expediente_seguimiento').innerHTML=data.documento_id;
   listar_seguimiento_tramite(data.documento_id);
 })
 
@@ -215,6 +215,10 @@ function Registrar_Derivacion(){
   let idusu = document.getElementById('txtprincipalid').value;
   let tipo = document.getElementById('select_derivar_de').value;
   let acc = document.getElementById('txt_acciones2').value;
+  
+  // Capturar las copias seleccionadas
+  let copias = $('#select_area_copias_derivar').val(); // Array de IDs de áreas
+  if(!copias) copias = []; // Si no hay selección, array vacío
 
   let nombrearchivo="";
 
@@ -244,6 +248,7 @@ function Registrar_Derivacion(){
   formData.append("achivoobj",achivoobj);
   formData.append("tipo",tipo);
   formData.append("acc",acc);
+  formData.append("copias",JSON.stringify(copias)); // Enviar copias como JSON
 
   $.ajax({
     url:"../controller/tramite_area/controlador_registro_tramite.php",

@@ -32,8 +32,8 @@
               </div>
               <div class="table-responsive" style="text-align:center">
               <div class="card-body">
-              <table id="tabla_tipo" class="table table-striped table-bordered" style="width:100%">
-                  <thead style="background-color:#0A5D86;color:#FFFFFF;">
+              <table id="tabla_tipo" class="table table-striped table-bordered table-modern" style="width:100%">
+                  <thead>
                       <tr>
                           <th style="text-align:center">Nro.</th>
                           <th style="text-align:center">Tipo Documento</th>

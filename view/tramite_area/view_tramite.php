@@ -52,8 +52,8 @@
               
                 <div class="table-responsive" style="text-align:center">
                   <div class="card-body">
-                    <table id="tabla_tramite" class="display compact" style="width:100%">
-                        <thead style="background-color:#0A5D86;color:#FFFFFF; ">
+                    <table id="tabla_tramite" class="display compact table-modern" style="width:100%">
+                        <thead>
                             <tr>
                                 <th style="text-align:center">Nro.</th>
                                 <th style="text-align:center">N° Expediente</th>
@@ -82,40 +82,79 @@
       </div><!-- /.container-fluid -->
 
     <!-- /.content -->
-<div class="modal fade" id="modal_seguimiento" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
+<div class="modal fade modal-modern" id="modal_seguimiento" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="lb_titulo">Seguimiento del Trámite</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <h5 class="modal-title" id="lb_titulo"><i class="fas fa-route mr-2"></i>SEGUIMIENTO DE TRAMITE N°: <span id="nro_expediente_seguimiento"></span></h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <div class="row">
-          <div class="col-12" style="text-align:center"> 
-          <div class="table-responsive" style="text-align:center">
-            <div class="card-body">  
-            <table id="tabla_seguimiento" class="display compact" style="width:100%" style="text-align:center">
-                <thead style="background-color:#0A5D86;color:#FFFFFF; ">
-                  <tr style="text-align:center">
-                      <th style="text-align:center">ORIGEN</th>
-                      <th style="text-align:center">DESTINO</th>
-                      <th style="text-align:center">FECHA</th>
-                      <th style="text-align:center">DESCRIPCION</th>
-                      <th style="text-align:center">ESTADO</th>
-                      <th style="text-align:center">ACCIONES</th>
-                      <th style="text-align:center">ARCHIVO ANEXADO</th>
-                   </tr>
-                  </thead>
-                </table>     
+        <!-- Legend Section -->
+        <div class="card mb-3" style="background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%); border: none; border-radius: 12px;">
+          <div class="card-body p-3">
+            <div class="d-flex flex-wrap align-items-center justify-content-center">
+              <div class="mr-4 mb-2">
+                <i class="fas fa-info-circle text-primary mr-2"></i>
+                <strong class="text-primary">Leyenda:</strong>
+              </div>
+              <div class="d-flex flex-wrap gap-3">
+                <span class="badge badge-pill px-3 py-2" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); font-size: 0.85rem;">
+                  <i class="fas fa-map-marker-alt mr-1"></i> Origen
+                </span>
+                <span class="badge badge-pill px-3 py-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); font-size: 0.85rem;">
+                  <i class="fas fa-map-pin mr-1"></i> Destino
+                </span>
+                <span class="badge badge-pill px-3 py-2" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); font-size: 0.85rem;">
+                  <i class="fas fa-clock mr-1"></i> PENDIENTE
+                </span>
+                <span class="badge badge-pill px-3 py-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); font-size: 0.85rem;">
+                  <i class="fas fa-check-circle mr-1"></i> ACEPTADO
+                </span>
+                <span class="badge badge-pill px-3 py-2" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); font-size: 0.85rem;">
+                  <i class="fas fa-times-circle mr-1"></i> RECHAZADO
+                </span>
+                <span class="badge badge-pill px-3 py-2" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); font-size: 0.85rem;">
+                  <i class="fas fa-share mr-1"></i> DERIVADO
+                </span>
+                <span class="badge badge-pill px-3 py-2" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); font-size: 0.85rem;">
+                  <i class="fas fa-flag-checkered mr-1"></i> FINALIZADO
+                </span>
+              </div>
+            </div>
           </div>
         </div>
-        </div>
+
+        <!-- Historial de Movimientos Section -->
+        <div class="card" style="border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+          <div class="card-header" style="background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%); color: white; border-radius: 12px 12px 0 0;">
+            <h6 class="mb-0"><i class="fas fa-list-ul mr-2"></i> Historial de Movimientos</h6>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table id="tabla_seguimiento" class="display compact table-modern" style="width:100%">
+                <thead>
+                  <tr style="text-align:center">
+                    <th style="text-align:center"><i class="fas fa-map-marker-alt mr-1"></i> ORIGEN</th>
+                    <th style="text-align:center"><i class="fas fa-map-pin mr-1"></i> DESTINO</th>
+                    <th style="text-align:center"><i class="fas fa-calendar-alt mr-1"></i> FECHA</th>
+                    <th style="text-align:center"><i class="fas fa-comment-dots mr-1"></i> DESCRIPCIÓN</th>
+                    <th style="text-align:center"><i class="fas fa-info-circle mr-1"></i> ESTADO</th>
+                    <th style="text-align:center"><i class="fas fa-tasks mr-1"></i> ACCIONES</th>
+                    <th style="text-align:center"><i class="fas fa-paperclip mr-1"></i> ARCHIVO ANEXADO</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-arrow-right-from-bracket"></i>Cerrar</button>
+      <div class="modal-footer" style="background-color: #f8f9fa; border-radius: 0 0 12px 12px;">
+        <button type="button" class="btn btn-gradient-danger btn-modern" data-dismiss="modal">
+          <i class="fas fa-times-circle mr-2"></i>Cerrar
+        </button>
       </div>
     </div>
   </div>
@@ -276,12 +315,12 @@
   </div>
 </div>
  <!-- /MODAL DERIVAR-->
- <div class="modal fade" id="modal_derivar" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+ <div class="modal fade modal-modern" id="modal_derivar" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="lb_titulo_derivar"></h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+        <h5 class="modal-title" id="lb_titulo_derivar"><i class="fas fa-share-square"></i> Derivar Trámite</h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -303,69 +342,126 @@
               <input type="text" id="txt_origen_de" class="form-control" readonly style="background-color:white">
           </div>
           <div class="col-6 form-group div_derivacion">   
-            <label for="">Área destino</label>
+            <label for=""><i class="fas fa-building"></i> Área destino(*):</label>
             <select class="js-example-basic-single" style="width:100%;" id="select_destino_de">
                 
             </select>
           </div>
           <div class="col-12 form-group">
-            <label for="">Anexar documento</label>
+            <label for=""><i class="fas fa-copy"></i> Copias a (Opcional):</label>
+            <select class="js-example-basic-multiple form-control" id="select_area_copias_derivar" name="states[]" multiple="multiple" style="width:100%">
+            </select>
+            <small class="text-muted">Seleccione las áreas que recibirán copia de este documento</small>
+          </div>
+          <div class="col-12 form-group">
+            <label for=""><i class="fas fa-paperclip"></i> Anexar documento:</label>
             <input type="file" id="txt_documento_de" class="form-control">
             <label for="" style="font-size:13px;color:red">El documento debe estar en formato PDF y con un tamaño máximo de 30 MB.</label>
 
           </div>
           
-          <div class="col-12 form-group" style="color:black">
-              <h7><b>Acciones del trámite:</b></h7>
+          <div class="col-12 form-group" style="color:#2d3748; margin-bottom: 1rem;">
+              <h6><i class="fas fa-clipboard-list"></i> <b>Acciones del trámite:</b></h6>
+              <small class="text-muted">Seleccione las acciones que se deben realizar con este trámite</small>
           </div>
-          <div class="col-12 row" style="border:#C8C8C8 2px solid;margin-left: auto;margin-right: auto;">
-          <div class="col-4 form-group"><br>
-          <input type="checkbox" id="accion" name="accion" value="-1. ACCIÓN-">
-          <label for="vehicle1"> 1. ACCIÓN</label><br>
-          <input type="checkbox" id="tramitar" name="tramitar" value="-2. TRAMITAR-">
-          <label for="vehicle2"> 2. TRAMITAR</label><br>
-          <input type="checkbox" id="revisar" name="revisar" value="-3. REVISAR-">
-          <label for="vehicle3"> 3. REVISAR</label><br>
-          <input type="checkbox" id="vb" name="vb" value="4. -V° B°-">
-          <label for="vehicle3"> 4. V° B°</label><br>
-          <input type="checkbox" id="coordinar" name="coordinar" value="-5. COORDINAR-">
-          <label for="vehicle3"> 5. COORDINAR</label><br>
-          <input type="checkbox" id="conocimiento" name="conocimiento" value="-6. CONOCIMIENTO-">
-          <label for="vehicle1"> 6. CONOCIMIENTO</label><br>
-          </div>
-          <div class="col-4 form-group"><br>
-          <input type="checkbox" id="proyectar" name="proyectar" value="-7. PROYECTAR DISPOSITIVOS-">
-          <label for="vehicle2"> 7. PROYECTAR DISPOSITIVOS</label><br>
-          <input type="checkbox" id="consolidar" name="consolidar" value="-8. CONSOLIDAD-">
-          <label for="vehicle3"> 8. CONSOLIDAD</label><br>
-          <input type="checkbox" id="seguimiento" name="seguimiento" value="-9. SEGUIMIENTO-">
-          <label for="vehicle3"> 9. SEGUIMIENTO</label><br>
-          <input type="checkbox" id="dar_respuesta" name="dar_respuesta" value="-10. DAR RESPUESTA-">
-          <label for="vehicle3"> 10. DAR RESPUESTA</label><br>
-          <input type="checkbox" id="difundir" name="difundir" value="-11. DIFUNDIR-">
-          <label for="vehicle1"> 11. DIFUNDIR</label><br>
-          <input type="checkbox" id="archivo" name="archivo" value="-12. ARCHIVO-">
-          <label for="vehicle2"> 12. ARCHIVO</label><br>
-          </div>
-          <div class="col-4 form-group"><br>
-          <input type="checkbox" id="evaluar" name="evaluar" value="-13. EVALUAR-">
-          <label for="vehicle3"> 13. EVALUAR</label><br>
-          <input type="checkbox" id="preparar" name="preparar" value="-14. PREPARAR RESPUESTA-">
-          <label for="vehicle3"> 14. PREPARAR RESPUESTA</label><br>
-          <input type="checkbox" id="opinion" name="opinion" value="-15. OPINIÓN-">
-          <label for="vehicle3"> 15. OPINIÓN</label><br>
-          <input type="checkbox" id="corregir" name="corregir" value="-16. CORREGIR-">
-          <label for="vehicle1"> 16. CORREGIR</label><br>
-          <input type="checkbox" id="informe" name="informe" value="-17. INFORME-">
-          <label for="vehicle2"> 17. INFORME</label><br>
-          <input type="checkbox" id="asistir" name="asistir" value="-18. ASISTIR-">
-          <label for="vehicle3"> 18. ASISTIR</label><br>
+          <div class="col-12" style="border: 2px solid #e2e8f0; border-radius: 8px; padding: 1rem; background-color: #f8fafc;">
+            <div class="checkbox-card-container">
+              <div class="checkbox-card">
+                <input type="checkbox" id="accion" name="accion" value="-1. ACCIÓN-">
+                <i class="fas fa-bolt"></i>
+                <label for="accion">1. ACCIÓN</label>
+              </div>
+              <div class="checkbox-card">
+                <input type="checkbox" id="tramitar" name="tramitar" value="-2. TRAMITAR-">
+                <i class="fas fa-file-alt"></i>
+                <label for="tramitar">2. TRAMITAR</label>
+              </div>
+              <div class="checkbox-card">
+                <input type="checkbox" id="revisar" name="revisar" value="-3. REVISAR-">
+                <i class="fas fa-search"></i>
+                <label for="revisar">3. REVISAR</label>
+              </div>
+              <div class="checkbox-card">
+                <input type="checkbox" id="vb" name="vb" value="4. -V° B°-">
+                <i class="fas fa-check-circle"></i>
+                <label for="vb">4. V° B°</label>
+              </div>
+              <div class="checkbox-card">
+                <input type="checkbox" id="coordinar" name="coordinar" value="-5. COORDINAR-">
+                <i class="fas fa-handshake"></i>
+                <label for="coordinar">5. COORDINAR</label>
+              </div>
+              <div class="checkbox-card">
+                <input type="checkbox" id="conocimiento" name="conocimiento" value="-6. CONOCIMIENTO-">
+                <i class="fas fa-lightbulb"></i>
+                <label for="conocimiento">6. CONOCIMIENTO</label>
+              </div>
+              <div class="checkbox-card">
+                <input type="checkbox" id="proyectar" name="proyectar" value="-7. PROYECTAR DISPOSITIVOS-">
+                <i class="fas fa-project-diagram"></i>
+                <label for="proyectar">7. PROYECTAR DISPOSITIVOS</label>
+              </div>
+              <div class="checkbox-card">
+                <input type="checkbox" id="consolidar" name="consolidar" value="-8. CONSOLIDAD-">
+                <i class="fas fa-layer-group"></i>
+                <label for="consolidar">8. CONSOLIDAR</label>
+              </div>
+              <div class="checkbox-card">
+                <input type="checkbox" id="seguimiento" name="seguimiento" value="-9. SEGUIMIENTO-">
+                <i class="fas fa-route"></i>
+                <label for="seguimiento">9. SEGUIMIENTO</label>
+              </div>
+              <div class="checkbox-card">
+                <input type="checkbox" id="dar_respuesta" name="dar_respuesta" value="-10. DAR RESPUESTA-">
+                <i class="fas fa-reply"></i>
+                <label for="dar_respuesta">10. DAR RESPUESTA</label>
+              </div>
+              <div class="checkbox-card">
+                <input type="checkbox" id="difundir" name="difundir" value="-11. DIFUNDIR-">
+                <i class="fas fa-bullhorn"></i>
+                <label for="difundir">11. DIFUNDIR</label>
+              </div>
+              <div class="checkbox-card">
+                <input type="checkbox" id="archivo" name="archivo" value="-12. ARCHIVO-">
+                <i class="fas fa-archive"></i>
+                <label for="archivo">12. ARCHIVO</label>
+              </div>
+              <div class="checkbox-card">
+                <input type="checkbox" id="evaluar" name="evaluar" value="-13. EVALUAR-">
+                <i class="fas fa-chart-line"></i>
+                <label for="evaluar">13. EVALUAR</label>
+              </div>
+              <div class="checkbox-card">
+                <input type="checkbox" id="preparar" name="preparar" value="-14. PREPARAR RESPUESTA-">
+                <i class="fas fa-pen"></i>
+                <label for="preparar">14. PREPARAR RESPUESTA</label>
+              </div>
+              <div class="checkbox-card">
+                <input type="checkbox" id="opinion" name="opinion" value="-15. OPINIÓN-">
+                <i class="fas fa-comment"></i>
+                <label for="opinion">15. OPINIÓN</label>
+              </div>
+              <div class="checkbox-card">
+                <input type="checkbox" id="corregir" name="corregir" value="-16. CORREGIR-">
+                <i class="fas fa-edit"></i>
+                <label for="corregir">16. CORREGIR</label>
+              </div>
+              <div class="checkbox-card">
+                <input type="checkbox" id="informe" name="informe" value="-17. INFORME-">
+                <i class="fas fa-file-invoice"></i>
+                <label for="informe">17. INFORME</label>
+              </div>
+              <div class="checkbox-card">
+                <input type="checkbox" id="asistir" name="asistir" value="-18. ASISTIR-">
+                <i class="fas fa-hands-helping"></i>
+                <label for="asistir">18. ASISTIR</label>
+              </div>
+            </div>
           </div>
           
-          </div><br><br>
-          <br><textarea class="form-control" id="txt_acciones2" rows="3" style="resize:none" hidden></textarea>       
-          <div class="col-12">
-            <label for="">Descripción</label>
+          <textarea class="form-control" id="txt_acciones2" rows="3" style="resize:none" hidden></textarea>       
+          <div class="col-12 form-group">
+            <label for=""><i class="fas fa-comment-dots"></i> Descripción:</label>
             <textarea name="" id="txt_descripcion_De" rows="3" class="form-control" style="resize:none;"></textarea>
           </div>
           <input type="text" id="txt_iddocumento_de" hidden>
@@ -373,8 +469,8 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-gradient-danger" data-dismiss="modal"><i class="fa fa-arrow-right-from-bracket"></i>Cerrar</button>
-        <button type="button" class="btn btn-gradient-success" onclick="Registrar_Derivacion();">Registrar</button>
+        <button type="button" class="btn btn-gradient-danger btn-modern" data-dismiss="modal"><i class="fas fa-times"></i> Cerrar</button>
+        <button type="button" class="btn btn-gradient-success btn-modern" onclick="Registrar_Derivacion();"><i class="fas fa-paper-plane"></i> Derivar</button>
       </div>
     </div>
   </div>
@@ -481,5 +577,44 @@ function checkboxClick(event) {
 
 for (var i = 0; i < checkboxes.length; i++) {
   checkboxes[i].addEventListener('click', checkboxClick);
+  // Add active class toggle for checkbox cards
+  checkboxes[i].addEventListener('change', function() {
+    const card = this.closest('.checkbox-card');
+    if (card) {
+      if (this.checked) {
+        card.classList.add('active');
+      } else {
+        card.classList.remove('active');
+      }
+    }
+  });
 }
+
+// Initialize Select2 for copias in derivation modal
+$('#modal_derivar').on('shown.bs.modal', function () {
+  if (!$('#select_area_copias_derivar').hasClass('select2-hidden-accessible')) {
+    $('#select_area_copias_derivar').select2({
+      placeholder: 'Seleccione las áreas para copias',
+      allowClear: true,
+      dropdownParent: $('#modal_derivar')
+    });
+  }
+  // Load areas for copias every time modal opens
+  $.ajax({
+    url: '../controller/usuario/controlador_cargar_select_area.php',
+    type: 'POST'
+  }).done(function(resp) {
+    let data = JSON.parse(resp);
+    if (data.length > 0) {
+      let cadena = "";
+      for (let i = 0; i < data.length; i++) {
+        cadena += "<option value='" + data[i][0] + "'>" + data[i][1] + "</option>";
+      }
+      $('#select_area_copias_derivar').html(cadena);
+    } else {
+      cadena = "<option value=''>No hay áreas disponibles</option>";
+      $('#select_area_copias_derivar').html(cadena);
+    }
+  });
+});
     </script>

@@ -166,6 +166,31 @@
             }
             conexionBD::cerrar_conexion();
         }
+        
+        public function Registrar_Copia($iddo, $orig, $dest_copia, $desc, $idusu, $ruta, $acc){
+            $c = conexionBD::conexionPDO();
+            // Usar el mismo stored procedure pero marcando como copia en la descripción
+            $desc_copia = "COPIA - " . $desc;
+            $sql = "CALL SP_REGISTRAR_TRAMITE_DERIVAR(?,?,?,?,?,?,?,?)";
+            $query = $c->prepare($sql);
+            $query->bindParam(1,$iddo);
+            $query->bindParam(2,$orig);
+            $query->bindParam(3,$dest_copia);
+            $query->bindParam(4,$desc_copia);
+            $query->bindParam(5,$idusu);
+            $query->bindParam(6,$ruta);
+            $tipo_copia = "DERIVAR"; // Las copias siempre se derivan
+            $query->bindParam(7,$tipo_copia);
+            $query->bindParam(8,$acc);
+            
+            $resul = $query->execute();
+            if($resul){
+                return 1;
+            }else{
+                return 0;
+            }
+            conexionBD::cerrar_conexion();
+        }
         public function Listar_Tramite_Fecha_Area($fechainicio,$fechafin,$area){
             $c = conexionBD::conexionPDO();
             $sql = "CALL SP_LISTAR_TRAMITE_AREA_FECHAS_TA(?,?,?)";

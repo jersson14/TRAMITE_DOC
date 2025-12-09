@@ -1,10 +1,12 @@
 <?php
-    // Iniciar buffer de salida para capturar cualquier output no deseado
+    // Archivo temporal para depurar la respuesta del controlador
+    require '../../model/model_tramite_area.php';
+    
+    // Capturar cualquier salida antes del JSON
     ob_start();
     
-    require '../../model/model_tramite_area.php';
-    $MTRA = new Modelo_TramiteArea();//Instaciamos
-    $idareas = strtoupper(htmlspecialchars($_POST['idareas'],ENT_QUOTES,'UTF-8'));
+    $MTRA = new Modelo_TramiteArea();
+    $idareas = isset($_POST['idareas']) ? $_POST['idareas'] : 1; // Usar 1 como prueba
     
     try {
         $consulta = $MTRA->Listar_Tramite_Areas($idareas);
@@ -13,18 +15,18 @@
         ob_end_clean();
         
         // Establecer header JSON
-        header('Content-Type: application/json; charset=utf-8');
+        header('Content-Type: application/json');
         
         if($consulta){
             echo json_encode($consulta);
-        }else{
+        } else {
             echo json_encode([
                 "data" => []
             ]);
         }
     } catch (Exception $e) {
         ob_end_clean();
-        header('Content-Type: application/json; charset=utf-8');
+        header('Content-Type: application/json');
         echo json_encode([
             "error" => $e->getMessage(),
             "data" => []

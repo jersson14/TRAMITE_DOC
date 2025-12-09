@@ -25,7 +25,7 @@
         <div class="col-md-12">
             <div class="card card-modern card-primary">
                 <div class="card-header">
-                    <h3 class="card-title"><b><u>DATOS DEL TRÁMITE</u></b></h3>
+                    <h3 class="card-title"><i class="fas fa-tasks"></i> <b>DATOS DEL TRÁMITE</b></h3>
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse">
                             <i class="fas fa-minus"></i>
@@ -35,57 +35,105 @@
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-12 form-group" style="color:black">
-                            <h7><b>Acciones del trámite:</b></h7>
+                        <div class="col-12 form-group" style="color:#2d3748; margin-bottom: 1rem;">
+                            <h6><i class="fas fa-clipboard-list"></i> <b>Acciones del trámite:</b></h6>
+                            <small class="text-muted">Seleccione las acciones que se deben realizar con este trámite</small>
                         </div>
-                        <div class="col-12 row" style="border:#C8C8C8 2px solid;margin-left: auto;margin-right: auto;">
-                            <div class="col-3 form-group"><br>
-                                <input type="checkbox" id="accion" name="accion" value="-1. ACCIÓN-">
-                                <label for="vehicle1"> 1. ACCIÓN</label><br>
-                                <input type="checkbox" id="tramitar" name="tramitar" value="-2. TRAMITAR-">
-                                <label for="vehicle2"> 2. TRAMITAR</label><br>
-                                <input type="checkbox" id="revisar" name="revisar" value="-3. REVISAR-">
-                                <label for="vehicle3"> 3. REVISAR</label><br>
-                                <input type="checkbox" id="vb" name="vb" value="4. -V° B°-">
-                                <label for="vehicle3"> 4. V° B°</label><br>
-                                <input type="checkbox" id="coordinar" name="coordinar" value="-5. COORDINAR-">
-                                <label for="vehicle3"> 5. COORDINAR</label><br>
+                        <div class="col-12">
+                            <div class="checkbox-card-container">
+                                <div class="checkbox-card">
+                                    <input type="checkbox" id="accion" name="accion" value="-1. ACCIÓN-">
+                                    <i class="fas fa-bolt"></i>
+                                    <label for="accion">1. ACCIÓN</label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" id="tramitar" name="tramitar" value="-2. TRAMITAR-">
+                                    <i class="fas fa-file-alt"></i>
+                                    <label for="tramitar">2. TRAMITAR</label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" id="revisar" name="revisar" value="-3. REVISAR-">
+                                    <i class="fas fa-search"></i>
+                                    <label for="revisar">3. REVISAR</label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" id="vb" name="vb" value="4. -V° B°-">
+                                    <i class="fas fa-check-circle"></i>
+                                    <label for="vb">4. V° B°</label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" id="coordinar" name="coordinar" value="-5. COORDINAR-">
+                                    <i class="fas fa-handshake"></i>
+                                    <label for="coordinar">5. COORDINAR</label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" id="conocimiento" name="conocimiento" value="-6. CONOCIMIENTO-">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <label for="conocimiento">6. CONOCIMIENTO</label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" id="proyectar" name="proyectar" value="-7. PROYECTAR DISPOSITIVOS-">
+                                    <i class="fas fa-project-diagram"></i>
+                                    <label for="proyectar">7. PROYECTAR DISPOSITIVOS</label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" id="consolidar" name="consolidar" value="-8. CONSOLIDAD-">
+                                    <i class="fas fa-layer-group"></i>
+                                    <label for="consolidar">8. CONSOLIDAR</label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" id="seguimiento" name="seguimiento" value="-9. SEGUIMIENTO-">
+                                    <i class="fas fa-route"></i>
+                                    <label for="seguimiento">9. SEGUIMIENTO</label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" id="dar_respuesta" name="dar_respuesta" value="-10. DAR RESPUESTA-">
+                                    <i class="fas fa-reply"></i>
+                                    <label for="dar_respuesta">10. DAR RESPUESTA</label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" id="difundir" name="difundir" value="-11. DIFUNDIR-">
+                                    <i class="fas fa-bullhorn"></i>
+                                    <label for="difundir">11. DIFUNDIR</label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" id="archivo" name="archivo" value="-12. ARCHIVO-">
+                                    <i class="fas fa-archive"></i>
+                                    <label for="archivo">12. ARCHIVO</label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" id="evaluar" name="evaluar" value="-13. EVALUAR-">
+                                    <i class="fas fa-chart-line"></i>
+                                    <label for="evaluar">13. EVALUAR</label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" id="preparar" name="preparar" value="-14. PREPARAR RESPUESTA-">
+                                    <i class="fas fa-pen"></i>
+                                    <label for="preparar">14. PREPARAR RESPUESTA</label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" id="opinion" name="opinion" value="-15. OPINIÓN-">
+                                    <i class="fas fa-comment"></i>
+                                    <label for="opinion">15. OPINIÓN</label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" id="corregir" name="corregir" value="-16. CORREGIR-">
+                                    <i class="fas fa-edit"></i>
+                                    <label for="corregir">16. CORREGIR</label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" id="informe" name="informe" value="-17. INFORME-">
+                                    <i class="fas fa-file-invoice"></i>
+                                    <label for="informe">17. INFORME</label>
+                                </div>
+                                <div class="checkbox-card">
+                                    <input type="checkbox" id="asistir" name="asistir" value="-18. ASISTIR-">
+                                    <i class="fas fa-hands-helping"></i>
+                                    <label for="asistir">18. ASISTIR</label>
+                                </div>
                             </div>
-                            <div class="col-3 form-group"><br>
-                                <input type="checkbox" id="conocimiento" name="conocimiento" value="-6. CONOCIMIENTO-">
-                                <label for="vehicle1"> 6. CONOCIMIENTO</label><br>
-                                <input type="checkbox" id="proyectar" name="proyectar" value="-7. PROYECTAR DISPOSITIVOS-">
-                                <label for="vehicle2"> 7. PROYECTAR DISPOSITIVOS</label><br>
-                                <input type="checkbox" id="consolidar" name="consolidar" value="-8. CONSOLIDAD-">
-                                <label for="vehicle3"> 8. CONSOLIDAD</label><br>
-                                <input type="checkbox" id="seguimiento" name="seguimiento" value="-9. SEGUIMIENTO-">
-                                <label for="vehicle3"> 9. SEGUIMIENTO</label><br>
-                                <input type="checkbox" id="dar_respuesta" name="dar_respuesta" value="-10. DAR RESPUESTA-">
-                                <label for="vehicle3"> 10. DAR RESPUESTA</label><br>
-                            </div>
-                            <div class="col-3 form-group"><br>
-                                <input type="checkbox" id="difundir" name="difundir" value="-11. DIFUNDIR-">
-                                <label for="vehicle1"> 11. DIFUNDIR</label><br>
-                                <input type="checkbox" id="archivo" name="archivo" value="-12. ARCHIVO-">
-                                <label for="vehicle2"> 12. ARCHIVO</label><br>
-                                <input type="checkbox" id="evaluar" name="evaluar" value="-13. EVALUAR-">
-                                <label for="vehicle3"> 13. EVALUAR</label><br>
-                                <input type="checkbox" id="preparar" name="preparar" value="-14. PREPARAR RESPUESTA-">
-                                <label for="vehicle3"> 14. PREPARAR RESPUESTA</label><br>
-                                <input type="checkbox" id="opinion" name="opinion" value="-15. OPINIÓN-">
-                                <label for="vehicle3"> 15. OPINIÓN</label><br>
-                            </div>
-                            <div class="col-3 form-group"><br>
-                                <input type="checkbox" id="corregir" name="corregir" value="-16. CORREGIR-">
-                                <label for="vehicle1"> 16. CORREGIR</label><br>
-                                <input type="checkbox" id="informe" name="informe" value="-17. INFORME-">
-                                <label for="vehicle2"> 17. INFORME</label><br>
-                                <input type="checkbox" id="asistir" name="asistir" value="-18. ASISTIR-">
-                                <label for="vehicle3"> 18. ASISTIR</label><br>
-
-                            </div>
-                        </div><br><br>
-                        <br><textarea class="form-control" id="txt_acciones" rows="3" style="resize:none" hidden></textarea>
+                        </div>
+                        <textarea class="form-control" id="txt_acciones" rows="3" style="resize:none" hidden></textarea>
 
                     </div>
                 </div>
@@ -95,7 +143,7 @@
         <div class="col-md-12">
             <div class="card card-modern card-primary">
                 <div class="card-header">
-                    <h3 class="card-title"><b><u>DATOS DEL REMITENTE</u></b></h3>
+                    <h3 class="card-title"><i class="fas fa-user"></i> <b>DATOS DEL REMITENTE</b></h3>
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse">
                             <i class="fas fa-minus"></i>
@@ -211,7 +259,7 @@
         <div class="col-md-12">
             <div class="card card-modern card-danger">
                 <div class="card-header">
-                    <h3 class="card-title"><b><u>DATOS DEL DOCUMENTO</u></b></h3>
+                    <h3 class="card-title"><i class="fas fa-file-alt"></i> <b>DATOS DEL DOCUMENTO</b></h3>
                     <div class="card-tools">
                         <button type="button" class="btn btn-tool" data-card-widget="collapse">
                             <i class="fas fa-minus"></i>
@@ -247,6 +295,12 @@
                         <div class="col-4 form-group">
                             <label for="" style="font-size:small;">Tiempo de respuesta en días(opcional):</label>
                             <input type="number" class="form-control" id="txt_tiempo_respuesta" onkeypress="return soloNumeros(event)">
+                        </div>
+                        <div class="col-12 form-group">
+                            <label for="" style="font-size:small;">Copias a (Opcional):</label>
+                            <select class="js-example-basic-multiple form-control" id="select_area_copias" name="states[]" multiple="multiple" style="width:100%">
+                            </select>
+                            <small class="text-muted">Seleccione las áreas que recibirán copia de este documento</small>
                         </div>
                         <div class="col-12 form-group">
                             <label for="" style="font-size:small;">Asunto(*):</label>
@@ -299,6 +353,10 @@
         Cargar_Select_DNI_UL();
 
         $('.js-example-basic-single').select2();
+        $('.js-example-basic-multiple').select2({
+            placeholder: 'Seleccione las áreas para copias',
+            allowClear: true
+        });
         $("#rad_presentacion1").on('click', function() {
             document.getElementById('div_juridico').style.display = "none";
         });
@@ -310,6 +368,7 @@
         });
         Cargar_Select_Tipo();
         Cargar_Select_Area();
+        Cargar_Select_Area_Copias();
         TraerNotificacionDocumentos();
 
     });
@@ -399,6 +458,17 @@
 
     for (var i = 0; i < checkboxes.length; i++) {
         checkboxes[i].addEventListener('click', checkboxClick);
+        // Add active class toggle for checkbox cards
+        checkboxes[i].addEventListener('change', function() {
+            const card = this.closest('.checkbox-card');
+            if (card) {
+                if (this.checked) {
+                    card.classList.add('active');
+                } else {
+                    card.classList.remove('active');
+                }
+            }
+        });
     }
     
      $("#prueba").click(function() {
