@@ -134,6 +134,54 @@ class Notificacion extends conexionBD {
     }
 
     /**
+     * Envía confirmación al CIUDADANO cuando su trámite externo es registrado.
+     * Incluye código de seguimiento, datos del documento y link de seguimiento.
+     *
+     * @param string $email_ciudadano  Correo del ciudadano
+     * @param string $nombre_ciudadano Nombre completo del ciudadano
+     * @param string $documento_id     Código generado (ej: D0000037)
+     * @param int    $tipodocumento_id ID del tipo de documento
+     * @param string $nro_documento    Número de registro del documento
+     * @param string $asunto           Asunto del documento
+     * @param int    $id_area_destino  ID del área destino (para obtener su nombre)
+     * @param string $url_base         URL base del sistema (ej: http://midominio.com/SISTRAMITEDOC)
+     */
+    public function notificarCiudadano($email_ciudadano, $nombre_ciudadano, $documento_id, $tipodocumento_id, $nro_documento, $asunto, $id_area_destino, $url_base = '') {
+        if (!EMAIL_ENABLED) return false;
+        if (empty($email_ciudadano)) return false;
+
+        $tipo_doc_texto      = $this->obtenerDescripcionTipoDoc($tipodocumento_id);
+        $nombre_area_destino = $this->obtenerNombreArea($id_area_destino);
+        $link_seguimiento    = rtrim($url_base, '/') . '/seguimiento.php';
+
+        $datos = [
+            'NUMERO'        => $documento_id,
+            'REMITENTE'     => strtoupper($nombre_ciudadano),
+            'TIPO_DOC'      => $tipo_doc_texto,
+            'NRO_DOCUMENTO' => $nro_documento,
+            'ASUNTO'        => strtoupper($asunto),
+            'AREA_DESTINO'  => $nombre_area_destino,
+            'FECHA'         => date('d/m/Y H:i'),
+            'LINK_SEGUIMIENTO' => $link_seguimiento,
+        ];
+        $html = $this->cargarPlantilla('notificacion_ciudadano.html', $datos);
+
+        try {
+            $mail = $this->crearMailer();
+            $mail->isHTML(true);
+            $mail->Subject = '✅ Su trámite fue registrado: ' . $documento_id;
+            $mail->Body    = $html;
+            $mail->AltBody = "Su trámite fue registrado.\nCódigo: $documento_id\nAsunto: $asunto\nÁrea receptora: $nombre_area_destino\nSeguimiento: $link_seguimiento";
+            $mail->addAddress($email_ciudadano, $nombre_ciudadano);
+            $mail->send();
+            return true;
+        } catch (Exception $e) {
+            error_log('[NOTIFICACION_CIUDADANO] Error: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Envía notificación cuando se registra un nuevo documento.
      *
      * @param int    $id_area_destino   ID numérico del área que recibe

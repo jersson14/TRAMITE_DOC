@@ -938,7 +938,7 @@
                                 let isCopy = datadetalle[i][6] && datadetalle[i][6].toUpperCase().includes('COPIA');
                                 let copyBadge = isCopy ? '<span class="badge badge-danger ml-2" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;"><i class="fas fa-copy"></i> COPIA</span>' : '';
                                 
-                                if(datadetalle[i][7] == "DERIVADO") {
+                                                                if(datadetalle[i][7] == "DERIVADO") {
                                     iconClass = "fas fa-share";
                                     gradientColor = "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);";
                                     statusColor = "#667eea";
