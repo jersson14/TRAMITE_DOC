@@ -1,10 +1,10 @@
 /**
- * Chat Assistant con IA
- * Maneja la interacción del usuario con el asistente virtual
+ * Chat Assistant - UX Fixed Version
  */
 
 class ChatAssistant {
   constructor() {
+    this.fab = document.getElementById("chat-fab");
     this.widget = document.getElementById("chat-widget");
     this.chatBody = document.getElementById("chat-body");
     this.chatInput = document.getElementById("chat-input");
@@ -13,7 +13,7 @@ class ChatAssistant {
     this.chatClear = document.getElementById("chat-clear");
     this.chatHeader = document.getElementById("chat-header");
 
-    this.isMinimized = true;
+    this.isOpen = false;
     this.isTyping = false;
     this.messageHistory = [];
 
@@ -21,19 +21,22 @@ class ChatAssistant {
   }
 
   init() {
-    console.log("ChatAssistant initialized");
-
-    // Verificar que los elementos existen
-    if (!this.widget || !this.chatToggle) {
+    if (!this.widget || !this.fab) {
       console.error("Chat elements not found!");
       return;
     }
 
-    // Event listeners
+    // El botón FAB es el único que abre el chat
+    this.fab.addEventListener("click", (e) => {
+      e.stopPropagation();
+      this.openChat();
+    });
+
+    // El botón de la cabecera cierra el chat
     if (this.chatToggle) {
       this.chatToggle.addEventListener("click", (e) => {
         e.stopPropagation();
-        this.toggleChat();
+        this.closeChat();
       });
     }
 
@@ -54,18 +57,36 @@ class ChatAssistant {
       });
     }
 
-    // Click en todo el widget cuando está minimizado
-    this.widget.addEventListener("click", (e) => {
-      if (this.isMinimized && !e.target.closest("button")) {
-        this.toggleChat();
+    // Cerrar el chat si se hace clic fuera
+    document.addEventListener("click", (e) => {
+      if (
+        this.isOpen &&
+        !this.widget.contains(e.target) &&
+        e.target !== this.fab
+      ) {
+        this.closeChat();
       }
     });
 
-    // Suggestion buttons iniciales
+    // Suggestion buttons
     this.attachSuggestionListeners();
 
-    // Make header draggable
+    // Arrastrable solo por la cabecera
     this.makeDraggable();
+  }
+
+  openChat() {
+    this.isOpen = true;
+    this.widget.classList.remove("minimized");
+    this.fab.classList.add("hidden");
+    setTimeout(() => this.chatInput && this.chatInput.focus(), 300);
+    this.scrollToBottom();
+  }
+
+  closeChat() {
+    this.isOpen = false;
+    this.widget.classList.add("minimized");
+    this.fab.classList.remove("hidden");
   }
 
   attachSuggestionListeners() {
@@ -80,45 +101,20 @@ class ChatAssistant {
     });
   }
 
-  toggleChat() {
-    this.isMinimized = !this.isMinimized;
-
-    if (this.isMinimized) {
-      this.widget.classList.add("minimized");
-      this.chatToggle.innerHTML = '<i class="fas fa-comment-dots"></i>';
-    } else {
-      this.widget.classList.remove("minimized");
-      this.chatToggle.innerHTML = '<i class="fas fa-minus"></i>';
-      this.chatInput.focus();
-      this.scrollToBottom();
-    }
-  }
-
   async sendMessage() {
     const message = this.chatInput.value.trim();
-
     if (!message || this.isTyping) return;
 
-    // Limpiar input
     this.chatInput.value = "";
 
-    // Remover mensaje de bienvenida si existe
     const welcomeMsg = this.chatBody.querySelector(".welcome-message");
-    if (welcomeMsg) {
-      welcomeMsg.remove();
-    }
+    if (welcomeMsg) welcomeMsg.remove();
 
-    // Agregar mensaje del usuario
     this.addMessage(message, "user");
-
-    // Mostrar indicador de escritura
     this.showTypingIndicator();
 
     try {
-      // Enviar a backend
       const response = await this.callAPI(message);
-
-      // Remover indicador de escritura
       this.hideTypingIndicator();
 
       if (response.success) {
@@ -141,15 +137,12 @@ class ChatAssistant {
     const formData = new FormData();
     formData.append("message", message);
 
-    const response = await fetch("controller/chat/chat_controller.php", {
+    const response = await fetch("../controller/chat/chat_controller.php", {
       method: "POST",
       body: formData,
     });
 
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
+    if (!response.ok) throw new Error("Network response was not ok");
     return await response.json();
   }
 
@@ -166,10 +159,7 @@ class ChatAssistant {
 
     const content = document.createElement("div");
     content.className = "message-content";
-
-    // Convertir markdown básico a HTML
-    const formattedText = this.formatMessage(text);
-    content.innerHTML = formattedText;
+    content.innerHTML = this.formatMessage(text);
 
     const time = document.createElement("div");
     time.className = "message-time";
@@ -178,27 +168,17 @@ class ChatAssistant {
     messageDiv.appendChild(avatar);
     messageDiv.appendChild(content);
     content.appendChild(time);
-
     this.chatBody.appendChild(messageDiv);
 
-    // Guardar en historial
     this.messageHistory.push({ text, type, time: new Date() });
   }
 
   formatMessage(text) {
-    // Convertir saltos de línea
     text = text.replace(/\n/g, "<br>");
-
-    // Convertir listas
     text = text.replace(/^- (.+)$/gm, "<li>$1</li>");
     text = text.replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>");
-
-    // Convertir negritas
     text = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-
-    // Convertir cursivas
     text = text.replace(/\*(.+?)\*/g, "<em>$1</em>");
-
     return text;
   }
 
@@ -212,7 +192,7 @@ class ChatAssistant {
 
   showTypingIndicator() {
     this.isTyping = true;
-    this.chatSend.disabled = true;
+    if (this.chatSend) this.chatSend.disabled = true;
 
     const typingDiv = document.createElement("div");
     typingDiv.className = "chat-message bot";
@@ -229,43 +209,31 @@ class ChatAssistant {
 
     typingDiv.appendChild(avatar);
     typingDiv.appendChild(indicator);
-
     this.chatBody.appendChild(typingDiv);
     this.scrollToBottom();
   }
 
   hideTypingIndicator() {
     this.isTyping = false;
-    this.chatSend.disabled = false;
-
+    if (this.chatSend) this.chatSend.disabled = false;
     const indicator = document.getElementById("typingIndicator");
-    if (indicator) {
-      indicator.remove();
-    }
+    if (indicator) indicator.remove();
   }
 
   clearChat() {
-    if (confirm("¿Estás seguro de que quieres limpiar la conversación?")) {
+    if (confirm("¿Limpiar la conversación?")) {
       this.chatBody.innerHTML = `
-                <div class="welcome-message">
-                    <i class="fas fa-robot"></i>
-                    <h4>¡Hola! Soy tu asistente virtual</h4>
-                    <p>Puedo ayudarte a consultar información sobre expedientes y documentos.</p>
-                    
-                    <div class="welcome-suggestions">
-                        <button class="suggestion-btn" data-suggestion="¿Cuántos documentos tengo pendientes?">
-                            <i class="fas fa-file-alt"></i> ¿Cuántos documentos tengo pendientes?
-                        </button>
-                        <button class="suggestion-btn" data-suggestion="Busca el expediente ">
-                            <i class="fas fa-search"></i> Buscar un expediente por número
-                        </button>
-                        <button class="suggestion-btn" data-suggestion="Muéstrame las estadísticas de mi área">
-                            <i class="fas fa-chart-bar"></i> Ver estadísticas de mi área
-                        </button>
-                    </div>
-                </div>
-            `;
-
+        <div class="welcome-message">
+          <div class="welcome-icon">🤖</div>
+          <h4>¡Hola! Soy tu asistente</h4>
+          <p>Consulta expedientes, pendientes y estadísticas.</p>
+          <div class="suggestion-buttons">
+            <button class="suggestion-btn" data-suggestion="¿Cuántos documentos tengo pendientes?">📋 Ver pendientes</button>
+            <button class="suggestion-btn" data-suggestion="Muéstrame las estadísticas de mi área">📊 Estadísticas</button>
+            <button class="suggestion-btn" data-suggestion="Busca el expediente ">🔍 Buscar expediente</button>
+          </div>
+        </div>
+      `;
       this.attachSuggestionListeners();
       this.messageHistory = [];
     }
@@ -278,37 +246,37 @@ class ChatAssistant {
   }
 
   getCurrentTime() {
-    const now = new Date();
-    return now.toLocaleTimeString("es-PE", {
+    return new Date().toLocaleTimeString("es-PE", {
       hour: "2-digit",
       minute: "2-digit",
     });
   }
 
   makeDraggable() {
-    let isDragging = false;
-    let currentX;
-    let currentY;
-    let initialX;
-    let initialY;
+    if (!this.chatHeader) return;
+    let isDragging = false,
+      startX,
+      startY,
+      startLeft,
+      startTop;
 
     this.chatHeader.addEventListener("mousedown", (e) => {
       if (e.target.closest("button")) return;
-
       isDragging = true;
-      initialX = e.clientX - this.widget.offsetLeft;
-      initialY = e.clientY - this.widget.offsetTop;
+      const rect = this.widget.getBoundingClientRect();
+      startX = e.clientX;
+      startY = e.clientY;
+      startLeft = rect.left;
+      startTop = rect.top;
     });
 
     document.addEventListener("mousemove", (e) => {
       if (!isDragging) return;
-
       e.preventDefault();
-      currentX = e.clientX - initialX;
-      currentY = e.clientY - initialY;
-
-      this.widget.style.left = currentX + "px";
-      this.widget.style.top = currentY + "px";
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      this.widget.style.left = startLeft + dx + "px";
+      this.widget.style.top = startTop + dy + "px";
       this.widget.style.right = "auto";
       this.widget.style.bottom = "auto";
     });
@@ -318,8 +286,3 @@ class ChatAssistant {
     });
   }
 }
-
-// Inicializar cuando el DOM esté listo
-document.addEventListener("DOMContentLoaded", () => {
-  window.chatAssistant = new ChatAssistant();
-});

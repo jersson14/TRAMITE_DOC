@@ -1,34 +1,48 @@
 <!-- Chat Widget Component -->
+
+<!-- Botón flotante separado del widget (evita el problema de "clic al lado") -->
+<button id="chat-fab" title="Abrir Asistente IA" aria-label="Asistente IA">
+    <i class="fas fa-robot"></i>
+    <span class="chat-fab-badge" id="chat-badge" style="display:none;">1</span>
+</button>
+
+<!-- Panel del chat -->
 <div id="chat-widget" class="minimized">
     <div class="chat-header" id="chat-header">
-        <h3>
-            <i class="fas fa-robot"></i>
-            Asistente IA
-        </h3>
+        <div class="chat-header-info">
+            <div class="chat-avatar-dot">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div>
+                <h3>Asistente IA</h3>
+                <span class="chat-status">● En línea</span>
+            </div>
+        </div>
         <div class="chat-header-buttons">
             <button id="chat-clear" title="Limpiar conversación">
                 <i class="fas fa-eraser"></i>
             </button>
-            <button id="chat-toggle" title="Minimizar/Expandir">
-                <i class="fas fa-minus"></i>
+            <button id="chat-toggle" title="Minimizar">
+                <i class="fas fa-chevron-down"></i>
             </button>
         </div>
     </div>
     
     <div class="chat-body" id="chat-body">
         <div class="welcome-message">
-            <h4>¡Hola! Soy tu asistente virtual</h4>
-            <p>Puedo ayudarte a consultar información sobre expedientes y documentos.</p>
+            <div class="welcome-icon">🤖</div>
+            <h4>¡Hola! Soy tu asistente</h4>
+            <p>Consulta expedientes, pendientes y estadísticas de tu área al instante.</p>
             
             <div class="suggestion-buttons">
                 <button class="suggestion-btn" data-suggestion="¿Cuántos documentos tengo pendientes?">
-                    📋 ¿Cuántos documentos tengo pendientes?
+                    📋 Ver pendientes
+                </button>
+                <button class="suggestion-btn" data-suggestion="Muéstrame las estadísticas de mi área">
+                    📊 Estadísticas
                 </button>
                 <button class="suggestion-btn" data-suggestion="Busca el expediente ">
                     🔍 Buscar expediente
-                </button>
-                <button class="suggestion-btn" data-suggestion="Muéstrame las estadísticas de mi área">
-                    📊 Ver estadísticas
                 </button>
             </div>
         </div>
@@ -50,19 +64,9 @@
 </div>
 
 <script>
-// Inicializar el chat cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing chat...');
-    
-    // Verificar que el widget existe
-    const widget = document.getElementById('chat-widget');
-    console.log('Widget found:', widget);
-    
-    if (widget) {
-        // Inicializar ChatAssistant
+    if (document.getElementById('chat-widget')) {
         window.chatAssistant = new ChatAssistant();
-    } else {
-        console.error('Chat widget not found in DOM!');
     }
 });
 </script>
