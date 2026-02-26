@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Documento Derivado</title>
+</head>
+<body style="margin:0;padding:0;background:#f0f4f8;font-family:'Segoe UI',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" bgcolor="#f0f4f8">
+  <tr>
+    <td align="center" style="padding:30px 10px;">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.10);">
+
+        <!-- HEADER -->
+        <tr>
+          <td style="background:linear-gradient(135deg,#1a3a1a 0%,#27ae60 100%);padding:35px 40px;">
+            <p style="color:#a9dfbf;font-size:12px;margin:0 0 4px 0;letter-spacing:2px;text-transform:uppercase;">Sistema de Trámite Documentario</p>
+            <h1 style="color:#ffffff;font-size:24px;margin:0;font-weight:700;">🔁 Documento Derivado a su Área</h1>
+          </td>
+        </tr>
+
+        <!-- ALERTA -->
+        <tr>
+          <td style="padding:24px 40px 0 40px;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#eafaf1;border-left:4px solid #27ae60;border-radius:0 8px 8px 0;">
+              <tr>
+                <td style="padding:16px 20px;">
+                  <p style="margin:0;color:#1e8449;font-size:15px;">Un documento ha sido derivado a su área para su atención. Ingrese al sistema para procesarlo.</p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- DATOS -->
+        <tr>
+          <td style="padding:28px 40px 10px 40px;">
+            <h2 style="color:#1e3a5f;font-size:16px;margin:0 0 16px 0;padding-bottom:10px;border-bottom:2px solid #e8f0f7;">Información de la Derivación</h2>
+            <table width="100%" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="padding:8px 0;border-bottom:1px solid #f0f4f8;">
+                  <span style="color:#7f8c8d;font-size:13px;display:block;">Número de Expediente</span>
+                  <span style="color:#1e3a5f;font-size:15px;font-weight:700;">{{NUMERO}}</span>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0;border-bottom:1px solid #f0f4f8;">
+                  <span style="color:#7f8c8d;font-size:13px;display:block;">Tipo de Documento</span>
+                  <span style="color:#2c3e50;font-size:14px;">{{TIPO_DOC}}</span>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0;border-bottom:1px solid #f0f4f8;">
+                  <span style="color:#7f8c8d;font-size:13px;display:block;">Asunto</span>
+                  <span style="color:#2c3e50;font-size:14px;">{{ASUNTO}}</span>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0;border-bottom:1px solid #f0f4f8;">
+                  <span style="color:#7f8c8d;font-size:13px;display:block;">📤 Área de Origen (Quién deriva)</span>
+                  <span style="color:#2c3e50;font-size:14px;font-weight:600;">{{AREA_ORIGEN}}</span>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0;border-bottom:1px solid #f0f4f8;">
+                  <span style="color:#7f8c8d;font-size:13px;display:block;">👤 Derivado por</span>
+                  <span style="color:#2c3e50;font-size:14px;font-weight:600;">{{DERIVADO_POR}}</span>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0;border-bottom:1px solid #f0f4f8;">
+                  <span style="color:#7f8c8d;font-size:13px;display:block;">📥 Área Destino (Área que recibe)</span>
+                  <span style="color:#2c3e50;font-size:14px;font-weight:600;">{{AREA_DESTINO}}</span>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0;border-bottom:1px solid #f0f4f8;">
+                  <span style="color:#7f8c8d;font-size:13px;display:block;">🙋 Recibido por</span>
+                  <span style="color:#2c3e50;font-size:14px;">{{RECIBIDO_POR}}</span>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0;border-bottom:1px solid #f0f4f8;">
+                  <span style="color:#7f8c8d;font-size:13px;display:block;">Tipo de Acción</span>
+                  <span style="color:#2c3e50;font-size:14px;">{{TIPO_ACCION}}</span>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:8px 0;">
+                  <span style="color:#7f8c8d;font-size:13px;display:block;">Fecha de Derivación</span>
+                  <span style="color:#2c3e50;font-size:14px;">{{FECHA}}</span>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- ESTADO -->
+        <tr>
+          <td style="padding:16px 40px;">
+            <table cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="background:#fff3e0;color:#e65100;padding:8px 18px;border-radius:20px;font-size:13px;font-weight:600;">
+                  🟠 Estado: EN PROCESO
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- FOOTER -->
+        <tr>
+          <td style="background:#f8fafc;padding:24px 40px;border-top:1px solid #e8f0f7;">
+            <p style="color:#95a5a6;font-size:12px;margin:0;text-align:center;">
+              Este es un correo automático del Sistema de Trámite Documentario.<br>
+              Por favor, no responda a este correo.
+            </p>
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
+</body>
+</html>

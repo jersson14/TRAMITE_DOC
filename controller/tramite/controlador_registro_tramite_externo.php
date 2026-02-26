@@ -1,6 +1,9 @@
 <?php
     require '../../model/model_tramite.php';
-    $MTR = new Modelo_Tramite();//Instaciamos
+    require '../../utilitario/class_notificacion.php';
+    $MTR = new Modelo_Tramite();
+    $NTF = new Notificacion();
+
     //DATOS DE REMITENTE//
     $dni = strtoupper(htmlspecialchars($_POST['dni'],ENT_QUOTES,'UTF-8'));
     $nom = strtoupper(htmlspecialchars($_POST['nom'],ENT_QUOTES,'UTF-8'));
@@ -12,7 +15,6 @@
     $vpresentacion = strtoupper(htmlspecialchars($_POST['vpresentacion'],ENT_QUOTES,'UTF-8'));
     $ruc = strtoupper(htmlspecialchars($_POST['ruc'],ENT_QUOTES,'UTF-8'));
     $raz = strtoupper(htmlspecialchars($_POST['raz'],ENT_QUOTES,'UTF-8'));
-
 
     //DATOS DEL DOCUMENTO //
     $tip = strtoupper(htmlspecialchars($_POST['tip'],ENT_QUOTES,'UTF-8'));
@@ -27,6 +29,11 @@
         if($nombrearchivo!=""){
             move_uploaded_file($_FILES['achivoobj']['tmp_name'],"documentos/".$nombrearchivo);
         }
+        // ✉️ NOTIFICACIÓN: origen=0 (ciudadano externo), destino=Mesa de Partes
+        // Ajusta $area_mesa_partes_id si el ID de Mesa de Partes es diferente en tu BD
+        $area_mesa_partes_id = 1;
+        $remitente_nombre = trim("$nom $apt $apm");
+        $NTF->notificarRegistro($area_mesa_partes_id, 0, $consulta, $tip, $asu, $remitente_nombre);
         echo $consulta;
     }
 ?>
