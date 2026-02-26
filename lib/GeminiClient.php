@@ -16,7 +16,7 @@ class GeminiClient {
         $this->api_key = GEMINI_API_KEY;
         $this->model = GEMINI_MODEL; // gemini-2.0-flash-exp
         
-        // URL correcta para Gemini 2.0 Flash
+        // URL para Gemini 1.5 Flash
         $this->api_url = 'https://generativelanguage.googleapis.com/v1beta/models/' . $this->model . ':generateContent?key=' . $this->api_key;
     }
     
@@ -48,7 +48,7 @@ class GeminiClient {
         $full_prompt .= "Consulta del usuario: $user_message\n\n" .
                        "Respuesta:";
         
-        // Preparar el payload para Gemini 2.5
+        // Preparar el payload para Gemini
         $payload = [
             'contents' => [
                 [
@@ -62,24 +62,6 @@ class GeminiClient {
                 'maxOutputTokens' => GEMINI_MAX_TOKENS,
                 'topP' => 0.95,
                 'topK' => 40
-            ],
-            'safetySettings' => [
-                [
-                    'category' => 'HARM_CATEGORY_HARASSMENT',
-                    'threshold' => 'BLOCK_NONE'
-                ],
-                [
-                    'category' => 'HARM_CATEGORY_HATE_SPEECH',
-                    'threshold' => 'BLOCK_NONE'
-                ],
-                [
-                    'category' => 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
-                    'threshold' => 'BLOCK_NONE'
-                ],
-                [
-                    'category' => 'HARM_CATEGORY_DANGEROUS_CONTENT',
-                    'threshold' => 'BLOCK_NONE'
-                ]
             ]
         ];
         
@@ -128,8 +110,10 @@ class GeminiClient {
         // Decodificar respuesta
         $result = json_decode($response, true);
         
-        // Verificar errores de la API
+        // Log de errores para el administrador
         if ($http_code !== 200) {
+            error_log("GEMINI API ERROR ($http_code): " . ($response ?: 'Empty response'));
+            
             $error_message = isset($result['error']['message']) 
                 ? $result['error']['message'] 
                 : 'Error desconocido';
@@ -141,16 +125,15 @@ class GeminiClient {
             
             // Detectar error de modelo no encontrado
             if ($http_code === 404 || strpos($error_message, 'not found') !== false) {
-                throw new Exception("El servicio de IA no está disponible temporalmente. Por favor, contacta al administrador.");
+                throw new Exception("El servicio de IA no está disponible temporalmente (404 Not Found).");
             }
             
             // Detectar error de API key
             if ($http_code === 401 || $http_code === 403) {
-                throw new Exception("Error de autenticación con el servicio de IA. Por favor, contacta al administrador.");
+                throw new Exception("Error de autenticación: Verifica tu API Key en gemini_config.php");
             }
             
-            // Error genérico
-            throw new Exception("El servicio de IA no está disponible en este momento. Por favor, intenta más tarde.");
+            throw new Exception("Error de sincronización con la IA ($http_code).");
         }
         
         // Extraer el texto de la respuesta

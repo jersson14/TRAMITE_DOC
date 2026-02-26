@@ -226,5 +226,4 @@ function analyzeAndFetchData($message, $chat_model, $area_id) {
     
     return $context;
 }
-
 ?>

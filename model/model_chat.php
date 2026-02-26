@@ -161,6 +161,36 @@ class Modelo_Chat {
     }
     
     /**
+     * Listar documentos pendientes de la última semana (7 días)
+     */
+    public function listar_pendientes_semana($area_id) {
+        $conexion = new conexionBD();
+        $c = $conexion->conexionPDO();
+        $sql = "SELECT 
+                    d.documento_id,
+                    CONCAT_WS(' ', d.doc_nombreremitente, d.doc_apepatremitente, d.doc_apematremitente) as remitente,
+                    d.doc_nrodocumento,
+                    d.doc_asunto,
+                    DATE_FORMAT(d.doc_fecharegistro, '%d/%m/%Y') as fecha_registro,
+                    d.dias_pasados,
+                    td.tipodo_descripcion as tipo_documento
+                FROM documento d
+                INNER JOIN tipo_documento td ON d.tipodocumento_id = td.tipodocumento_id
+                WHERE d.area_destino = ? 
+                AND d.doc_estatus = 'PENDIENTE'
+                AND d.doc_fecharegistro >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+                ORDER BY d.doc_fecharegistro DESC";
+        
+        $query = $c->prepare($sql);
+        $query->bindParam(1, $area_id);
+        $query->execute();
+        $resultado = $query->fetchAll(PDO::FETCH_ASSOC);
+        
+        $conexion->cerrar_conexion();
+        return $resultado;
+    }
+    
+    /**
      * Obtener seguimiento de un documento
      */
     public function obtener_seguimiento($doc_id) {
@@ -298,6 +328,29 @@ class Modelo_Chat {
                     COUNT(*) as cantidad
                 FROM documento
                 WHERE area_destino = ?
+                GROUP BY doc_estatus";
+        
+        $query = $c->prepare($sql);
+        $query->bindParam(1, $area_id);
+        $query->execute();
+        $resultado = $query->fetchAll(PDO::FETCH_ASSOC);
+        
+        $conexion->cerrar_conexion();
+        return $resultado;
+    }
+
+    /**
+     * Contar documentos por estado en la última semana
+     */
+    public function contar_por_estado_semana($area_id) {
+        $conexion = new conexionBD();
+        $c = $conexion->conexionPDO();
+        $sql = "SELECT 
+                    doc_estatus as estado,
+                    COUNT(*) as cantidad
+                FROM documento
+                WHERE area_destino = ?
+                AND doc_fecharegistro >= DATE_SUB(NOW(), INTERVAL 7 DAY)
                 GROUP BY doc_estatus";
         
         $query = $c->prepare($sql);
