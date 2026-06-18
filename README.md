@@ -1,6 +1,5 @@
 <div align="center">
 
-<img src="logo_diresa.png" alt="DIRESA Apurímac" width="120"/>
 
 # Transformación Digital en DIRESA Apurímac
 
