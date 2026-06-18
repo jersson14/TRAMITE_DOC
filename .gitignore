@@ -1,1 +1,10 @@
 sistema_tramite.sql
+*.sql
+
+# Archivos de configuración con credenciales reales
+config/config_email.php
+config/gemini_config.php
+model/model_conexion.php
+
+# Entorno
+.env

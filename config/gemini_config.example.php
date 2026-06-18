@@ -1,12 +1,15 @@
 <?php
 /**
- * Configuración de Google Gemini API
+ * Configuración de Google Gemini API - EJEMPLO
+ * Copia este archivo como gemini_config.php y completa
+ * con tu API Key real. Ese archivo NO se sube al
+ * repositorio (ver .gitignore).
  */
 
 // API Key de Gemini
-define('GEMINI_API_KEY', 'AIzaSyDjd8YWMfxCgC9idhVZcpxtEN_ATDdMYBE');
+define('GEMINI_API_KEY', 'TU_API_KEY_AQUI');
 
-// Modelo a utilizar - Cambiado a 1.5 Flash por mayor cuota
+// Modelo a utilizar
 define('GEMINI_MODEL', 'gemini-1.5-flash');
 
 // NO definir GEMINI_API_URL aquí, se construye en GeminiClient
@@ -19,7 +22,7 @@ define('GEMINI_TEMPERATURE', 0.7);
 define('CHAT_MAX_REQUESTS_PER_MINUTE', 10);
 define('CHAT_MAX_REQUESTS_PER_DAY', 100);
 
-define('SYSTEM_PROMPT', 
+define('SYSTEM_PROMPT',
 'Eres un asistente virtual experto del Sistema de Trámite Documentario (SISTRAMITEDOC).
 Tu función es ayudar a los usuarios a consultar información sobre expedientes y trámites de forma inteligente y visual.
 
