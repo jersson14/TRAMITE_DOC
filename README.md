@@ -46,21 +46,82 @@ Flujo de firma digital que elimina la necesidad de papel físico, permitiendo la
 
 ## 🏗️ Arquitectura del Sistema (MVC)
 
+```mermaid
+flowchart TB
+    subgraph CLIENT["💻 CAPA DE PRESENTACIÓN"]
+        direction LR
+        UI["Vistas PHP/HTML<br/>Bootstrap · AdminLTE · DataTables"]
+        JS["JavaScript / AJAX<br/>Validaciones · Chat UI"]
+    end
+
+    subgraph SERVER["⚙️ CAPA DE APLICACIÓN — PHP (MVC)"]
+        direction LR
+        CTRL["Controllers<br/>tramite · usuario · chat · area · empleado"]
+        MODEL["Models<br/>model_tramite · model_usuario · model_chat ..."]
+        UTIL["Utilitarios<br/>mPDF · PHPMailer · DataTables Server"]
+    end
+
+    subgraph DATA["🗄️ CAPA DE DATOS"]
+        direction LR
+        DB[("MySQL / MariaDB<br/>expedientes · trámites · usuarios")]
+    end
+
+    subgraph IA["🤖 CAPA DE INTELIGENCIA ARTIFICIAL"]
+        direction LR
+        RAG["Motor RAG<br/>chat_controller.php"]
+        LLM["Gemini API<br/>(LLM Generativo)"]
+    end
+
+    subgraph EXT["🌐 SERVICIOS EXTERNOS"]
+        direction LR
+        RENIEC["RENIEC<br/>Validación DNI"]
+        SUNAT["SUNAT<br/>Validación RUC"]
+        SMTP["SMTP<br/>Notificaciones por correo"]
+    end
+
+    UI <--> JS
+    JS -- "HTTP / AJAX" --> CTRL
+    CTRL --> MODEL
+    CTRL --> UTIL
+    MODEL <--> DB
+
+    CTRL -- "Consulta en lenguaje natural" --> RAG
+    RAG -- "Recupera contexto" --> DB
+    RAG -- "Prompt + contexto" --> LLM
+    LLM -- "Respuesta generada" --> RAG
+    RAG -- "Respuesta + gráficos ASCII" --> CTRL
+
+    CTRL -- "Validar identidad" --> RENIEC
+    CTRL -- "Validar identidad" --> SUNAT
+    UTIL -- "Enviar notificación" --> SMTP
+
+    style CLIENT fill:#1e293b,stroke:#38bdf8,color:#f8fafc
+    style SERVER fill:#1e293b,stroke:#a78bfa,color:#f8fafc
+    style DATA fill:#1e293b,stroke:#34d399,color:#f8fafc
+    style IA fill:#1e293b,stroke:#fbbf24,color:#f8fafc
+    style EXT fill:#1e293b,stroke:#f87171,color:#f8fafc
 ```
-┌──────────────────────────┐
-│          VIEW             │   HTML / CSS / JS / Bootstrap / AdminLTE
-└─────────────┬─────────────┘
-              │
-┌─────────────▼─────────────┐
-│      BACKEND LOGIC         │   PHP (Arquitectura MVC)
-│  Controller · Model · View │
-└──────┬───────────────┬─────┘
-       │               │
-┌──────▼─────┐   ┌──────▼───────┐
-│   MySQL     │   │   IA (LLM)   │
-│  Database   │──▶│  RAG Engine  │
-│ (fuente RAG)│   │ Gemini/OpenAI│
-└─────────────┘   └──────────────┘
+
+> 💡 El diagrama se renderiza automáticamente en GitHub (formato [Mermaid](https://mermaid.js.org/)). Si lo visualizas fuera de GitHub, usa el [Mermaid Live Editor](https://mermaid.live) pegando el bloque de código anterior.
+
+### Flujo de una consulta al Chatbot RAG
+
+```mermaid
+sequenceDiagram
+    participant U as Usuario
+    participant V as Vista (Chat UI)
+    participant C as chat_controller.php
+    participant D as MySQL (Trámites/Expedientes)
+    participant G as Gemini API (LLM)
+
+    U->>V: Escribe pregunta en lenguaje natural
+    V->>C: Envía consulta (AJAX)
+    C->>D: Recupera registros relevantes (Retrieval)
+    D-->>C: Datos de expedientes/trámites
+    C->>G: Prompt + contexto recuperado (Augmented)
+    G-->>C: Respuesta generada (Generation)
+    C-->>V: Respuesta + resumen/gráfico ASCII
+    V-->>U: Muestra respuesta en el chat
 ```
 
 **Stack tecnológico:**
