@@ -1070,6 +1070,26 @@ input[type="file"]:disabled::file-selector-button {
     margin-left: 2px;
 }
 
+/* En "Recibidos": se pidió atención al área (debe responder) */
+.badge-atencion {
+    background: #EFF4F9;
+    color: #2C5282;
+    border: 1px solid #2C5282;
+    font-weight: 600;
+    padding: 0.35rem 0.6rem;
+}
+
+.atencion-respuesta {
+    margin-top: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    background: #F8FAFC;
+    border-left: 3px solid #2C5282;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: #2D3748;
+    white-space: pre-wrap;
+}
+
 /* En "Recibidos": el trámite llegó en copia, es solo para conocimiento */
 .badge-copia {
     background: #EFF4F9;
@@ -1124,6 +1144,23 @@ input[type="file"]:disabled::file-selector-button {
 .semaforo-ambar { color: #B45309; background: #FFFBEB; border-color: #FDE68A; }
 .semaforo-rojo  { color: #B91C1C; background: #FEF2F2; border-color: #FECACA; }
 .semaforo-gris  { color: #4A5568; background: #F7FAFC; border-color: #E2E8F0; }
+
+/* Selectores múltiples (copias, áreas para atención): etiquetas legibles */
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: #1E3A5F !important;
+    border-color: #1E3A5F !important;
+    color: #FFFFFF !important;
+    padding-left: 1.4rem !important;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: #FFFFFF !important;
+    border-right-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+    background-color: #16304E !important;
+}
 
 /* Mobile Responsiveness */
 @media (max-width: 768px) {

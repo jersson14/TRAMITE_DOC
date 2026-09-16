@@ -52,6 +52,22 @@ class Plazos
                 continue;
             }
 
+            // Fila de un área a la que se pidió atención: su plazo es el de su atención
+            if ((int) ($fila['es_atencion'] ?? 0) === 1) {
+                if (!empty($fila['atencion_respondida'])) {
+                    $fila['plazo_semaforo'] = self::CERRADO;
+                    continue;
+                }
+                $inicio = self::fecha($fila['atencion_fecha'] ?? null);
+                $fila['dias_respuesta'] = (int) ($fila['atencion_plazo'] ?? 0);
+                if ($inicio) {
+                    self::calcular($fila, $inicio, (int) $fila['dias_respuesta'], $hoy);
+                } else {
+                    $fila['plazo_semaforo'] = self::SIN_PLAZO;
+                }
+                continue;
+            }
+
             $id = $fila['documento_id'] ?? '';
             $llegada = self::fecha($llegadas[$id] ?? ($fila['doc_fecharegistro'] ?? null));
             if (!$llegada) {
@@ -59,27 +75,31 @@ class Plazos
                 continue;
             }
 
-            $fila['plazo_dias_area'] = self::habilesEntre($llegada, $hoy);
-
-            $plazo = (int) ($fila['dias_respuesta'] ?? 0);
-            if ($plazo <= 0) {
-                $fila['plazo_semaforo'] = self::SIN_PLAZO;
-                continue;
-            }
-
-            $limite = self::sumarHabiles($llegada, $plazo);
-            $fila['plazo_limite'] = $limite->format('d/m/Y');
-
-            if ($hoy > $limite) {
-                $restante = -self::habilesEntre($limite, $hoy);
-                $fila['plazo_semaforo'] = self::ROJO;
-            } else {
-                $restante = self::habilesEntre($hoy, $limite);
-                $fila['plazo_semaforo'] = $restante <= 1 ? self::AMBAR : self::VERDE;
-            }
-            $fila['plazo_restante'] = $restante;
+            self::calcular($fila, $llegada, (int) ($fila['dias_respuesta'] ?? 0), $hoy);
         }
         unset($fila);
+    }
+
+    /** Días en el área, fecha límite, días restantes y color, desde $inicio con $plazo días hábiles. */
+    private static function calcular(array &$fila, DateTimeImmutable $inicio, int $plazo, DateTimeImmutable $hoy): void
+    {
+        $fila['plazo_dias_area'] = self::habilesEntre($inicio, $hoy);
+
+        if ($plazo <= 0) {
+            $fila['plazo_semaforo'] = self::SIN_PLAZO;
+            return;
+        }
+
+        $limite = self::sumarHabiles($inicio, $plazo);
+        $fila['plazo_limite'] = $limite->format('d/m/Y');
+
+        if ($hoy > $limite) {
+            $fila['plazo_restante'] = -self::habilesEntre($limite, $hoy);
+            $fila['plazo_semaforo'] = self::ROJO;
+        } else {
+            $fila['plazo_restante'] = self::habilesEntre($hoy, $limite);
+            $fila['plazo_semaforo'] = $fila['plazo_restante'] <= 1 ? self::AMBAR : self::VERDE;
+        }
     }
 
     /** Días hábiles en el intervalo (desde, hasta]: no cuenta el día de inicio. */
@@ -147,7 +167,7 @@ class Plazos
                 $consulta = $pdo->prepare(
                     "SELECT documento_id, MAX(mov_fecharegistro)
                        FROM movimiento
-                      WHERE documento_id IN ($marcas) AND mov_descripcion NOT LIKE 'COPIA - %'
+                      WHERE documento_id IN ($marcas) AND mov_tipo = 'PRINCIPAL'
                       GROUP BY documento_id"
                 );
                 $consulta->execute($bloque);

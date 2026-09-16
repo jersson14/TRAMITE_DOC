@@ -70,6 +70,7 @@ function marcoArchivos(contador, cuerpo) {
 }
 
 function Cargar_Anexos(documentoId) {
+  if (typeof Cargar_Atenciones === "function") Cargar_Atenciones(documentoId);
   var caja = document.getElementById("lista_anexos");
   if (!caja) return;
 
@@ -198,6 +199,7 @@ function Render_Estado_Movimiento(data, type, row, conIconos) {
     ACEPTADO: ["bg-success", "fas fa-check-circle"],
     FINALIZADO: ["bg-primary", "fas fa-flag"],
     DERIVADO: ["bg-dark", "fas fa-share"],
+    ATENDIDO: ["bg-info", "fas fa-reply"],
   };
   var e = estilos[data];
   var html = !e
@@ -214,4 +216,71 @@ function Render_Estado_Movimiento(data, type, row, conIconos) {
     html += '<small class="d-block text-muted mt-1">Sin acuse de recepción</small>';
   }
   return html;
+}
+
+/**
+ * Panel "Atención solicitada a otras áreas" del modal "Datos del Expediente".
+ * Solo aparece si al trámite se le pidió atención a alguna área.
+ */
+function Cargar_Atenciones(documentoId) {
+  var caja = document.getElementById("lista_atenciones");
+  if (!caja) return;
+  caja.innerHTML = "";
+  if (!documentoId) return;
+
+  $.ajax({
+    url: "../controller/tramite_area/controlador_listar_atenciones.php",
+    type: "POST",
+    data: { id: documentoId },
+    dataType: "json",
+  }).done(function (r) {
+    var filas = (r && r.data) || [];
+    if (filas.length === 0) return;
+
+    var respondidas = filas.filter(function (a) { return a.respuesta_fecha; }).length;
+    var clases = { VERDE: "semaforo-verde", AMBAR: "semaforo-ambar", ROJO: "semaforo-rojo" };
+    var html = "";
+
+    for (var i = 0; i < filas.length; i++) {
+      var a = filas[i];
+      var estado;
+      if (a.respuesta_fecha) {
+        estado = '<span class="semaforo semaforo-verde">Respondió ' + escaparTexto(a.respuesta_fecha) + "</span>";
+      } else if (a.semaforo === "ROJO") {
+        estado = '<span class="semaforo semaforo-rojo">Vencido hace ' + Math.abs(a.plazo_restante) + " día(s)</span>";
+      } else if (clases[a.semaforo]) {
+        estado = '<span class="semaforo ' + clases[a.semaforo] + '">' +
+          (a.plazo_restante === 0 ? "Vence hoy" : "Quedan " + a.plazo_restante + " día(s)") + "</span>";
+      } else {
+        estado = '<span class="semaforo semaforo-gris">Sin plazo</span>';
+      }
+
+      var meta = [];
+      if (a.plazo_limite) meta.push("límite " + escaparTexto(a.plazo_limite));
+      if (a.recibido_fecha) meta.push("recibido " + escaparTexto(a.recibido_fecha));
+      else if (!a.respuesta_fecha) meta.push("aún sin acuse de recepción");
+      if (a.respuesta_por) meta.push("respondió " + escaparTexto(a.respuesta_por));
+
+      var respuesta = a.respuesta
+        ? '<div class="atencion-respuesta">' + escaparTexto(a.respuesta) +
+          (a.respuesta_archivo
+            ? '<div class="mt-2"><a class="btn btn-archivo" href="../' + escaparTexto(a.respuesta_archivo) + '" target="_blank" rel="noopener"><i class="fas fa-file-pdf"></i> Ver archivo de la respuesta</a></div>'
+            : "") + "</div>"
+        : "";
+
+      html += '<div class="archivo-item" style="align-items:flex-start;">' +
+        '<div class="archivo-icono"><i class="fas fa-tasks"></i></div>' +
+        '<div class="archivo-cuerpo">' +
+          '<div class="archivo-nombre">' + escaparTexto(a.area) + "</div>" +
+          '<div class="archivo-meta">' + meta.join(" · ") + "</div>" + respuesta +
+        "</div>" +
+        '<div class="archivo-acciones">' + estado + "</div>" +
+      "</div>";
+    }
+
+    caja.innerHTML = '<div class="archivos-tramite">' +
+      '<div class="archivos-cabecera"><h6 class="archivos-titulo"><i class="fas fa-tasks"></i> Atención solicitada a otras áreas</h6>' +
+      '<span class="archivos-contador">' + respondidas + " de " + filas.length + " respondieron</span></div>" +
+      html + "</div>";
+  });
 }

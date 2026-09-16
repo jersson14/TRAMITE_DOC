@@ -176,8 +176,8 @@
         public function Registrar_Copia($iddo, $orig, $dest_copia, $desc, $idusu, $ruta, $acc){
             $c = conexionBD::conexionPDO();
             $sql = "INSERT INTO movimiento (documento_id, area_origen_id, areadestino_id, mov_fecharegistro,
-                                            mov_descripcion, mov_estatus, usuario_id, mov_archivo, mov_acciones)
-                    VALUES (?, ?, ?, NOW(), ?, 'PENDIENTE', ?, ?, ?)";
+                                            mov_descripcion, mov_estatus, usuario_id, mov_archivo, mov_acciones, mov_tipo)
+                    VALUES (?, ?, ?, NOW(), ?, 'PENDIENTE', ?, ?, ?, 'COPIA')";
             $query = $c->prepare($sql);
             $resul = $query->execute([$iddo, $orig, $dest_copia, "COPIA - " . $desc, $idusu, $ruta, $acc]);
             return $resul ? 1 : 0;

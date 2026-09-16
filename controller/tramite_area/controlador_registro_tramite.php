@@ -25,10 +25,44 @@
     $area_orig_txt = isset($_POST['area_orig_txt']) ? htmlspecialchars($_POST['area_orig_txt'],ENT_QUOTES,'UTF-8') : '';
     $area_dest_txt = isset($_POST['area_dest_txt']) ? htmlspecialchars($_POST['area_dest_txt'],ENT_QUOTES,'UTF-8') : '';
 
+    if (!preg_match('/^[A-Z0-9\-]{1,15}$/', $iddo)) {
+        Seguridad::responderError(422, 'Trámite no válido.');
+    }
+    if (!in_array($tipo, ['DERIVAR', 'FINALIZAR'], true)) {
+        Seguridad::responderError(422, 'Operación no válida.');
+    }
+    if ($tipo === 'DERIVAR' && (int) $dest <= 0) {
+        Seguridad::responderError(422, 'Seleccione el área de destino.');
+    }
+    // Solo el área que tiene el trámite (o el administrador) puede derivarlo o
+    // finalizarlo. Antes no se comprobaba: cualquier sesión podía mover un trámite ajeno.
+    if (!Seguridad::esAdmin() && !$MTR->Es_Area_Destino($iddo, Seguridad::areaId())) {
+        Seguridad::responderError(403, 'Solo el área que tiene el trámite puede derivarlo o finalizarlo.');
+    }
+
     // Recibir copias
     $copias = isset($_POST['copias']) ? json_decode($_POST['copias'], true) : [];
     if(!is_array($copias)){
         $copias = [];
+    }
+    $copias = array_values(array_unique(array_filter(array_map('intval', $copias), fn($a) => $a > 0)));
+
+    // Áreas para atención: deben responder, cada una con su plazo en días hábiles.
+    // Solo al derivar; no pueden ser el área destino ni la que deriva.
+    $atenciones = [];
+    if ($tipo === 'DERIVAR') {
+        $pedidas = isset($_POST['atenciones']) ? json_decode($_POST['atenciones'], true) : [];
+        foreach (is_array($pedidas) ? $pedidas : [] as $p) {
+            $area = (int) ($p['area'] ?? 0);
+            $plazo = max(0, min(365, (int) ($p['plazo'] ?? 0)));
+            if ($area > 0 && $area !== (int) $dest && $area !== (int) $orig && !isset($atenciones[$area])) {
+                $atenciones[$area] = ['area' => $area, 'plazo' => $plazo];
+            }
+        }
+        $atenciones = array_values($atenciones);
+        // Un área a la que se pide atención no necesita además una copia
+        $areasAtencion = array_column($atenciones, 'area');
+        $copias = array_values(array_diff($copias, $areasAtencion));
     }
 
     // El nombre y el tipo del archivo los determina el servidor, no el navegador
@@ -60,16 +94,28 @@
         foreach($copias as $area_copia){
             $MTRA->Registrar_Copia($iddo, $orig, $area_copia, $desc, $idusu, $ruta, $acc);
         }
+        $MTR->Registrar_Atenciones($iddo, $orig, $atenciones, $desc, $idusu, $ruta, $acc);
         $MTR->Vincular_Anexos($iddo, $idsAnexos, $ultimoMovimiento);
 
         // ✉️ NOTIFICACIÓN: la clase obtiene automáticamente nombres de área y de usuario
         $NTF->notificarDerivacion($dest, $orig, $idusu, $iddo, '', $desc, $tipo);
         Bitacora::registrar(Bitacora::DERIVO_TRAMITE, 'documento', $iddo,
-            'del área ' . $orig . ' al área ' . $dest . (count($copias) ? ' (con ' . count($copias) . ' copia(s))' : ''));
+            $tipo === 'FINALIZAR'
+                ? 'finalizado en el área ' . $orig
+                : 'del área ' . $orig . ' al área ' . $dest . (count($copias) ? ' (con ' . count($copias) . ' copia(s))' : ''));
 
         // ✉️ NOTIFICACIÓN a áreas que reciben copias
         foreach($copias as $area_copia){
             $NTF->notificarDerivacion($area_copia, $orig, $idusu, $iddo, '', 'COPIA - ' . $desc, $tipo);
+        }
+
+        // ✉️ Áreas a las que se pidió atención
+        if ($atenciones) {
+            foreach ($atenciones as $a) {
+                $NTF->notificarDerivacion($a['area'], $orig, $idusu, $iddo, '', 'ATENCIÓN - ' . $desc, $tipo);
+            }
+            Bitacora::registrar(Bitacora::ATENCION_SOLICITADA, 'documento', $iddo,
+                'a las áreas ' . implode(', ', array_map(fn($a) => $a['area'] . ($a['plazo'] ? ' (' . $a['plazo'] . ' días)' : ''), $atenciones)));
         }
 
         echo $consulta;

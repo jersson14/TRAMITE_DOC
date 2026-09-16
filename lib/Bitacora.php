@@ -21,6 +21,8 @@ class Bitacora
     const CAMBIO_ESTADO    = 'CAMBIO_ESTADO';
     const ELIMINO_TRAMITE  = 'ELIMINO_TRAMITE';
     const RECEPCION        = 'RECEPCION';
+    const ATENCION_SOLICITADA = 'ATENCION_SOLICITADA';
+    const ATENCION_RESPONDIDA = 'ATENCION_RESPONDIDA';
 
     // Acciones sobre el mantenimiento
     const REGISTRO         = 'REGISTRO';

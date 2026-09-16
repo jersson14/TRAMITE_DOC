@@ -38,12 +38,17 @@ $filasDocumento = fila_dato('N° de expediente', $t['doc_expediente'] ?: $t['doc
 
 $filasRecorrido = '';
 foreach ($movimientos as $n => $m) {
-    $esCopia = stripos((string) $m['mov_descripcion'], 'COPIA - ') === 0;
-    $descripcion = $esCopia ? substr($m['mov_descripcion'], 8) : $m['mov_descripcion'];
+    $esCopia = ($m['mov_tipo'] ?? '') === 'COPIA';
+    $esAtencion = ($m['mov_tipo'] ?? '') === 'ATENCION';
+    $descripcion = preg_replace('/^(COPIA|ATENCIÓN) - /u', '', (string) $m['mov_descripcion']);
     $filasRecorrido .= '<tr' . ($esCopia ? ' class="copia"' : '') . '>'
         . '<td class="centro">' . ($n + 1) . '</td>'
         . '<td>' . pdf_e($m['origen']) . '<span class="flecha"> → </span><strong>' . pdf_e($m['destino']) . '</strong>'
-        . ($esCopia ? '<br><span class="marca-copia">COPIA · para conocimiento</span>' : '') . '</td>'
+        . ($esCopia ? '<br><span class="marca-copia">COPIA · para conocimiento</span>' : '')
+        . ($esAtencion ? '<br><span class="marca-copia">ATENCIÓN · debe responder'
+            . ($m['mov_plazo_dias'] ? ' en ' . (int) $m['mov_plazo_dias'] . ' días hábiles' : '')
+            . ($m['mov_respuesta_fecha'] ? ' · respondió ' . pdf_e(pdf_fecha_corta($m['mov_respuesta_fecha'])) : '')
+            . '</span>' : '') . '</td>'
         . '<td class="centro">' . pdf_e(pdf_fecha_corta($m['mov_fecharegistro'])) . '</td>'
         . '<td>' . pdf_e($m['mov_acciones']) . '</td>'
         . '<td>' . pdf_e($descripcion) . ((int) $m['anexos'] > 0 ? '<br><span class="anexos">' . (int) $m['anexos'] . ' anexo(s)</span>' : '') . '</td>'

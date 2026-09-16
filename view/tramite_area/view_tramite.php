@@ -307,6 +307,7 @@
       </div>
       <div class="px-4 pb-3">
         <div id="lista_anexos"></div>
+  <div id="lista_atenciones" class="mt-3"></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-arrow-right-from-bracket"></i>Cerrar</button>
@@ -352,6 +353,12 @@
             <select class="js-example-basic-multiple form-control" id="select_area_copias_derivar" name="states[]" multiple="multiple" style="width:100%">
             </select>
             <small class="text-muted">Seleccione las áreas que recibirán copia de este documento</small>
+          </div>
+          <div class="col-12 form-group" id="bloque_atencion_derivar">
+            <label for=""><i class="fas fa-tasks"></i> Pedir atención a otras áreas (Opcional):</label>
+            <select class="form-control" id="select_area_atencion_derivar" multiple="multiple" style="width:100%"></select>
+            <small class="text-muted">Estas áreas deben responder (informe u opinión) dentro de su plazo. El trámite sigue a cargo del área destino.</small>
+            <div id="plazos_atencion_derivar" class="mt-2"></div>
           </div>
           <div class="col-12 form-group">
             <label for=""><i class="fas fa-paperclip"></i> Anexar documento:</label>
@@ -605,6 +612,15 @@ $('#modal_derivar').on('shown.bs.modal', function () {
       dropdownParent: $('#modal_derivar')
     });
   }
+  // Áreas para atención: mismo listado de áreas, cada una con su plazo
+  if (!$('#select_area_atencion_derivar').hasClass('select2-hidden-accessible')) {
+    $('#select_area_atencion_derivar').select2({
+      placeholder: 'Seleccione las áreas que deben responder',
+      allowClear: true,
+      dropdownParent: $('#modal_derivar')
+    });
+    $('#select_area_atencion_derivar').on('change', Pintar_Plazos_Atencion);
+  }
   // Load areas for copias every time modal opens
   $.ajax({
     url: '../controller/usuario/controlador_cargar_select_area.php',
@@ -617,6 +633,7 @@ $('#modal_derivar').on('shown.bs.modal', function () {
         cadena += "<option value='" + data[i][0] + "'>" + data[i][1] + "</option>";
       }
       $('#select_area_copias_derivar').html(cadena);
+      $('#select_area_atencion_derivar').html(cadena).val(null).trigger('change');
     } else {
       cadena = "<option value=''>No hay áreas disponibles</option>";
       $('#select_area_copias_derivar').html(cadena);

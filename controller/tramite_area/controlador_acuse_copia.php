@@ -14,11 +14,11 @@
 
     $resultado = $MTR->Registrar_Acuse_Copia($id, Seguridad::areaId(), Seguridad::usuarioId());
     if ($resultado === -1) {
-        Seguridad::responderError(403, 'Su área no recibió copia de este trámite.');
+        Seguridad::responderError(403, 'Su área no recibió copia ni pedido de atención de este trámite.');
     }
 
     if ($resultado > 0) {
-        Bitacora::registrar(Bitacora::RECEPCION, 'documento', $id, 'acuse de copia');
+        Bitacora::registrar(Bitacora::RECEPCION, 'documento', $id, 'acuse del área que recibió copia o pedido de atención');
     }
 
     // 0 = ya tenía acuse: no es un error, simplemente no cambia nada.

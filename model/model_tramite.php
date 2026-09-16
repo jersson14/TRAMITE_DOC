@@ -77,7 +77,7 @@
                                          m.mov_estatus = IF(m.mov_estatus = 'PENDIENTE', 'ACEPTADO', m.mov_estatus)
                                    WHERE m.documento_id = ?
                                      AND m.areadestino_id = d.area_destino
-                                     AND m.mov_descripcion NOT LIKE 'COPIA - %'
+                                     AND m.mov_tipo = 'PRINCIPAL'
                                      AND m.mov_recibido_fecha IS NULL");
             $query->execute([$usuario_id, $documento_id]);
             return $query->rowCount();
@@ -91,7 +91,7 @@
         public function Registrar_Acuse_Copia($documento_id, $area_id, $usuario_id){
             $c = conexionBD::conexionPDO();
             $existe = $c->prepare("SELECT COUNT(*) FROM movimiento
-                                    WHERE documento_id = ? AND areadestino_id = ? AND mov_descripcion LIKE 'COPIA - %'");
+                                    WHERE documento_id = ? AND areadestino_id = ? AND mov_tipo IN ('COPIA', 'ATENCION')");
             $existe->execute([$documento_id, $area_id]);
             if((int) $existe->fetchColumn() === 0){
                 return -1;
@@ -99,9 +99,79 @@
             $query = $c->prepare("UPDATE movimiento
                                      SET mov_recibido_fecha = NOW(), mov_recibido_usuario = ?
                                    WHERE documento_id = ? AND areadestino_id = ?
-                                     AND mov_descripcion LIKE 'COPIA - %'
+                                     AND mov_tipo IN ('COPIA', 'ATENCION')
                                      AND mov_recibido_fecha IS NULL");
             $query->execute([$usuario_id, $documento_id, $area_id]);
+            return $query->rowCount();
+        }
+
+        /**
+         * Pide atención a otras áreas al derivar. Cada una recibe su propio envío
+         * (mov_tipo ATENCION) con su plazo en días hábiles y debe responder.
+         * $atenciones = [['area' => int, 'plazo' => int], ...]
+         */
+        public function Registrar_Atenciones($iddo, $orig, array $atenciones, $desc, $idusu, $ruta, $acc){
+            if(empty($atenciones)){
+                return 0;
+            }
+            $c = conexionBD::conexionPDO();
+            $query = $c->prepare("INSERT INTO movimiento (documento_id, area_origen_id, areadestino_id, mov_fecharegistro,
+                                                          mov_descripcion, mov_estatus, usuario_id, mov_archivo, mov_acciones,
+                                                          mov_tipo, mov_plazo_dias)
+                                  VALUES (?, ?, ?, NOW(), ?, 'PENDIENTE', ?, ?, ?, 'ATENCION', ?)");
+            $total = 0;
+            foreach($atenciones as $a){
+                $query->execute([$iddo, $orig, $a['area'], 'ATENCIÓN - ' . $desc, $idusu, $ruta, $acc,
+                                 $a['plazo'] > 0 ? $a['plazo'] : null]);
+                $total++;
+            }
+            return $total;
+        }
+
+        /** Atenciones pedidas en un trámite, con su respuesta si ya la hay. */
+        public function Listar_Atenciones($documento_id){
+            $c = conexionBD::conexionPDO();
+            $query = $c->prepare("SELECT m.movimiento_id, m.areadestino_id AS area_id, a.area_nombre AS area,
+                                         o.area_nombre AS solicitada_por, m.mov_fecharegistro AS fecha,
+                                         m.mov_plazo_dias AS plazo, m.mov_estatus AS estado,
+                                         DATE_FORMAT(m.mov_recibido_fecha, '%d/%m/%Y %H:%i') AS recibido_fecha,
+                                         m.mov_respuesta AS respuesta,
+                                         DATE_FORMAT(m.mov_respuesta_fecha, '%d/%m/%Y %H:%i') AS respuesta_fecha,
+                                         m.mov_respuesta_archivo AS respuesta_archivo,
+                                         (SELECT COALESCE(NULLIF(TRIM(CONCAT_WS(' ', e.emple_nombre, e.emple_apepat)), ''), u.usu_usuario)
+                                            FROM usuario u LEFT JOIN empleado e ON e.empleado_id = u.empleado_id
+                                           WHERE u.usu_id = m.mov_respuesta_usuario) AS respuesta_por
+                                    FROM movimiento m
+                                    LEFT JOIN area a ON a.area_cod = m.areadestino_id
+                                    LEFT JOIN area o ON o.area_cod = m.area_origen_id
+                                   WHERE m.documento_id = ? AND m.mov_tipo = 'ATENCION'
+                                   ORDER BY m.movimiento_id");
+            $query->execute([$documento_id]);
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        /**
+         * Respuesta de un área a la atención que se le pidió (la última sin responder).
+         * Devuelve -1 si al área no se le pidió atención en este trámite,
+         * 0 si ya había respondido, 1 si quedó registrada.
+         */
+        public function Responder_Atencion($documento_id, $area_id, $usuario_id, $texto, $archivo){
+            $c = conexionBD::conexionPDO();
+            $existe = $c->prepare("SELECT COUNT(*) FROM movimiento WHERE documento_id = ? AND areadestino_id = ? AND mov_tipo = 'ATENCION'");
+            $existe->execute([$documento_id, $area_id]);
+            if((int) $existe->fetchColumn() === 0){
+                return -1;
+            }
+            $query = $c->prepare("UPDATE movimiento
+                                     SET mov_respuesta = ?, mov_respuesta_fecha = NOW(), mov_respuesta_usuario = ?,
+                                         mov_respuesta_archivo = ?, mov_estatus = 'ATENDIDO',
+                                         mov_recibido_fecha = COALESCE(mov_recibido_fecha, NOW()),
+                                         mov_recibido_usuario = COALESCE(mov_recibido_usuario, ?)
+                                   WHERE documento_id = ? AND areadestino_id = ? AND mov_tipo = 'ATENCION'
+                                     AND mov_respuesta_fecha IS NULL
+                                   ORDER BY movimiento_id DESC
+                                   LIMIT 1");
+            $query->execute([$texto, $usuario_id, $archivo, $usuario_id, $documento_id, $area_id]);
             return $query->rowCount();
         }
 
@@ -222,8 +292,8 @@
             if(!empty($copias) && is_array($copias)){
                 foreach($copias as $area_copia_id){
                     if(!empty($area_copia_id)){
-                        $sql_copia = "INSERT INTO movimiento (documento_id, area_origen_id, areadestino_id, mov_descripcion, mov_estatus, usuario_id, mov_acciones, mov_archivo)
-                                     VALUES (?, ?, ?, ?, 'PENDIENTE', ?, ?, ?)";
+                        $sql_copia = "INSERT INTO movimiento (documento_id, area_origen_id, areadestino_id, mov_descripcion, mov_estatus, usuario_id, mov_acciones, mov_archivo, mov_tipo)
+                                     VALUES (?, ?, ?, ?, 'PENDIENTE', ?, ?, ?, 'COPIA')";
                         $query_copia = $c->prepare($sql_copia);
                         $descripcion_copia = "COPIA - " . $asu;
                         // La copia lleva el mismo archivo: sin él, el área copiada no podía abrir el documento.
@@ -276,8 +346,8 @@
             if(!empty($copias) && is_array($copias)){
                 foreach($copias as $area_copia_id){
                     if(!empty($area_copia_id)){
-                        $sql_copia = "INSERT INTO movimiento (documento_id, area_origen_id, areadestino_id, mov_descripcion, mov_estatus, usuario_id, mov_acciones, mov_archivo)
-                                     VALUES (?, ?, ?, ?, 'PENDIENTE', ?, ?, ?)";
+                        $sql_copia = "INSERT INTO movimiento (documento_id, area_origen_id, areadestino_id, mov_descripcion, mov_estatus, usuario_id, mov_acciones, mov_archivo, mov_tipo)
+                                     VALUES (?, ?, ?, ?, 'PENDIENTE', ?, ?, ?, 'COPIA')";
                         $query_copia = $c->prepare($sql_copia);
                         $descripcion_copia = "COPIA - " . $asu;
                         // La copia lleva el mismo archivo: sin él, el área copiada no podía abrir el documento.

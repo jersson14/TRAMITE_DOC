@@ -323,6 +323,7 @@
       </div>
       <div class="px-4 pb-3">
         <div id="lista_anexos"></div>
+  <div id="lista_atenciones" class="mt-3"></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fa fa-arrow-right-from-bracket"></i>Cerrar</button>

@@ -52,6 +52,17 @@ function listar_tramite(){
         {"data":"doc_estatus",
         render: function(data,type,row){
                 // Llegó en copia: es para conocimiento, esta área no decide sobre él.
+                // Se le pidió atención: confirma recepción y responde; no decide sobre el trámite
+                if(row.es_atencion == 1){
+                  var botones = "";
+                  if(!row.acuse_fecha){
+                    botones += "<button class='acuse-copia btn btn-sm btn-archivo' title='Confirmar que su área recibió el pedido'><i class='fas fa-inbox'></i> Confirmar recepción</button> ";
+                  }
+                  if(row.atencion_respondida){
+                    return botones + "<span class='badge badge-atencion' title='Respuesta registrada'><i class='fas fa-check'></i> Atendido · "+row.atencion_respondida+"</span>";
+                  }
+                  return botones + "<button class='responder-atencion btn btn-sm btn-gradient-primary' title='Registrar la respuesta de su área'><i class='fas fa-reply'></i> Responder</button>";
+                }
                 if(row.es_copia == 1){
                   if(row.acuse_fecha){
                     return "<span class='badge badge-copia' title='Recepción confirmada'><i class='fas fa-check'></i> Copia recibida · "+row.acuse_fecha+"</span>";
@@ -211,12 +222,39 @@ function Registrar_Derivacion(){
 
   let nombrearchivo="";
 
-  if(dest.length==0){
-    Swal.fire("Mensaje de Advertencia","Seleccionar el área destino","warning");
+  // Antes mostraban el aviso pero seguían y enviaban la derivación igual
+  if(tipo=="DERIVAR" && dest.length==0){
+    return Swal.fire("Mensaje de Advertencia","Seleccionar el área destino","warning");
   }
   if(acc.length==0){
-    Swal.fire("Mensaje de Advertencia","Seleccionar al menos una acción a realizar","warning");
+    return Swal.fire("Mensaje de Advertencia","Seleccionar al menos una acción a realizar","warning");
   }
+
+  // Finalizar con atenciones sin responder: se avisa antes
+  if(tipo=="FINALIZAR" && !window._finalizarConfirmado){
+    $.post("../controller/tramite_area/controlador_listar_atenciones.php",{id:iddo},null,"json").done(function(r){
+      var pendientes = (r.data || []).filter(function(a){ return !a.respuesta_fecha; });
+      if(pendientes.length === 0){
+        window._finalizarConfirmado = true;
+        Registrar_Derivacion();
+        return;
+      }
+      var lista = pendientes.map(function(a){ return "<li>"+escaparTexto(a.area)+"</li>"; }).join("");
+      Swal.fire({
+        title: "Hay atenciones sin responder",
+        html: "Estas áreas todavía no respondieron:<ul style='text-align:left'>"+lista+"</ul>¿Desea finalizar el trámite de todos modos?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Finalizar de todos modos",
+        confirmButtonColor: "#B91C1C",
+        cancelButtonText: "Esperar respuestas"
+      }).then(function(res){
+        if(res.isConfirmed){ window._finalizarConfirmado = true; Registrar_Derivacion(); }
+      });
+    });
+    return false;
+  }
+  window._finalizarConfirmado = false;
   if(arc==""){
 
   }else{
@@ -245,6 +283,7 @@ function Registrar_Derivacion(){
   formData.append("tipo",tipo);
   formData.append("acc",acc);
   formData.append("copias",JSON.stringify(copias)); // Enviar copias como JSON
+  formData.append("atenciones",JSON.stringify(Leer_Atenciones_Derivar()));
 
   $.ajax({
     url:"../controller/tramite_area/controlador_registro_tramite.php",
@@ -714,5 +753,72 @@ $('#tabla_tramite').on('click','.acuse-copia',function(){
   }).done(function(){
     Swal.fire("Recepción confirmada","Quedó registrado que su área recibió la copia del expediente "+(data.doc_expediente || data.documento_id)+".","success");
     tbl_tramite.ajax.reload(null,false);
+  });
+});
+
+/// ÁREAS PARA ATENCIÓN
+// Una fila de plazo por cada área seleccionada en el modal de derivar
+function Pintar_Plazos_Atencion(){
+  var caja = document.getElementById('plazos_atencion_derivar');
+  if(!caja){ return; }
+  var anteriores = {};
+  $(caja).find('input[data-area]').each(function(){ anteriores[this.getAttribute('data-area')] = this.value; });
+  var html = "";
+  $('#select_area_atencion_derivar option:selected').each(function(){
+    var id = this.value;
+    var plazo = anteriores[id] !== undefined ? anteriores[id] : "3";
+    html += "<div class='d-flex align-items-center mb-1' style='gap:.5rem;'>" +
+      "<span style='min-width:45%;'><i class='fas fa-building text-muted'></i> "+escaparTexto(this.text)+"</span>" +
+      "<input type='number' min='0' max='365' class='form-control form-control-sm' style='width:5.5rem;' data-area='"+escaparTexto(id)+"' value='"+escaparTexto(plazo)+"'>" +
+      "<small class='text-muted'>días hábiles (0 = sin plazo)</small></div>";
+  });
+  caja.innerHTML = html;
+}
+
+function Leer_Atenciones_Derivar(){
+  var lista = [];
+  $('#plazos_atencion_derivar input[data-area]').each(function(){
+    lista.push({ area: parseInt(this.getAttribute('data-area'), 10), plazo: parseInt(this.value || "0", 10) || 0 });
+  });
+  return lista;
+}
+
+$('#tabla_tramite').on('click','.responder-atencion',function(){
+  var tr = $(this).closest('tr');
+  if(tr.hasClass('child')){ tr = tr.prev(); }
+  var data = tbl_tramite.row(tr).data();
+  if(!data){ return; }
+  Swal.fire({
+    title: "Responder atención",
+    html: "<div style='text-align:left'>" +
+      "<p class='mb-2'>Expediente <b>"+escaparTexto(data.doc_expediente || data.documento_id)+"</b><br><small class='text-muted'>"+escaparTexto(data.doc_asunto)+"</small></p>" +
+      "<label style='font-size:small'>Respuesta de su área (*)</label>" +
+      "<textarea id='txt_respuesta_atencion' class='form-control' rows='5' maxlength='4000' placeholder='Informe, opinión técnica o conclusión'></textarea>" +
+      "<label class='mt-3' style='font-size:small'>Archivo (opcional, PDF)</label>" +
+      "<input type='file' id='txt_archivo_atencion' accept='.pdf' class='form-control'></div>",
+    showCancelButton: true,
+    confirmButtonText: "Enviar respuesta",
+    confirmButtonColor: "#1E3A5F",
+    cancelButtonText: "Cancelar",
+    focusConfirm: false,
+    preConfirm: function(){
+      var texto = document.getElementById('txt_respuesta_atencion').value.trim();
+      if(texto.length < 3){ Swal.showValidationMessage("Escriba la respuesta de su área"); return false; }
+      var fd = new FormData();
+      fd.append("id", data.documento_id);
+      fd.append("respuesta", texto);
+      var archivo = document.getElementById('txt_archivo_atencion').files[0];
+      if(archivo){ fd.append("archivo", archivo); }
+      return $.ajax({ url:"../controller/tramite_area/controlador_responder_atencion.php", type:"POST", data:fd, contentType:false, processData:false, dataType:"json" })
+        .then(function(r){ return r; }, function(xhr){
+          Swal.showValidationMessage((xhr.responseJSON && xhr.responseJSON.mensaje) || "No se pudo registrar la respuesta");
+          return false;
+        });
+    }
+  }).then(function(res){
+    if(res.isConfirmed && res.value){
+      Swal.fire("Respuesta registrada","El área responsable ya puede ver la respuesta de su área.","success");
+      tbl_tramite.ajax.reload(null,false);
+    }
   });
 });

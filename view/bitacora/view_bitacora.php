@@ -51,6 +51,8 @@
                       <option value="CAMBIO_ESTADO">Cambio de estado</option>
                       <option value="ELIMINO_TRAMITE">Eliminación de trámite</option>
                       <option value="RECEPCION">Acuse de recepción</option>
+                      <option value="ATENCION_SOLICITADA">Atención solicitada</option>
+                      <option value="ATENCION_RESPONDIDA">Atención respondida</option>
                     </select>
                   </div>
                   <div class="col-md-3 form-group" style="display:flex; align-items:flex-end;">

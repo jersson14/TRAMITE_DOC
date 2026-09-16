@@ -87,6 +87,7 @@ if (!$tramite) {
 // --- Recorrido: cada envío con su origen y su destino ---
 $consulta = $mysqli->prepare(
     "SELECT m.movimiento_id, m.mov_fecharegistro, m.mov_descripcion, m.mov_estatus, m.mov_acciones,
+            m.mov_tipo, m.mov_plazo_dias, m.mov_respuesta_fecha,
             COALESCE(ao.area_nombre, 'EXTERNO') AS origen, ad.area_nombre AS destino,
             (SELECT COUNT(*) FROM movimiento_anexo ma WHERE ma.movimiento_id = m.movimiento_id) AS anexos,
             m.mov_recibido_fecha AS recibido_fecha,
