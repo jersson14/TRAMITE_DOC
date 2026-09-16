@@ -1,5 +1,6 @@
 <?php
     require_once __DIR__ . '/../_guard.php';
+    require_once __DIR__ . '/../../lib/Plazos.php';
     // Iniciar buffer de salida para capturar cualquier output no deseado
     ob_start();
     
@@ -17,6 +18,8 @@
         header('Content-Type: application/json; charset=utf-8');
         
         if($consulta){
+            // Semáforo en días hábiles, calculado al momento (ver lib/Plazos.php)
+            Plazos::agregar($consulta['data']);
             echo json_encode($consulta);
         }else{
             echo json_encode([

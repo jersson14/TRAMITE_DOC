@@ -65,3 +65,43 @@ function Render_Fecha_Registro(data, type) {
   }
   return data;
 }
+
+/**
+ * Columna "Días en el área": días hábiles desde que el trámite llegó al área que
+ * lo tiene (lo calcula lib/Plazos.php en el servidor).
+ */
+function Render_Dias_Area(data, type, row) {
+  var dias = row ? row.plazo_dias_area : null;
+  if (type !== "display") return dias === null || dias === undefined ? -1 : dias;
+  if (dias === null || dias === undefined) return '<span class="text-muted">—</span>';
+  return '<span style="white-space:nowrap;">' + dias + (dias === 1 ? " día" : " días") + "</span>" +
+    '<small class="d-block text-muted">hábiles</small>';
+}
+
+/**
+ * Columna "Plazo": semáforo según el plazo de respuesta de cada trámite.
+ *   verde = en plazo · ámbar = vence hoy o el próximo día hábil · rojo = vencido
+ */
+function Render_Plazo(data, type, row) {
+  var semaforo = row ? row.plazo_semaforo : null;
+  if (type !== "display") return row && row.plazo_restante !== null && row.plazo_restante !== undefined ? row.plazo_restante : 9999;
+
+  if (semaforo === "CERRADO") return '<span class="text-muted">—</span>';
+  if (semaforo === "SIN_PLAZO" || !semaforo) {
+    return '<span class="semaforo semaforo-gris" title="No se indicó plazo de respuesta">Sin plazo</span>';
+  }
+
+  var r = row.plazo_restante;
+  var detalle;
+  if (semaforo === "ROJO") {
+    detalle = "Vencido hace " + Math.abs(r) + (Math.abs(r) === 1 ? " día" : " días");
+  } else if (r === 0) {
+    detalle = "Vence hoy";
+  } else {
+    detalle = "Quedan " + r + (r === 1 ? " día" : " días");
+  }
+  var clase = { VERDE: "semaforo-verde", AMBAR: "semaforo-ambar", ROJO: "semaforo-rojo" }[semaforo] || "semaforo-gris";
+  return '<span class="semaforo ' + clase + '" title="Plazo: ' + escaparTextoFormato(String(data)) +
+    ' días hábiles · límite ' + escaparTextoFormato(row.plazo_limite) + '">' + detalle + "</span>" +
+    '<small class="d-block text-muted" style="white-space:nowrap;">límite ' + escaparTextoFormato(row.plazo_limite) + "</small>";
+}

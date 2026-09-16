@@ -57,7 +57,7 @@ function listar_tramite(){
     }],
       "columns":[
         {"data":"documento_id"},
-        {"data":"doc_expediente", render: Render_Expediente},
+        {"data":"doc_expediente", render: Render_Expediente, responsivePriority: 1},
         {"data":"doc_nrodocumento"},
         {"data":"doc_fecharegistro", render: Render_Fecha_Registro},
         {"data":"tipodo_descripcion"},
@@ -81,31 +81,8 @@ function listar_tramite(){
             }
              
         },
-        {"data":"dias_pasados",
-        render: function(data,type,row){
-                if(data=='1'){
-                    return '<i class="fa fa-circle text-dark fa-0x"></i>';
-                }else if(data=='2'){
-                    return '<i class="fa fa-circle text-success fa-0x"></i>';
-                }else if(data>='3' && data<='4'){
-                    return '<i class="fa fa-circle text-warning fa-0x"></i>';
-                }else if(data>='5'){
-                  return '<i class="fa fa-circle text-danger fa-0x"></i>';
-                }else if(data=='0'){
-                  return '<i class="fa fa-circle text-danger fa-0x" hidden></i>';
-                }
-            }
-             
-        },
-        {"data":"dias_respuesta",
-            render: function (data, type, row ) {
-               if(row["dias_pasados"] >= row["dias_respuesta"]){
-                return "<span class='badge badge-danger' style='size:10px'>"+data+" días</span>";              
-              }else {
-                return "<span class='badge badge-success' style='size:10px'>"+data+" días</span>";              
-              }
-            }
-          },
+        {"data":"dias_pasados", render: Render_Dias_Area},
+        {"data":"dias_respuesta", render: Render_Plazo, responsivePriority: 2},
           {"data":"doc_estatus",
           render: function(data,type,row){
             if(data=='PENDIENTE'){
@@ -194,7 +171,7 @@ function listar_tramite_buscar_area(){
     }],
       "columns":[
         {"data":"documento_id"},
-        {"data":"doc_expediente", render: Render_Expediente},
+        {"data":"doc_expediente", render: Render_Expediente, responsivePriority: 1},
         {"data":"doc_nrodocumento"},
         {"data":"doc_fecharegistro", render: Render_Fecha_Registro},
         {"data":"tipodo_descripcion"},
@@ -218,31 +195,8 @@ function listar_tramite_buscar_area(){
             }
              
         },
-        {"data":"dias_pasados",
-        render: function(data,type,row){
-                if(data=='1'){
-                    return '<i class="fa fa-circle text-dark fa-0x"></i>';
-                }else if(data=='2'){
-                    return '<i class="fa fa-circle text-success fa-0x"></i>';
-                }else if(data>='3' && data<='4'){
-                    return '<i class="fa fa-circle text-warning fa-0x"></i>';
-                }else if(data>='5'){
-                  return '<i class="fa fa-circle text-danger fa-0x"></i>';
-                }else if(data=='0'){
-                  return '<i class="fa fa-circle text-danger fa-0x" hidden></i>';
-                }
-            }
-             
-        },
-        {"data":"dias_respuesta",
-            render: function (data, type, row ) {
-               if(row["dias_pasados"] >= row["dias_respuesta"]){
-                return "<span class='badge badge-danger' style='size:10px'>"+data+" días</span>";              
-              }else {
-                return "<span class='badge badge-success' style='size:10px'>"+data+" días</span>";              
-              }
-            }
-          },
+        {"data":"dias_pasados", render: Render_Dias_Area},
+        {"data":"dias_respuesta", render: Render_Plazo, responsivePriority: 2},
           {"data":"doc_estatus",
           render: function(data,type,row){
             if(data=='PENDIENTE'){

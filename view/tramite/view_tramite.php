@@ -63,18 +63,12 @@
                 </div>
                 <div class="row">
                 <div class="col-lg-12 form-group" style="text-align:right">
-                <label for="" style="color:#000000">ALERTAS POR DÍAS TRANSCURRIDOS: </label> 
-                <label for="" style="color:#000000"> 1 día Negro</label>
-                <label for="" style="color:#000000"> | </label> 
-                <label for="" style="color:#15803D"> 2 días Verde</label>  
-                <label for="" style="color:#000000"> | </label> 
-                <label for="" style="color:#FFC300"> 3 - 4 días Amarillo</label>
-                <label for="" style="color:#000000"> | </label> 
-                <label for="" style="color:#B91C1C"> 5 días a más Rojo</label><br>
-                <label for="" style="color:#000000">ALERTAS POR DÍAS DE RESPUESTA: </label> 
-                <label for="" style="color:#15803D"> Verde = Dentro de tiempo</label>
-                <label for="" style="color:#000000"> | </label> 
-                <label for="" style="color:#B91C1C"> Rojo = Plazo a vencer o vencido</label>             
+                <label style="color:#1A202C;">PLAZO DE RESPUESTA (días hábiles):</label>
+                <span class="semaforo semaforo-verde">En plazo</span>
+                <span class="semaforo semaforo-ambar">Vence hoy o el próximo día hábil</span>
+                <span class="semaforo semaforo-rojo">Vencido</span>
+                <span class="semaforo semaforo-gris">Sin plazo</span><br>
+                <small class="text-muted">El plazo corre desde que el trámite llega al área y no cuenta sábados, domingos ni feriados.</small>             
                 </div>
                 
                 </div>
@@ -95,8 +89,8 @@
                                 <th style="text-align:center">Área Origen</th>
                                 <th style="text-align:center">Localización</th>
                                 <th style="text-align:center">Estado Documento</th>
-                                <th style="text-align:center">Alerta Días Transc.</th>
-                                <th style="text-align:center">Alerta Días de Respu.</th>
+                                <th style="text-align:center">Días en el área</th>
+                                <th style="text-align:center">Plazo</th>
                                 <th style="text-align:center">Acci&oacute;n</th>
 
                             </tr>

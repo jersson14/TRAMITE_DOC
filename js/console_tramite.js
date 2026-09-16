@@ -19,7 +19,7 @@ function listar_tramite(){
       
       "columns":[
         {"data":"documento_id"},
-        {"data":"doc_expediente", render: Render_Expediente},
+        {"data":"doc_expediente", render: Render_Expediente, responsivePriority: 1},
         {"data":"doc_nrodocumento"},
         {"data":"doc_fecharegistro", render: Render_Fecha_Registro},
         {"data":"tipodo_descripcion"},
@@ -45,32 +45,8 @@ function listar_tramite(){
             }
              
         },
-        {"data":"dias_pasados",
-        render: function(data,type,row){
-                if(data=='1'){
-                    return '<i class="fa fa-circle text-dark fa-0x"></i>';
-                }else if(data=='2'){
-                    return '<i class="fa fa-circle text-success fa-0x"></i>';
-                }else if(data>='3' && data<='4'){
-                    return '<i class="fa fa-circle text-warning fa-0x"></i>';
-                }else if(data>='5'){
-                  return '<i class="fa fa-circle text-danger fa-0x"></i>';
-                }else if(data=='0'){
-                  return '<i class="fa fa-circle text-danger fa-0x" hidden></i>';
-                }
-            }
-             
-        },   
-        {"data":"dias_respuesta",
-            render: function (data, type, row ) {
-               if(row["dias_pasados"] >= data){
-                return "<span class='badge badge-danger' style='size:10px'>"+data+" días</span>";              
-              }else {
-                return "<span class='badge badge-success' style='size:10px'>"+data+" días</span>";              
-              }
-          
-            }
-          }, 
+        {"data":"dias_pasados", render: Render_Dias_Area},   
+        {"data":"dias_respuesta", render: Render_Plazo, responsivePriority: 2}, 
         {"defaultContent":"<button class='delete btn btn-danger btn-sm' title='Eliminar tramite'><i class='fa fa-trash'></i><b> Eliminar</b></button>&nbsp;<button style='font-size:13px;' type='button' title='Imprimir ticket' id='imprimir' class='imprimir btn btn-primary btn-sm'><i class='fa fa-print'></i><b> Imprimir Ticket</b></button>&nbsp;<button style='font-size:13px;' type='button' title='Imprimir hoja de seguimiento' id='imprimir' class='imprimir2 btn btn-success btn-sm'><i class='fa fa-file'></i><b> Imprimir Seguimiento</b></button>&nbsp;<button style='font-size:13px;' type='button' title='Imprimir hoja de ruta' id='imprimir' class='imprimir3 btn btn-warning btn-sm'><i class='fa fa-file'></i><b> Imprimir Hoja de Ruta</b></button>"},
      
     ],
@@ -170,7 +146,7 @@ function listar_tramite_buscar(){
     }],
       "columns":[
         {"data":"documento_id"},
-        {"data":"doc_expediente", render: Render_Expediente},
+        {"data":"doc_expediente", render: Render_Expediente, responsivePriority: 1},
         {"data":"doc_nrodocumento"},
         {"data":"doc_fecharegistro", render: Render_Fecha_Registro},
         {"data":"tipodo_descripcion"},
@@ -194,31 +170,8 @@ function listar_tramite_buscar(){
             }
              
         },
-        {"data":"dias_pasados",
-        render: function(data,type,row){
-                if(data=='1'){
-                    return '<i class="fa fa-circle text-dark fa-0x"></i>';
-                }else if(data=='2'){
-                    return '<i class="fa fa-circle text-success fa-0x"></i>';
-                }else if(data>='3' && data<='4'){
-                    return '<i class="fa fa-circle text-warning fa-0x"></i>';
-                }else if(data>='5'){
-                  return '<i class="fa fa-circle text-danger fa-0x"></i>';
-                }else if(data=='0'){
-                  return '<i class="fa fa-circle text-danger fa-0x" hidden></i>';
-                }
-            }
-             
-        },
-        {"data":"dias_respuesta",
-            render: function (data, type, row ) {
-               if(row["dias_pasados"] >= row["dias_respuesta"]){
-                return "<span class='badge badge-danger' style='size:10px'>"+data+" días</span>";              
-              }else {
-                return "<span class='badge badge-success' style='size:10px'>"+data+" días</span>";              
-              }
-            }
-          },
+        {"data":"dias_pasados", render: Render_Dias_Area},
+        {"data":"dias_respuesta", render: Render_Plazo, responsivePriority: 2},
           {"defaultContent":"<button class='delete btn btn-danger btn-sm' title='Eliminar tramite'><i class='fa fa-trash'></i><b> Eliminar</b></button>&nbsp;<button style='font-size:13px;' type='button' title='Imprimir ticket' id='imprimir' class='imprimir btn btn-primary btn-sm'><i class='fa fa-print'></i><b> Imprimir Ticket</b></button>&nbsp;<button style='font-size:13px;' type='button' title='Imprimir hoja de seguimiento' id='imprimir' class='imprimir2 btn btn-success btn-sm'><i class='fa fa-file'></i><b> Imprimir Seguimiento</b></button>&nbsp;<button style='font-size:13px;' type='button' title='Imprimir hoja de ruta' id='imprimir' class='imprimir3 btn btn-warning btn-sm'><i class='fa fa-file'></i><b> Imprimir Hoja de Ruta</b></button>"},
      
     ],
