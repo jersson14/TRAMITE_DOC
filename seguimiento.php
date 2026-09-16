@@ -1056,9 +1056,16 @@
                        "Seguimiento", "scrollbars=NO,width=800,height=600");
         });
 
-        // Focus en primer campo
+        // Si se llega desde el QR del ticket (?codigo=D0000041), el código ya viene
+        // escrito y el cursor pasa al DNI, que es lo único que falta.
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('txt_numero').focus();
+            var codigo = (new URLSearchParams(window.location.search).get('codigo') || '').toUpperCase().trim();
+            if (/^[A-Z0-9-]{1,20}$/.test(codigo)) {
+                document.getElementById('txt_numero').value = codigo;
+                document.getElementById('txt_dni').focus();
+            } else {
+                document.getElementById('txt_numero').focus();
+            }
         });
     </script>
 </body>

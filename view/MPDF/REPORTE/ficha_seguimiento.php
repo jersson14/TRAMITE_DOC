@@ -1,127 +1,102 @@
 <?php
-require_once  __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 require_once '../conexion.php';
 require __DIR__ . '/_acceso.php';
-$html="";
-$consulta="SELECT
-documento.documento_id,
-documento.doc_dniremitente,
-CONCAT_WS(' ',documento.doc_nombreremitente,documento.doc_apepatremitente,documento.doc_apematremitente) AS REMITENTE,
-documento.doc_nombreremitente,
-documento.doc_apepatremitente,
-documento.doc_apematremitente,
-documento.tipodocumento_id,
-tipo_documento.tipodo_descripcion,
-documento.doc_estatus,
-documento.doc_nrodocumento,
-documento.doc_celularremitente,
-documento.doc_emailremitente,
-documento.doc_direccionremitente,
-documento.doc_representacion,
-documento.doc_ruc,
-documento.doc_empresa,
-documento.doc_folio,
-documento.doc_archivo,
-documento.doc_asunto,
-documento.doc_fecharegistro,
-documento.area_origen,
-documento.area_destino,
-documento.area_id,
-documento.dias_pasados,
-documento.dias_respuesta,
-documento.acciones,
-documento.doc_observaciones,
-documento.dias_respuesta,
-origen.area_nombre AS origen,
-destino.area_nombre AS destino,
-empresa.emp_logo
-FROM
-documento
-INNER JOIN tipo_documento ON documento.tipodocumento_id = tipo_documento.tipodocumento_id
-INNER JOIN area AS origen ON documento.area_origen = origen.area_cod
-INNER JOIN area AS destino ON documento.area_destino = destino.area_cod ,
-empresa
-WHERE
-documento_id = '".$codigo."'";
+require __DIR__ . '/_datos.php';
 
-  $resultado=$mysqli->query($consulta);
-  
-  while($filas=$resultado->fetch_assoc()){
-    $fecha = setlocale(LC_TIME, "spanish");					    
-        $fecharegistro = date("d-m-Y - h:i:sa", strtotime($filas['doc_fecharegistro']));
-    
-    $html.='
-    <div style="font-family:arial">
-    <table style="  font-size: 12px;width:100%;border-collapse:collapse; border-color:#FF0080; margin: 0;" >
-    <thead>
-    <tr>
-    <td align="left"> <img src="../../../img/empre.jpg" alt="Girl in a jacket" width="150" height="60" align="left"></td>
-    </tr>
-    </thead>
-    </table><br>
-    <div margin: 0;><h2  style="text-align:center;float:center;width:100%; margin: 0;font-family:Cooper Black; color:black;font-size:17px">
-        <u>HOJA DE ENVÍO DE TRÁMITE GENERAL</u></h2>
-    </div><br>
-    <table style="  font-size: 12px;width:100%;border-collapse:collapse; border-color:#FF0080; margin: 0;" >
-    <thead align="left">
-    <tr>
-    <td align="left"><b>Remitente: </b><span>'.utf8_encode($filas['REMITENTE']).'</span></td>
-    <td align="left"><b>Área Orig.: </b><span>'.utf8_encode($filas['origen']).'</span></td>
-    <td align="left"><b>N° Documento: </b>'.utf8_encode($filas['documento_id']).'</td>
-    </tr>
-    </thead>
-    </table>
-    <table style="  font-size: 12px;width:100%;border-collapse:collapse; border-color:#FF0080; margin: 0;" >
-    <thead align="left">
-    <tr>
-    <td align="left"><b>Área Dest.: </b><span>'.utf8_encode($filas['destino']).'</span></td>
-    <td align="left"><b>N° Expediente: </b>'.utf8_encode($filas['doc_nrodocumento']).'</td>
-    <td align="left"><b>N° Folios: </b>'.utf8_encode($filas['doc_folio']).'</td>
+// Hoja de envío para llenar a mano: acompaña al documento físico y cada área
+// anota destino, acción, fecha, responsable y firma.
+$i = $institucion;
+$t = $tramite;
 
-    </tr>
-    </thead>
-    </table>
-    <table style="  font-size: 12px;width:100%;border-collapse:collapse; border-color:#FF0080; margin: 0;" >
-    <thead align="left">
-    <tr>
-    <td align="left"><b>Tipo Documento: </b>'.utf8_encode($filas['tipodo_descripcion']).'</td>
-    </tr>
-    </thead>
-    </table>
-    <table style="  font-size: 12px;width:100%;border-collapse:collapse; border-color:#FF0080; margin: 0;" >
-    <thead align="left">
-    <tr>
-    <td align="left"><b>Fecha de Registro: </b><span>'.$fecharegistro.'</span></td>
-    </tr>
-    </thead>
-    </table>
-    
-    <table style="  font-size: 12px;width:100%;border-collapse:collapse; border-color:#FF0080; margin: 0;" >
-    <thead align="left">
-    <tr>
-    <td align="left"><b>Asunto: </b><span>'.utf8_encode($filas['doc_asunto']).'</span></td>
-
-    </tr>
-    </thead>
-    </table>
-    <table style="  font-size: 12px;width:100%;border-collapse:collapse; border-color:#FF0080; margin: 0;" >
-    <thead align="left">
-    <tr>
-    <td align="left"><b>Observaciones: </b><span>'.utf8_encode($filas['doc_observaciones']).'</span></td>
-    </tr>
-    </thead>
-    </table>
-    </div>
-    <div style="float:right;widht:100%; text-align:center">
-    <img src="../../../cuadro_seguimiento.jpg" alt="Girl in a jacket" width="100%" height="93%">
-</div>
-
-';
+/** Celda rótulo + valor de la cabecera de datos. */
+function dato(string $rotulo, $valor): string
+{
+    $v = trim((string) $valor) === '' ? '—' : pdf_e($valor);
+    return '<td class="dato"><span class="rotulo">' . pdf_e($rotulo) . '</span><br>' . $v . '</td>';
 }
-$mpdf = new \Mpdf\Mpdf(
-['mode' => 'UTF-8','format' => [190, 245]]
-);
-$mpdf->WriteHTML($html);
-$mpdf->Output();
 
-?>
+// Cuadrícula vacía (antes era una imagen pegada; como tabla se imprime nítida)
+$filasCuadricula = str_repeat(
+    '<tr><td>&nbsp;</td><td></td><td></td><td></td><td></td><td></td></tr>',
+    8
+);
+
+// Leyenda de acciones, en tres columnas como en el formato original
+$acciones = ['Acción', 'Tramitar', 'Revisar', 'V°B°', 'Coordinar', 'Conocimiento', 'Proyecto',
+             'Consolidar', 'Seguimiento', 'Dar respuesta', 'Difundir', 'Archivo', 'Evaluar',
+             'Preparar respuesta', 'Opinión', 'Corregir', 'Informe', 'Asistir'];
+$columnas = ['', '', ''];
+foreach ($acciones as $n => $accion) {
+    $columnas[min(2, intdiv($n, 7))] .= '<div>' . ($n + 1) . '. ' . pdf_e($accion) . '</div>';
+}
+
+$html = '
+<style>
+    body { font-family: dejavusans, sans-serif; font-size: 8.5pt; color: #1A202C; }
+    .cabecera { width: 100%; border-bottom: 0.7mm solid #1E3A5F; padding-bottom: 2mm; }
+    .cabecera td { vertical-align: middle; }
+    .logo { max-height: 15mm; max-width: 50mm; }
+    .institucion { font-size: 11pt; font-weight: bold; color: #1E3A5F; text-align: right; }
+    .titulo { font-size: 10pt; font-weight: bold; text-align: right; margin-top: 0.8mm; }
+    .expediente { font-size: 12pt; font-weight: bold; color: #1E3A5F; text-align: right; margin-top: 0.8mm; }
+    .datos { width: 100%; border-collapse: collapse; margin-top: 3mm; }
+    .dato { padding: 1.2mm 1.5mm; border-bottom: 0.2mm solid #E2E8F0; vertical-align: top; font-size: 8pt; }
+    .rotulo { font-size: 6.5pt; color: #718096; }
+    .cuadricula { width: 100%; border-collapse: collapse; margin-top: 4mm; }
+    .cuadricula th { border: 0.4mm solid #1A202C; background: #EFF4F9; font-size: 7.5pt; padding: 1.5mm; }
+    .cuadricula td { border: 0.4mm solid #1A202C; height: 13mm; }
+    .leyenda { width: 100%; margin-top: 3mm; font-size: 7.5pt; }
+    .leyenda td { vertical-align: top; width: 33%; }
+    .leyenda-titulo { font-size: 7pt; font-weight: bold; color: #4A5568; margin-top: 3mm; }
+    .pie { margin-top: 3mm; font-size: 6.5pt; color: #718096; text-align: center; }
+</style>
+
+<table class="cabecera"><tr>
+    <td style="width:40%;"><img class="logo" src="' . pdf_e($logoPdf) . '"></td>
+    <td style="width:60%;">
+        <div class="institucion">' . pdf_e($i['razon']) . '</div>
+        <div class="titulo">HOJA DE ENVÍO DE TRÁMITE</div>
+        <div class="expediente">' . pdf_e($t['doc_expediente'] ?: $t['documento_id']) . '</div>
+    </td>
+</tr></table>
+
+<table class="datos">
+    <tr>' . dato('Remitente', $t['remitente']) . dato('Código de seguimiento', $t['documento_id']) . dato('Registrado', pdf_fecha_corta($t['doc_fecharegistro'])) . '</tr>
+    <tr>' . dato('Área de origen', $t['origen']) . dato('Área de destino', $t['destino']) . dato('Tipo de documento', $t['tipo']) . '</tr>
+    <tr>' . dato('N° de documento', $t['doc_nrodocumento']) . dato('Folios', $t['doc_folio']) . dato('Acciones solicitadas', $t['acciones']) . '</tr>
+    <tr><td class="dato" colspan="3"><span class="rotulo">Asunto</span><br>' . pdf_e($t['doc_asunto']) . '</td></tr>
+    <tr><td class="dato" colspan="3"><span class="rotulo">Observaciones</span><br>' . (trim((string) $t['doc_observaciones']) === '' ? '—' : pdf_e($t['doc_observaciones'])) . '</td></tr>
+</table>
+
+<table class="cuadricula">
+    <thead><tr>
+        <th style="width:20%;">DESTINO</th>
+        <th style="width:11%;">ACCIONES</th>
+        <th style="width:11%;">FECHA</th>
+        <th style="width:21%;">RESPONSABLE</th>
+        <th style="width:15%;">FIRMA</th>
+        <th style="width:22%;">OBSERVACIONES</th>
+    </tr></thead>
+    <tbody>' . $filasCuadricula . '</tbody>
+</table>
+
+<div class="leyenda-titulo">ACCIONES (anote el número en la columna ACCIONES)</div>
+<table class="leyenda"><tr>
+    <td>' . $columnas[0] . '</td><td>' . $columnas[1] . '</td><td>' . $columnas[2] . '</td>
+</tr></table>
+
+<div class="pie">' . pdf_e($i['razon']) . ' · Emitido el ' . pdf_e(pdf_fecha_corta(date('Y-m-d H:i:s'))) . '</div>';
+
+$mpdf = new \Mpdf\Mpdf([
+    'mode' => 'utf-8',
+    'format' => [190, 245],
+    'margin_top' => 8,
+    'margin_bottom' => 8,
+    'margin_left' => 10,
+    'margin_right' => 10,
+]);
+$mpdf->SetTitle('Hoja de envío ' . ($t['doc_expediente'] ?: $t['documento_id']));
+$mpdf->SetAuthor($i['razon']);
+$mpdf->WriteHTML($html);
+$mpdf->Output('Hoja_envio_manual_' . $t['documento_id'] . '.pdf', 'I');
