@@ -143,3 +143,44 @@ function Cargar_Anexos(documentoId) {
       caja.innerHTML = marcoArchivos("", '<div class="archivos-aviso archivo-perdido">' + mensaje + "</div>");
     });
 }
+
+/**
+ * Columna ARCHIVO del historial de movimientos.
+ *
+ * Muestra el documento de ese envío y, al costado, un botón por cada anexo que
+ * viajó con él (el nombre aparece al pasar el mouse). Antes esta pintura estaba
+ * copiada en 11 archivos y armaba un enlace a "../null" cuando la copia no tenía
+ * archivo; ahora vive aquí.
+ */
+function Render_Archivos_Movimiento(data, type, row) {
+  if (type !== "display") return data || "";
+
+  var html = '<div class="archivos-movimiento">';
+
+  if (data) {
+    html +=
+      '<a class="btn btn-sm btn-primary" href="../' + escaparTexto(data) + '" target="_blank" rel="noopener" ' +
+      'title="Ver documento"><i class="fas fa-file-download"></i></a>';
+  } else {
+    html +=
+      '<button class="btn btn-sm btn-secondary" disabled title="Sin documento">' +
+      '<i class="fa fa-file-pdf"></i></button>';
+  }
+
+  var lineas = row && row.anexos ? String(row.anexos).split("\n") : [];
+  var anexos = [];
+  for (var i = 0; i < lineas.length; i++) {
+    var partes = lineas[i].split("\t");
+    if (partes[0]) anexos.push({ ruta: partes[0], nombre: partes[1] || "Anexo" });
+  }
+
+  for (var j = 0; j < anexos.length; j++) {
+    html +=
+      '<a class="btn btn-sm btn-anexo" href="../' + escaparTexto(anexos[j].ruta) + '" target="_blank" rel="noopener" ' +
+      'title="Anexo: ' + escaparTexto(anexos[j].nombre) + '" aria-label="Anexo: ' + escaparTexto(anexos[j].nombre) + '">' +
+      '<i class="fas fa-paperclip"></i>' + (anexos.length > 1 ? '<span class="anexo-numero">' + (j + 1) + "</span>" : "") +
+      "</a>";
+  }
+
+  return html + "</div>";
+}

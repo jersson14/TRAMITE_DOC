@@ -53,7 +53,8 @@
     $ruta='controller/tramite/documentos/'.$nombrearchivo;
     $consulta = $MTR->Registrar_Tramite_Externo($dni,$nom,$apt,$apm,$cel,$ema,$dir,$vpresentacion,$ruc,$raz,$tip,$ndo,$asu,$ruta,$fol);
     if ($consulta) {
-        $MTR->Registrar_Anexos($consulta, $anexos, 'controller/tramite/documentos', 0);
+        $idsAnexos = $MTR->Registrar_Anexos($consulta, $anexos, 'controller/tramite/documentos', 0);
+        $MTR->Vincular_Anexos($consulta, $idsAnexos, 0);
         Seguridad::registrarIntento($clave, 3600);
 
         // URL base del sistema — ajusta si el dominio cambia

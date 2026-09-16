@@ -1044,6 +1044,41 @@ input[type="file"]:disabled::file-selector-button {
     background: #FCFDFE;
 }
 
+/* Historial de movimientos: documento + anexos al costado */
+.archivos-movimiento {
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+}
+
+.btn-anexo {
+    border: 1px solid #1E3A5F;
+    color: #1E3A5F;
+    background: #fff;
+}
+
+.btn-anexo:hover,
+.btn-anexo:focus {
+    background: #1E3A5F;
+    color: #fff;
+}
+
+.anexo-numero {
+    font-size: 0.68rem;
+    font-weight: 700;
+    margin-left: 2px;
+}
+
+/* En "Recibidos": el trámite llegó en copia, es solo para conocimiento */
+.badge-copia {
+    background: #EFF4F9;
+    color: #1E3A5F;
+    border: 1px solid #CBD5E0;
+    font-weight: 600;
+    padding: 0.35rem 0.6rem;
+}
+
 @media (max-width: 576px) {
     .archivo-item {
         flex-wrap: wrap;

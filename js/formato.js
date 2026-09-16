@@ -22,10 +22,18 @@ function formatoFechaHora(valor) {
  * Columna "N° Expediente": el código no debe partirse en dos líneas
  * ("EXP-2026-" arriba y "000006" abajo se lee como dos datos distintos).
  */
-function Render_Expediente(data, type) {
+function Render_Expediente(data, type, row) {
   if (type !== "display") return data || "";
-  if (!data) return '<span class="text-muted">—</span>';
-  return '<span style="white-space:nowrap;">' + escaparTextoFormato(data) + "</span>";
+  var html = data
+    ? '<span style="white-space:nowrap;">' + escaparTextoFormato(data) + "</span>"
+    : '<span class="text-muted">—</span>';
+  // En "Recibidos", un trámite que llegó en copia se marca aquí, a la vista:
+  // la columna de acciones se oculta en pantallas medianas.
+  if (row && row.es_copia == 1) {
+    html += '<span class="badge badge-copia d-block mt-1" title="Recibido en copia, solo para conocimiento">' +
+      '<i class="fas fa-copy"></i> Copia</span>';
+  }
+  return html;
 }
 
 function escaparTextoFormato(valor) {

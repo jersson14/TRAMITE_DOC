@@ -56,7 +56,9 @@
     $consulta = $MTR->Registrar_Tramite_ul($documentoFinal,$nom,$apt,$apm,$cel,$ema,$dir,$vpresentacion,$ruc,$raz,$arp,
     $ard,$tip,$ndo,$asu,$ruta,$fol,$idusu,$acc,$obs,$tre,$copias);
     if ($consulta) {
-        $MTR->Registrar_Anexos($consulta, $anexos, 'controller/tramite/documentos', $idusu);
+        // Trámite nuevo: todos sus movimientos (principal y copias) son de este envío.
+        $idsAnexos = $MTR->Registrar_Anexos($consulta, $anexos, 'controller/tramite/documentos', $idusu);
+        $MTR->Vincular_Anexos($consulta, $idsAnexos, 0);
         Bitacora::registrar(Bitacora::REGISTRO_TRAMITE, 'documento', $consulta,
             'asunto: ' . $asu . (count($anexos) ? ' · ' . count($anexos) . ' anexo(s)' : ''));
         echo $consulta;

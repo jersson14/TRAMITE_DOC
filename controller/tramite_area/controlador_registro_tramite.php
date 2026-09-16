@@ -1,5 +1,8 @@
 <?php
     require_once __DIR__ . '/../_guard.php';
+    // Faltaba: sin esto la llamada a Bitacora tumbaba la derivación con un error 500
+    // después de guardarla, y no llegaban los avisos a las áreas copiadas.
+    require_once __DIR__ . '/../../lib/Bitacora.php';
     require '../../model/model_tramite_area.php';
     require '../../model/model_tramite.php';
     require '../../utilitario/class_notificacion.php';
@@ -44,15 +47,20 @@
         Seguridad::responderError(422, $e->getMessage());
     }
 
+    // Los movimientos posteriores a este son los que crea esta derivación
+    // (la principal y sus copias); a ellos se vinculan los anexos.
+    $ultimoMovimiento = $MTR->Ultimo_Movimiento($iddo);
+
     // Registrar la derivación principal
     $consulta = $MTRA->Registrar_Deri($iddo,$orig,$dest,$desc,$idusu,$ruta,$tipo,$acc);
 
     if($consulta==1){
-        $MTR->Registrar_Anexos($iddo, $anexos, 'controller/tramite_area/documentos', $idusu);
+        $idsAnexos = $MTR->Registrar_Anexos($iddo, $anexos, 'controller/tramite_area/documentos', $idusu);
         // Registrar copias si existen
         foreach($copias as $area_copia){
             $MTRA->Registrar_Copia($iddo, $orig, $area_copia, $desc, $idusu, $ruta, $acc);
         }
+        $MTR->Vincular_Anexos($iddo, $idsAnexos, $ultimoMovimiento);
 
         // ✉️ NOTIFICACIÓN: la clase obtiene automáticamente nombres de área y de usuario
         $NTF->notificarDerivacion($dest, $orig, $idusu, $iddo, '', $desc, $tipo);

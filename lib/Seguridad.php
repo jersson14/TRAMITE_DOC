@@ -252,7 +252,9 @@ class Seguridad
                 }
                 $guardados[] = [
                     'nombre'   => $nombre,
-                    'original' => mb_substr(basename((string) $nombres[$i]), 0, 180),
+                    // Sin caracteres de control: el historial separa los anexos con
+                    // tabulador y salto de línea, y un nombre no debe poder romperlo.
+                    'original' => mb_substr(preg_replace('/[\x00-\x1F\x7F]/u', '', basename((string) $nombres[$i])), 0, 180),
                     'bytes'    => (int) $tamanos[$i],
                 ];
             }

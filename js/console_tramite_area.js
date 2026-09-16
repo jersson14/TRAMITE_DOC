@@ -74,6 +74,10 @@ function listar_tramite(){
       },
         {"data":"doc_estatus",
         render: function(data,type,row){
+                // Llegó en copia: es para conocimiento, esta área no decide sobre él.
+                if(row.es_copia == 1){
+                  return "<span class='badge badge-copia' title='Recibido en copia, solo para conocimiento'><i class='fas fa-copy'></i> Copia · para conocimiento</span>";
+                }
                 if(data=='PENDIENTE'){
                     return "</button>&nbsp;<button  title='Aceptar Documento' class='aceptar btn btn-success  btn-sm'><i class='fa fa-check'></i> Aceptar</button>&nbsp;<button  title='Rechazar Documento' class='rechazar btn btn-danger  btn-sm'><i class='fa fa-search'></i> Rechazar</button>&nbsp;<button hidden class='derivar btn btn-primary  btn-sm' title='Derivar Documento'><i class='fa fa-share-square'></i> Derivar</button>";
                 }else if (data=='ACEPTADO'){
@@ -331,13 +335,15 @@ $('#tabla_tramite').on('click','.aceptar',function(){
       confirmButtonText: 'Si, Aceptar'
     }).then((result) => {
       if (result.isConfirmed) {
-        Modificar_Estatus_Documento(parseInt(data.doc_nrodocumento),'ACEPTADO');
+        Modificar_Estatus_Documento(data.documento_id,'ACEPTADO', data.doc_expediente);
       }
     })
 
 })
 
-function Modificar_Estatus_Documento(id,estatus){
+// id = código del trámite. Antes se mandaba el Nº de documento del ciudadano,
+// que se repite entre trámites y hacía que aceptar uno aceptara varios.
+function Modificar_Estatus_Documento(id,estatus,etiqueta){
   let esta=estatus;
 
   if(esta==="ACEPTADO"){
@@ -352,7 +358,7 @@ function Modificar_Estatus_Documento(id,estatus){
     }
   }).done(function(resp){
     if(resp>0){
-        Swal.fire("Mensaje de Confirmación","Se "+esta+ " con exito El Documento Nº "+id,"success").then((value)=>{
+        Swal.fire("Mensaje de Confirmación","Se "+esta+ " con éxito el expediente Nº "+(etiqueta || id),"success").then((value)=>{
           tbl_tramite.ajax.reload();
         });
     }else{
@@ -721,15 +727,7 @@ function listar_seguimiento_tramite(id){
           }
         },
 
-        {"data":"mov_archivo",
-        render: function(data,type,row){
-          if(data==''){
-            return "<button class='btn btn-sm btn-secondary' disabled title='Sin archivo'><i class='fa fa-file-pdf'></i></button>";
-          }else{
-            return "<a class='btn btn-sm btn-primary' href='../"+data+"' target='_blank' title='Ver archivo'><i class='fas fa-file-download'></i></a>";
-          }
-              }   
-        },     
+        {"data":"mov_archivo", render: Render_Archivos_Movimiento},     
     ],
 
     "language":idioma_espanol,

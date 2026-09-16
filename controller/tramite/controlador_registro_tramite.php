@@ -59,7 +59,9 @@
     $consulta = $MTR->Registrar_Tramite($dni,$nom,$apt,$apm,$cel,$ema,$dir,$vpresentacion,$ruc,$raz,$arp,
     $ard,$tip,$ndo,$asu,$ruta,$fol,$idusu,$acc,$obs,$tre,$copias);
     if ($consulta) {
-        $MTR->Registrar_Anexos($consulta, $anexos, 'controller/tramite/documentos', $idusu);
+        // Trámite nuevo: todos sus movimientos (principal y copias) son de este envío.
+        $idsAnexos = $MTR->Registrar_Anexos($consulta, $anexos, 'controller/tramite/documentos', $idusu);
+        $MTR->Vincular_Anexos($consulta, $idsAnexos, 0);
         // ✉️ NOTIFICACIÓN: registra quién envió, de qué área viene ($arp), y a qué área llegó ($ard)
         $remitente_nombre = trim("$nom $apt $apm");
         $NTF->notificarRegistro($ard, $arp, $consulta, $tip, $asu, $remitente_nombre);

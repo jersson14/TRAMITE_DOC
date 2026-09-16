@@ -8,15 +8,16 @@
          * $anexos viene de Seguridad::guardarArchivos() y $rutaBase es la carpeta
          * relativa donde quedaron, por ejemplo controller/tramite/documentos/.
          */
+        /** Devuelve los anexo_id creados, para vincularlos después con cada envío. */
         public function Registrar_Anexos($documento_id, array $anexos, $rutaBase, $idusu){
             if(empty($documento_id) || empty($anexos)){
-                return 0;
+                return array();
             }
             $c = conexionBD::conexionPDO();
             $sql = "INSERT INTO documento_anexo (documento_id, anexo_nombre, anexo_ruta, anexo_bytes, usuario_id)
                     VALUES (?,?,?,?,?)";
             $query = $c->prepare($sql);
-            $guardados = 0;
+            $ids = array();
             foreach($anexos as $anexo){
                 $query->execute([
                     $documento_id,
@@ -25,9 +26,48 @@
                     $anexo['bytes'],
                     $idusu > 0 ? $idusu : null
                 ]);
-                $guardados++;
+                $ids[] = (int) $c->lastInsertId();
             }
-            return $guardados;
+            return $ids;
+        }
+
+        /** Último movimiento del trámite; sirve para saber cuáles crea un envío nuevo. */
+        public function Ultimo_Movimiento($documento_id){
+            $c = conexionBD::conexionPDO();
+            $query = $c->prepare("SELECT IFNULL(MAX(movimiento_id), 0) FROM movimiento WHERE documento_id = ?");
+            $query->execute([$documento_id]);
+            return (int) $query->fetchColumn();
+        }
+
+        /**
+         * Vincula los anexos con los movimientos que creó un envío: el principal y
+         * sus copias, que son los posteriores a $desdeMovimiento. Así el historial
+         * muestra cada anexo junto al documento con el que viajó.
+         */
+        public function Vincular_Anexos($documento_id, array $anexoIds, $desdeMovimiento){
+            if(empty($anexoIds)){
+                return 0;
+            }
+            $c = conexionBD::conexionPDO();
+            $marcas = implode(',', array_fill(0, count($anexoIds), '?'));
+            $sql = "INSERT IGNORE INTO movimiento_anexo (movimiento_id, anexo_id)
+                    SELECT m.movimiento_id, a.anexo_id
+                      FROM movimiento m
+                      INNER JOIN documento_anexo a ON a.documento_id = m.documento_id
+                     WHERE m.documento_id = ?
+                       AND m.movimiento_id > ?
+                       AND a.anexo_id IN ($marcas)";
+            $query = $c->prepare($sql);
+            $query->execute(array_merge([$documento_id, (int) $desdeMovimiento], array_map('intval', $anexoIds)));
+            return $query->rowCount();
+        }
+
+        /** Solo el área a la que va dirigido el trámite puede aceptarlo o rechazarlo. */
+        public function Es_Area_Destino($documento_id, $area_id){
+            $c = conexionBD::conexionPDO();
+            $query = $c->prepare("SELECT 1 FROM documento WHERE documento_id = ? AND area_destino = ? LIMIT 1");
+            $query->execute([$documento_id, $area_id]);
+            return (bool) $query->fetchColumn();
         }
 
         /** Documento principal del trámite (el archivo con que se registró). */
@@ -139,11 +179,12 @@
             if(!empty($copias) && is_array($copias)){
                 foreach($copias as $area_copia_id){
                     if(!empty($area_copia_id)){
-                        $sql_copia = "INSERT INTO movimiento (documento_id, area_origen_id, areadestino_id, mov_descripcion, mov_estatus, usuario_id, mov_acciones) 
-                                     VALUES (?, ?, ?, ?, 'PENDIENTE', ?, ?)";
+                        $sql_copia = "INSERT INTO movimiento (documento_id, area_origen_id, areadestino_id, mov_descripcion, mov_estatus, usuario_id, mov_acciones, mov_archivo)
+                                     VALUES (?, ?, ?, ?, 'PENDIENTE', ?, ?, ?)";
                         $query_copia = $c->prepare($sql_copia);
                         $descripcion_copia = "COPIA - " . $asu;
-                        $query_copia->execute([$documento_id, $arp, $area_copia_id, $descripcion_copia, $idusu, $acc]);
+                        // La copia lleva el mismo archivo: sin él, el área copiada no podía abrir el documento.
+                        $query_copia->execute([$documento_id, $arp, $area_copia_id, $descripcion_copia, $idusu, $acc, $ruta]);
                     }
                 }
             }
@@ -192,11 +233,12 @@
             if(!empty($copias) && is_array($copias)){
                 foreach($copias as $area_copia_id){
                     if(!empty($area_copia_id)){
-                        $sql_copia = "INSERT INTO movimiento (documento_id, area_origen_id, areadestino_id, mov_descripcion, mov_estatus, usuario_id, mov_acciones) 
-                                     VALUES (?, ?, ?, ?, 'PENDIENTE', ?, ?)";
+                        $sql_copia = "INSERT INTO movimiento (documento_id, area_origen_id, areadestino_id, mov_descripcion, mov_estatus, usuario_id, mov_acciones, mov_archivo)
+                                     VALUES (?, ?, ?, ?, 'PENDIENTE', ?, ?, ?)";
                         $query_copia = $c->prepare($sql_copia);
                         $descripcion_copia = "COPIA - " . $asu;
-                        $query_copia->execute([$documento_id, $arp, $area_copia_id, $descripcion_copia, $idusu, $acc]);
+                        // La copia lleva el mismo archivo: sin él, el área copiada no podía abrir el documento.
+                        $query_copia->execute([$documento_id, $arp, $area_copia_id, $descripcion_copia, $idusu, $acc, $ruta]);
                     }
                 }
             }

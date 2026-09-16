@@ -558,15 +558,7 @@ function listar_seguimiento_tramite(id){
             }
              
         },
-        {"data":"mov_archivo",
-        render: function(data,type,row){
-          if(data==''){
-            return "<button class='btn btn-danger btn-sm' disabled title='Ver archivo'><i class='fa fa-file-pdf'></i></button>";
-        }else{
-          return "<a class='btn btn-primary btn-sm' href='../"+data+"' target='_blank' title='Ver archivo'><i class='fas fa-file-download'></i></a>";
-        }
-            }   
-        },         
+        {"data":"mov_archivo", render: Render_Archivos_Movimiento},         
     ],
 
     "language":idioma_espanol,
