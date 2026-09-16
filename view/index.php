@@ -217,6 +217,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </a>
               </li>
               <li class="nav-item">
+                <a href="#" onclick="cargar_contenido('contenido_principal','bitacora/view_bitacora.php')" class="nav-link">
+                  <i class="nav-icon fas fa-clipboard-list"></i>
+                  <p>
+                    Bitácora
+                  </p>
+                </a>
+              </li>
+              <li class="nav-item">
                 <a href="#" onclick="cargar_contenido('contenido_principal','rastreo/view_rastreo_admin.php')" class="nav-link">
                   <i class="nav-icon fas fa-search"></i>
                   <p>
@@ -832,6 +840,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       }
     });
   </script>
+  <script src="../js/anexos.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_comunicados.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_empleado.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_tramite.js?rev=<?php echo time(); ?>"></script>

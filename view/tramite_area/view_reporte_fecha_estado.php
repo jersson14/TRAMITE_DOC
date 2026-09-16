@@ -216,7 +216,7 @@
                       <!-- N° Expediente y Folios -->
                       <div class="col-md-8 form-group">
                         <label class="font-weight-bold text-muted mb-2" style="font-size: 0.85rem;">
-                          <i class="fas fa-hashtag text-warning mr-2"></i>N° Expediente
+                          <i class="fas fa-hashtag text-warning mr-2"></i>N° Documento
                         </label>
                         <div class="input-group">
                           <div class="input-group-prepend">
@@ -369,6 +369,10 @@
             </div>
           </div>
         </div>
+      </div>
+      <div class="px-4 pb-3">
+        <label style="font-size:small; font-weight:600;"><i class="fas fa-paperclip"></i> Anexos del trámite</label>
+        <div id="lista_anexos"></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-gradient-danger btn-modern" data-dismiss="modal">

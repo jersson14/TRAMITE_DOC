@@ -214,7 +214,7 @@
                                 <select class="js-example-basic-single" id="select_tipo" style="width:100%; background-color:white" disabled></select>
                             </div>
                             <div class="col-4 form-group">
-                                <label for="" style="font-size:small;">N° Expediente</label>
+                                <label for="" style="font-size:small;">N° Documento</label>
                                 <input type="text" class="form-control" id="txt_ndocumento" readonly>
                             </div>
                             <div class="col-4 form-group">
@@ -321,6 +321,10 @@
             </div>
           </div>
         </div>
+      </div>
+      <div class="px-4 pb-3">
+        <label style="font-size:small; font-weight:600;"><i class="fas fa-paperclip"></i> Anexos del trámite</label>
+        <div id="lista_anexos"></div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-gradient-danger" data-dismiss="modal"><i class="fa fa-arrow-right-from-bracket"></i>Cerrar</button>

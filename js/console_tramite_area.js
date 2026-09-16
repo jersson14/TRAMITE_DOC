@@ -158,7 +158,10 @@ document.getElementById('txt_asunto').value=data.doc_asunto;
 document.getElementById('txt_observacion').value=data.doc_observaciones;
 document.getElementById('txt_tiempo_respuesta').value=data.dias_respuesta;
 document.getElementById('txt_acciones').value=data.acciones;
-document.getElementById('lb_titulo_datos').innerHTML="DATOS DEL EXPEDIENTE Nº: "+data.doc_nrodocumento;
+// El título ahora muestra el expediente oficial; si el listado aún no lo
+// trae, se cae al número de documento de siempre.
+document.getElementById('lb_titulo_datos').innerHTML = "DATOS DEL EXPEDIENTE Nº: " + (data.doc_expediente || data.doc_nrodocumento);
+if (typeof Cargar_Anexos === "function") { Cargar_Anexos(data.documento_id); }
 $("#select_area_p").select2().val(data.area_origen).trigger('change.select2');
 $("#select_area_d").select2().val(data.area_destino).trigger('change.select2');
 $("#select_tipo").select2().val(data.tipodocumento_id).trigger('change.select2');
