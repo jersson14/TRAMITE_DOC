@@ -2,7 +2,47 @@
     require_once 'model_conexion.php';
 
     class Modelo_Tramite extends conexionBD{
-        
+
+        /**
+         * Guarda los archivos adicionales de un trámite.
+         * $anexos viene de Seguridad::guardarArchivos() y $rutaBase es la carpeta
+         * relativa donde quedaron, por ejemplo controller/tramite/documentos/.
+         */
+        public function Registrar_Anexos($documento_id, array $anexos, $rutaBase, $idusu){
+            if(empty($documento_id) || empty($anexos)){
+                return 0;
+            }
+            $c = conexionBD::conexionPDO();
+            $sql = "INSERT INTO documento_anexo (documento_id, anexo_nombre, anexo_ruta, anexo_bytes, usuario_id)
+                    VALUES (?,?,?,?,?)";
+            $query = $c->prepare($sql);
+            $guardados = 0;
+            foreach($anexos as $anexo){
+                $query->execute([
+                    $documento_id,
+                    $anexo['original'],
+                    rtrim($rutaBase,'/').'/'.$anexo['nombre'],
+                    $anexo['bytes'],
+                    $idusu > 0 ? $idusu : null
+                ]);
+                $guardados++;
+            }
+            return $guardados;
+        }
+
+        public function Listar_Anexos($documento_id){
+            $c = conexionBD::conexionPDO();
+            $query = $c->prepare("CALL SP_LISTAR_ANEXOS(?)");
+            $query->execute([$documento_id]);
+            $resultado = $query->fetchAll(PDO::FETCH_ASSOC);
+            $query->closeCursor();
+            $arreglo = array();
+            foreach($resultado as $resp){
+                $arreglo["data"][]=$resp;
+            }
+            return $arreglo;
+        }
+
         public function Listar_Tramite(){
             $c = conexionBD::conexionPDO();
             $sql = "CALL SP_LISTAR_TRAMITE()";

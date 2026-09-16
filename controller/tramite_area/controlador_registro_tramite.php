@@ -1,8 +1,10 @@
 <?php
     require_once __DIR__ . '/../_guard.php';
     require '../../model/model_tramite_area.php';
+    require '../../model/model_tramite.php';
     require '../../utilitario/class_notificacion.php';
     $MTRA = new Modelo_TramiteArea();
+    $MTR  = new Modelo_Tramite(); // para los anexos del expediente
     $NTF  = new Notificacion();
 
     //DATOS DE DERIVACIÓN//
@@ -34,10 +36,19 @@
     }
     $ruta = $nombrearchivo ? 'controller/tramite_area/documentos/'.$nombrearchivo : '';
 
+    // Anexos de la derivación: se validan antes de mover el expediente.
+    try {
+        $anexos = Seguridad::guardarArchivos('anexos', __DIR__ . '/documentos', Seguridad::MIME_PDF, 20 * 1048576, 'ANX');
+    } catch (RuntimeException $e) {
+        Seguridad::borrarArchivoEn(__DIR__ . '/documentos', (string) $nombrearchivo);
+        Seguridad::responderError(422, $e->getMessage());
+    }
+
     // Registrar la derivación principal
     $consulta = $MTRA->Registrar_Deri($iddo,$orig,$dest,$desc,$idusu,$ruta,$tipo,$acc);
 
     if($consulta==1){
+        $MTR->Registrar_Anexos($iddo, $anexos, 'controller/tramite_area/documentos', $idusu);
         // Registrar copias si existen
         foreach($copias as $area_copia){
             $MTRA->Registrar_Copia($iddo, $orig, $area_copia, $desc, $idusu, $ruta, $acc);

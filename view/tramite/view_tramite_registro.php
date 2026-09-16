@@ -293,6 +293,12 @@
                             <div class="col-12 form-group">
                                 <label for="" style="font-size:small;">Adjuntar Documento(*):</label>
                                 <input class="form-control" type="file" id="txt_archivo" disabled><br>
+                                <div class="col-12 form-group">
+                                    <label for="" style="font-size:small;">Anexos (opcional):</label>
+                                    <input class="form-control" type="file" id="txt_anexos" accept=".pdf" multiple>
+                                    <small class="text-muted">Puede seleccionar varios PDF a la vez: hasta 10 archivos de 20 MB cada uno.
+                                    Use este campo para los recaudos (DNI, partida, planos); el documento principal va arriba.</small>
+                                </div>
                                 <label for="" style="font-size:16px;color:red">El documento debe estar en formato PDF y con un tamaño máximo de 30 MB.</label>
 
                             </div>

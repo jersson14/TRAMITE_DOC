@@ -190,6 +190,82 @@ class Seguridad
         return $nombre;
     }
 
+    /**
+     * Guarda varios archivos de un mismo campo (input con "multiple").
+     *
+     * Aplica archivo por archivo las mismas comprobaciones que guardarArchivo:
+     * tamaño y tipo real según su contenido, no según lo que declare el navegador.
+     * Si alguno falla se borran los ya guardados, para no dejar sueltos archivos
+     * de un trámite que al final no se registró.
+     *
+     * Devuelve una lista de ['nombre' => guardado, 'original' => nombre del
+     * usuario, 'bytes' => tamaño].
+     */
+    public static function guardarArchivos(string $campo, string $directorio, array $mimes, int $maxBytes, string $prefijo, int $maximo = 10): array
+    {
+        if (empty($_FILES[$campo])) {
+            return [];
+        }
+        $entrada = $_FILES[$campo];
+
+        // Un input "multiple" llega como arreglos paralelos; uno simple, como valores sueltos.
+        $nombres = is_array($entrada['name']) ? $entrada['name'] : [$entrada['name']];
+        $temporales = is_array($entrada['tmp_name']) ? $entrada['tmp_name'] : [$entrada['tmp_name']];
+        $errores = is_array($entrada['error']) ? $entrada['error'] : [$entrada['error']];
+        $tamanos = is_array($entrada['size']) ? $entrada['size'] : [$entrada['size']];
+
+        $reales = 0;
+        foreach ($errores as $error) {
+            if ($error !== UPLOAD_ERR_NO_FILE) {
+                $reales++;
+            }
+        }
+        if ($reales === 0) {
+            return [];
+        }
+        if ($reales > $maximo) {
+            throw new RuntimeException('Se permiten como máximo ' . $maximo . ' archivos por trámite.');
+        }
+
+        $guardados = [];
+        try {
+            foreach ($temporales as $i => $temporal) {
+                if (($errores[$i] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+                    continue;
+                }
+                if ($errores[$i] !== UPLOAD_ERR_OK || !is_uploaded_file($temporal)) {
+                    throw new RuntimeException('No se pudo recibir el archivo "' . basename((string) $nombres[$i]) . '".');
+                }
+                if ($tamanos[$i] > $maxBytes) {
+                    throw new RuntimeException('El archivo "' . basename((string) $nombres[$i]) . '" supera los ' . round($maxBytes / 1048576) . ' MB.');
+                }
+                $mime = (new finfo(FILEINFO_MIME_TYPE))->file($temporal);
+                if (!isset($mimes[$mime])) {
+                    throw new RuntimeException('El archivo "' . basename((string) $nombres[$i]) . '" no es de un tipo permitido.');
+                }
+                if (!is_dir($directorio)) {
+                    mkdir($directorio, 0775, true);
+                }
+                $nombre = $prefijo . date('YmdHis') . '-' . bin2hex(random_bytes(4)) . '.' . $mimes[$mime];
+                if (!move_uploaded_file($temporal, rtrim($directorio, '/\\') . DIRECTORY_SEPARATOR . $nombre)) {
+                    throw new RuntimeException('No se pudo guardar el archivo "' . basename((string) $nombres[$i]) . '".');
+                }
+                $guardados[] = [
+                    'nombre'   => $nombre,
+                    'original' => mb_substr(basename((string) $nombres[$i]), 0, 180),
+                    'bytes'    => (int) $tamanos[$i],
+                ];
+            }
+        } catch (RuntimeException $e) {
+            foreach ($guardados as $hecho) {
+                self::borrarArchivoEn($directorio, $hecho['nombre']);
+            }
+            throw $e;
+        }
+
+        return $guardados;
+    }
+
     /** Borra un archivo solo si está dentro del directorio indicado (evita rutas manipuladas). */
     public static function borrarArchivoEn(string $directorio, string $rutaRelativa, array $protegidos = []): void
     {

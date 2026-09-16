@@ -42,9 +42,18 @@
         Seguridad::responderError(422, 'Adjunte el documento en formato PDF.');
     }
 
+    // Anexos del ciudadano (recaudos). Se validan antes de registrar.
+    try {
+        $anexos = Seguridad::guardarArchivos('anexos', __DIR__ . '/documentos', Seguridad::MIME_PDF, 20 * 1048576, 'ANX');
+    } catch (RuntimeException $e) {
+        Seguridad::borrarArchivoEn(__DIR__ . '/documentos', (string) $nombrearchivo);
+        Seguridad::responderError(422, $e->getMessage());
+    }
+
     $ruta='controller/tramite/documentos/'.$nombrearchivo;
     $consulta = $MTR->Registrar_Tramite_Externo($dni,$nom,$apt,$apm,$cel,$ema,$dir,$vpresentacion,$ruc,$raz,$tip,$ndo,$asu,$ruta,$fol);
     if ($consulta) {
+        $MTR->Registrar_Anexos($consulta, $anexos, 'controller/tramite/documentos', 0);
         Seguridad::registrarIntento($clave, 3600);
 
         // URL base del sistema — ajusta si el dominio cambia

@@ -247,6 +247,13 @@ function Registrar_Derivacion(){
   formData.append("idusu",idusu);
   formData.append("nombrearchivo",nombrearchivo);
   formData.append("achivoobj",achivoobj);
+  // Anexos opcionales: archivos adicionales al documento principal
+  if($("#txt_anexos").length && $("#txt_anexos")[0].files.length){
+    var listaAnexos = $("#txt_anexos")[0].files;
+    for(var iAnexo=0; iAnexo<listaAnexos.length; iAnexo++){
+      formData.append("anexos[]", listaAnexos[iAnexo]);
+    }
+  }
   formData.append("tipo",tipo);
   formData.append("acc",acc);
   formData.append("copias",JSON.stringify(copias)); // Enviar copias como JSON
@@ -518,6 +525,13 @@ function Registrar_Tramite(){
     formData.append("nombrearchivo",nombrearchivo);
     formData.append("fol",fol);
     formData.append("achivoobj",achivoobj);
+    // Anexos opcionales: archivos adicionales al documento principal
+    if($("#txt_anexos").length && $("#txt_anexos")[0].files.length){
+      var listaAnexos = $("#txt_anexos")[0].files;
+      for(var iAnexo=0; iAnexo<listaAnexos.length; iAnexo++){
+        formData.append("anexos[]", listaAnexos[iAnexo]);
+      }
+    }
     formData.append("idusu",idusu);
     formData.append("acc",acc);
     formData.append("obs",obs);

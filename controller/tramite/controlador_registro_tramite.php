@@ -46,10 +46,20 @@
         Seguridad::responderError(422, $e->getMessage());
     }
 
+    // Los anexos se validan y guardan antes de registrar: si uno no sirve, se
+    // avisa sin haber creado el trámite a medias.
+    try {
+        $anexos = Seguridad::guardarArchivos('anexos', __DIR__ . '/documentos', Seguridad::MIME_PDF, 20 * 1048576, 'ANX');
+    } catch (RuntimeException $e) {
+        Seguridad::borrarArchivoEn(__DIR__ . '/documentos', (string) $nombrearchivo);
+        Seguridad::responderError(422, $e->getMessage());
+    }
+
     $ruta='controller/tramite/documentos/'.$nombrearchivo;
     $consulta = $MTR->Registrar_Tramite($dni,$nom,$apt,$apm,$cel,$ema,$dir,$vpresentacion,$ruc,$raz,$arp,
     $ard,$tip,$ndo,$asu,$ruta,$fol,$idusu,$acc,$obs,$tre,$copias);
     if ($consulta) {
+        $MTR->Registrar_Anexos($consulta, $anexos, 'controller/tramite/documentos', $idusu);
         // ✉️ NOTIFICACIÓN: registra quién envió, de qué área viene ($arp), y a qué área llegó ($ard)
         $remitente_nombre = trim("$nom $apt $apm");
         $NTF->notificarRegistro($ard, $arp, $consulta, $tip, $asu, $remitente_nombre);
