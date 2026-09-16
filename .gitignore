@@ -15,3 +15,10 @@ storage/*
 
 # Entorno
 .env
+# Documentos subidos por funcionarios y ciudadanos: llevan DNI y datos
+# personales, no deben entrar al repositorio. (Los que ya estaban versionados
+# siguen rastreados hasta que se decida quitarlos con git rm --cached.)
+controller/tramite/documentos/*
+!controller/tramite/documentos/.htaccess
+controller/tramite_area/documentos/*
+!controller/tramite_area/documentos/.htaccess

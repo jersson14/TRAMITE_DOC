@@ -57,8 +57,9 @@ function listar_tramite(){
     }],
       "columns":[
         {"data":"documento_id"},
-        {"data":"doc_expediente"},
+        {"data":"doc_expediente", render: Render_Expediente},
         {"data":"doc_nrodocumento"},
+        {"data":"doc_fecharegistro", render: Render_Fecha_Registro},
         {"data":"tipodo_descripcion"},
         {"data":"doc_dniremitente"},
         {"data":"REMITENTE"},
@@ -193,8 +194,9 @@ function listar_tramite_buscar_area(){
     }],
       "columns":[
         {"data":"documento_id"},
-        {"data":"doc_expediente"},
+        {"data":"doc_expediente", render: Render_Expediente},
         {"data":"doc_nrodocumento"},
+        {"data":"doc_fecharegistro", render: Render_Fecha_Registro},
         {"data":"tipodo_descripcion"},
         {"data":"doc_dniremitente"},
         {"data":"REMITENTE"},

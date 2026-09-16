@@ -1,10 +1,9 @@
 /**
- * Anexos del trámite.
+ * Archivos del trámite: documento principal y anexos.
  *
- * Los formularios de datos del expediente muestran el documento principal; esta
- * función agrega debajo la lista de archivos adicionales. Si la vista no tiene
- * el contenedor #lista_anexos, no hace nada, así puede llamarse desde cualquier
- * pantalla sin romper las que todavía no lo muestran.
+ * Se muestran juntos en el modal "Datos del Expediente". Si la vista no tiene el
+ * contenedor #lista_anexos, la función no hace nada, así puede llamarse desde
+ * cualquier pantalla sin romper las que no lo muestran.
  */
 function escaparTexto(valor) {
   return String(valor === null || valor === undefined ? "" : valor)
@@ -17,9 +16,57 @@ function escaparTexto(valor) {
 
 function tamanoLegible(bytes) {
   var n = parseInt(bytes, 10) || 0;
+  if (n <= 0) return "";
   if (n < 1024) return n + " B";
-  if (n < 1048576) return (n / 1024).toFixed(0) + " KB";
-  return (n / 1048576).toFixed(1) + " MB";
+  if (n < 1048576) return Math.round(n / 1024) + " KB";
+  return (n / 1048576).toFixed(1).replace(".", ",") + " MB";
+}
+
+/** Una fila de archivo. `datos` = { titulo, etiqueta, principal, ruta, descarga, meta, existe } */
+function filaArchivo(datos) {
+  var clases = "archivo-item" + (datos.principal ? " es-principal" : "") + (datos.existe ? "" : " no-disponible");
+  var url = "../" + escaparTexto(datos.ruta);
+
+  var acciones = datos.existe
+    ? '<div class="archivo-acciones">' +
+        '<a class="btn btn-archivo" href="' + url + '" target="_blank" rel="noopener" title="Abrir en otra pestaña">' +
+          '<i class="fas fa-eye"></i> Ver</a>' +
+        '<a class="btn btn-archivo" href="' + url + '" download="' + escaparTexto(datos.descarga) + '" ' +
+          'title="Descargar" aria-label="Descargar ' + escaparTexto(datos.titulo) + '">' +
+          '<i class="fas fa-download"></i></a>' +
+      "</div>"
+    : "";
+
+  var meta = datos.existe
+    ? escaparTexto(datos.meta)
+    : '<span class="archivo-perdido"><i class="fas fa-exclamation-triangle"></i> ' +
+      "El archivo no se encuentra en el servidor</span>";
+
+  return (
+    '<div class="' + clases + '">' +
+      '<div class="archivo-icono"><i class="fas ' + (datos.principal ? "fa-file-alt" : "fa-paperclip") + '"></i></div>' +
+      '<div class="archivo-cuerpo">' +
+        '<div class="archivo-nombre" title="' + escaparTexto(datos.titulo) + '">' +
+          escaparTexto(datos.titulo) +
+          '<span class="archivo-etiqueta">' + escaparTexto(datos.etiqueta) + "</span>" +
+        "</div>" +
+        '<div class="archivo-meta">' + meta + "</div>" +
+      "</div>" +
+      acciones +
+    "</div>"
+  );
+}
+
+function marcoArchivos(contador, cuerpo) {
+  return (
+    '<div class="archivos-tramite">' +
+      '<div class="archivos-cabecera">' +
+        '<h6 class="archivos-titulo"><i class="fas fa-folder-open"></i> Archivos del trámite</h6>' +
+        (contador ? '<span class="archivos-contador">' + contador + "</span>" : "") +
+      "</div>" +
+      cuerpo +
+    "</div>"
+  );
 }
 
 function Cargar_Anexos(documentoId) {
@@ -31,42 +78,68 @@ function Cargar_Anexos(documentoId) {
     return;
   }
 
-  caja.innerHTML = '<small class="text-muted">Cargando anexos...</small>';
+  caja.innerHTML = marcoArchivos("", '<div class="archivos-aviso">Cargando archivos...</div>');
 
   $.ajax({
     url: "../controller/tramite/controlador_listar_anexos.php",
     type: "POST",
     data: { id: documentoId },
     dataType: "json",
+    // El aviso general de view/index.php ya muestra el mensaje de un 403;
+    // aquí solo se refleja dentro del recuadro.
   })
     .done(function (respuesta) {
-      var filas = (respuesta && respuesta.data) || [];
-      if (filas.length === 0) {
-        caja.innerHTML =
-          '<small class="text-muted"><i class="fas fa-paperclip"></i> Este trámite no tiene anexos.</small>';
-        return;
+      var principal = respuesta && respuesta.principal;
+      var anexos = (respuesta && respuesta.data) || [];
+      var filas = "";
+
+      if (principal) {
+        var metaPrincipal = ["Registrado el " + principal.fecha];
+        if (tamanoLegible(principal.bytes)) metaPrincipal.push(tamanoLegible(principal.bytes));
+        filas += filaArchivo({
+          titulo: "Documento principal",
+          etiqueta: "Principal",
+          principal: true,
+          ruta: principal.ruta,
+          descarga: (principal.expediente || documentoId) + ".pdf",
+          meta: metaPrincipal.join(" · "),
+          existe: principal.existe,
+        });
       }
 
-      var html =
-        '<div class="list-group">';
-      for (var i = 0; i < filas.length; i++) {
-        var a = filas[i];
-        html +=
-          '<a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" ' +
-          'href="../' + escaparTexto(a.anexo_ruta) + '" target="_blank" rel="noopener">' +
-          '<span><i class="fas fa-file-pdf text-danger mr-2"></i>' +
-          escaparTexto(a.anexo_nombre) +
-          '</span>' +
-          '<small class="text-muted">' +
-          tamanoLegible(a.anexo_bytes) +
-          (a.anexo_fecha_texto ? " &middot; " + escaparTexto(a.anexo_fecha_texto) : "") +
-          "</small></a>";
+      for (var i = 0; i < anexos.length; i++) {
+        var a = anexos[i];
+        var metaAnexo = [];
+        if (tamanoLegible(a.anexo_bytes)) metaAnexo.push(tamanoLegible(a.anexo_bytes));
+        var f = formatoFechaHora(a.anexo_fecha);
+        if (f) metaAnexo.push(f.fecha + " " + f.hora);
+        if (a.usu_usuario) metaAnexo.push("subido por " + a.usu_usuario);
+        filas += filaArchivo({
+          titulo: a.anexo_nombre,
+          etiqueta: "Anexo",
+          principal: false,
+          ruta: a.anexo_ruta,
+          descarga: a.anexo_nombre,
+          meta: metaAnexo.join(" · "),
+          existe: a.existe,
+        });
       }
-      html += "</div>";
-      caja.innerHTML = html;
+
+      var total = (principal ? 1 : 0) + anexos.length;
+      if (total === 0) {
+        caja.innerHTML = marcoArchivos("", '<div class="archivos-aviso">Este trámite no tiene archivos adjuntos.</div>');
+        return;
+      }
+      if (principal && anexos.length === 0) {
+        filas += '<div class="archivos-aviso archivos-aviso-fila">Sin anexos adicionales.</div>';
+      }
+
+      caja.innerHTML = marcoArchivos(total + (total === 1 ? " archivo" : " archivos"), filas);
     })
-    .fail(function () {
-      caja.innerHTML =
-        '<small class="text-danger">No se pudieron cargar los anexos.</small>';
+    .fail(function (xhr) {
+      var mensaje = xhr && xhr.status === 403
+        ? "No tiene acceso a los archivos de este trámite."
+        : "No se pudieron cargar los archivos.";
+      caja.innerHTML = marcoArchivos("", '<div class="archivos-aviso archivo-perdido">' + mensaje + "</div>");
     });
 }

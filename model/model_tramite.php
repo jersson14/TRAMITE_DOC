@@ -30,6 +30,34 @@
             return $guardados;
         }
 
+        /** Documento principal del trámite (el archivo con que se registró). */
+        public function Traer_Archivo_Principal($documento_id){
+            $c = conexionBD::conexionPDO();
+            $query = $c->prepare("SELECT doc_archivo, doc_expediente, doc_fecharegistro,
+                                         DATE_FORMAT(doc_fecharegistro, '%d/%m/%Y %H:%i') AS fecha_texto
+                                  FROM documento WHERE documento_id = ?");
+            $query->execute([$documento_id]);
+            $fila = $query->fetch(PDO::FETCH_ASSOC);
+            return $fila ? $fila : null;
+        }
+
+        /**
+         * Un usuario de área solo puede ver los archivos de trámites que pasaron
+         * por su área: los que originó, los que recibió o los que le derivaron.
+         */
+        public function Area_Puede_Ver($documento_id, $area_id){
+            $c = conexionBD::conexionPDO();
+            $query = $c->prepare("SELECT 1 FROM documento d
+                                  WHERE d.documento_id = ?
+                                    AND (d.area_origen = ? OR d.area_destino = ?
+                                         OR EXISTS (SELECT 1 FROM movimiento m
+                                                    WHERE m.documento_id = d.documento_id
+                                                      AND (m.area_origen_id = ? OR m.areadestino_id = ?)))
+                                  LIMIT 1");
+            $query->execute([$documento_id, $area_id, $area_id, $area_id, $area_id]);
+            return (bool) $query->fetchColumn();
+        }
+
         public function Listar_Anexos($documento_id){
             $c = conexionBD::conexionPDO();
             $query = $c->prepare("CALL SP_LISTAR_ANEXOS(?)");

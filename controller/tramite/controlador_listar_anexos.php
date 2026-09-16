@@ -2,16 +2,56 @@
     require_once __DIR__ . '/../_guard.php';
     require '../../model/model_tramite.php';
 
-    $MTR = new Modelo_Tramite();
-    $id = strtoupper(htmlspecialchars(trim((string) ($_POST['id'] ?? '')), ENT_QUOTES, 'UTF-8'));
-
     header('Content-Type: application/json; charset=utf-8');
+
+    $MTR = new Modelo_Tramite();
+    $id = strtoupper(trim((string) ($_POST['id'] ?? '')));
 
     // El código de seguimiento tiene un formato fijo; cualquier otra cosa no se consulta.
     if (!preg_match('/^[A-Z0-9\-]{1,12}$/', $id)) {
-        echo json_encode(['data' => []]);
+        echo json_encode(['principal' => null, 'data' => []]);
         exit;
     }
 
-    $resultado = $MTR->Listar_Anexos($id);
-    echo json_encode(empty($resultado) ? ['data' => []] : $resultado);
+    // Sin esta comprobación, cualquier usuario con sesión podía listar los archivos
+    // de un trámite ajeno con solo cambiar el código en la petición.
+    if (!Seguridad::esAdmin() && !$MTR->Area_Puede_Ver($id, Seguridad::areaId())) {
+        Seguridad::responderError(403, 'No tiene acceso a los archivos de este trámite.');
+    }
+
+    $raiz = realpath(__DIR__ . '/../..');
+
+    /** Comprueba en disco que el archivo siga existiendo y devuelve su tamaño. */
+    function estadoArchivo(string $raiz, $ruta): array
+    {
+        $ruta = (string) $ruta;
+        if ($ruta === '') {
+            return ['existe' => false, 'bytes' => 0];
+        }
+        $completa = realpath($raiz . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $ruta));
+        $valida = $completa && strpos($completa, $raiz . DIRECTORY_SEPARATOR) === 0 && is_file($completa);
+        return ['existe' => (bool) $valida, 'bytes' => $valida ? filesize($completa) : 0];
+    }
+
+    $principal = null;
+    $documento = $MTR->Traer_Archivo_Principal($id);
+    if ($documento && $documento['doc_archivo'] !== '') {
+        $estado = estadoArchivo($raiz, $documento['doc_archivo']);
+        $principal = [
+            'ruta'       => $documento['doc_archivo'],
+            'expediente' => $documento['doc_expediente'],
+            'fecha'      => $documento['fecha_texto'],
+            'existe'     => $estado['existe'],
+            'bytes'      => $estado['bytes'],
+        ];
+    }
+
+    $anexos = $MTR->Listar_Anexos($id);
+    $filas = $anexos['data'] ?? [];
+    foreach ($filas as &$fila) {
+        $estado = estadoArchivo($raiz, $fila['anexo_ruta']);
+        $fila['existe'] = $estado['existe'];
+    }
+    unset($fila);
+
+    echo json_encode(['principal' => $principal, 'data' => $filas]);

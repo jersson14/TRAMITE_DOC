@@ -323,7 +323,6 @@
         </div>
       </div>
       <div class="px-4 pb-3">
-        <label style="font-size:small; font-weight:600;"><i class="fas fa-paperclip"></i> Anexos del trámite</label>
         <div id="lista_anexos"></div>
       </div>
       <div class="modal-footer">

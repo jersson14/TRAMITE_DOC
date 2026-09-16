@@ -59,6 +59,7 @@
                                 <th style="text-align:center">Nro.</th>
                                 <th style="text-align:center">N° Expediente</th>
                                 <th style="text-align:center">N° Documento</th>
+                                <th style="text-align:center">Fecha de Registro</th>
                                 <th style="text-align:center">Tipo Documento</th>
                                 <th style="text-align:center">DNI Remit.</th>
                                 <th style="text-align:center">Remitente</th>
@@ -311,7 +312,6 @@
         </div>
       </div>
       <div class="px-4 pb-3">
-        <label style="font-size:small; font-weight:600;"><i class="fas fa-paperclip"></i> Anexos del trámite</label>
         <div id="lista_anexos"></div>
       </div>
       <div class="modal-footer">

@@ -834,12 +834,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
         window.location.href = '../index.php';
         return;
       }
-      if ([403, 422, 429].indexOf(xhr.status) !== -1) {
-        var mensaje = (xhr.responseJSON && xhr.responseJSON.mensaje) || 'No se pudo completar la operación.';
+      if ([403, 419, 422, 429].indexOf(xhr.status) !== -1) {
+        let mensaje = (xhr.responseJSON && xhr.responseJSON.mensaje) || 'No se pudo completar la operación.';
         Swal.fire('Atención', mensaje, 'warning');
       }
     });
   </script>
+  <script src="../js/formato.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/anexos.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_comunicados.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_empleado.js?rev=<?php echo time(); ?>"></script>
@@ -850,7 +851,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <script src="../utilitario/DataTables/datatables.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-  <script src="../js/console_usuario.js?rev=<?php echo time(); ?>"></script>
 
 </body>
 
