@@ -1,7 +1,9 @@
 <?php
-  session_start();
-  if(isset($_SESSION['S_ID'])){
+  require_once __DIR__ . '/lib/Seguridad.php';
+  Seguridad::iniciarSesion();
+  if (Seguridad::autenticado()) {
     header('Location: view/index.php');
+    exit;
   }
 ?>
 <!DOCTYPE html>
@@ -32,7 +34,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1E3A5F;
             position: relative;
             overflow: hidden;
         }
@@ -83,7 +85,7 @@
         
         /* Left Side - Branding */
         .login-brand {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1E3A5F;
             padding: 3rem;
             display: flex;
             flex-direction: column;
@@ -175,7 +177,7 @@
             width: 40px;
             height: 40px;
             background: white;
-            color: #667eea;
+            color: #1E3A5F;
             border-radius: 10px;
             display: flex;
             align-items: center;
@@ -250,13 +252,13 @@
         
         .form-control-custom:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #1E3A5F;
             background: white;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 4px rgba(30, 58, 95, 0.1);
         }
         
         .form-control-custom:focus + .input-icon {
-            color: #667eea;
+            color: #1E3A5F;
         }
         
         .toggle-password {
@@ -270,7 +272,7 @@
         }
         
         .toggle-password:hover {
-            color: #667eea;
+            color: #1E3A5F;
         }
         
         .form-options {
@@ -290,7 +292,7 @@
             width: 18px;
             height: 18px;
             cursor: pointer;
-            accent-color: #667eea;
+            accent-color: #1E3A5F;
         }
         
         .remember-me label {
@@ -301,7 +303,7 @@
         }
         
         .forgot-password {
-            color: #667eea;
+            color: #1E3A5F;
             text-decoration: none;
             font-size: 0.9rem;
             font-weight: 600;
@@ -309,13 +311,13 @@
         }
         
         .forgot-password:hover {
-            color: #5568d3;
+            color: #16304E;
         }
         
         .btn-login {
             width: 100%;
             padding: 1.1rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1E3A5F;
             color: white;
             border: none;
             border-radius: 12px;
@@ -323,7 +325,7 @@
             font-size: 1.1rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(30, 58, 95, 0.4);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -332,7 +334,7 @@
         
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+            box-shadow: 0 6px 20px rgba(30, 58, 95, 0.5);
         }
         
         .btn-login:active {
@@ -384,9 +386,9 @@
         }
         
         .quick-link:hover {
-            border-color: #667eea;
+            border-color: #1E3A5F;
             background: white;
-            color: #667eea;
+            color: #1E3A5F;
             transform: translateX(5px);
         }
         
@@ -521,11 +523,11 @@
             
             <div class="quick-links">
                 <a href="seguimiento.php" class="quick-link">
-                    <i class="fas fa-search" style="color: #10b981;"></i>
+                    <i class="fas fa-search" style="color: #15803D;"></i>
                     <span>Rastrear Trámite</span>
                 </a>
                 <a href="registrar.php" class="quick-link">
-                    <i class="fas fa-file-signature" style="color: #667eea;"></i>
+                    <i class="fas fa-file-signature" style="color: #1E3A5F;"></i>
                     <span>Registrar Nuevo Trámite</span>
                 </a>
             </div>
@@ -556,15 +558,14 @@
         const usuarioInput = document.getElementById('txt_usuario');
         const passInput = document.getElementById('txt_contra');
         
-        if(localStorage.checkbox && localStorage.checkbox != "") {
-            rmcheck.setAttribute("checked", "checked");
-            usuarioInput.value = localStorage.usuario;
-            passInput.value = localStorage.pass;
-        } else {
-            rmcheck.removeAttribute("checked");
-            usuarioInput.value = "";
-            passInput.value = "";
-        }
+        // Solo se recuerda el usuario; se elimina cualquier contraseña guardada por versiones anteriores
+        try {
+            localStorage.removeItem('pass');
+            if(localStorage.checkbox && localStorage.checkbox != "") {
+                rmcheck.setAttribute("checked", "checked");
+                usuarioInput.value = localStorage.usuario || "";
+            }
+        } catch (e) {}
 
         // Focus on username input
         txt_usuario.focus();

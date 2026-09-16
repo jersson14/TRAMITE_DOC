@@ -1,4 +1,5 @@
 <?php
+    require_once __DIR__ . '/../_guard_admin.php';
     // Archivo temporal para depurar la respuesta del controlador
     require '../../model/model_tramite_area.php';
     

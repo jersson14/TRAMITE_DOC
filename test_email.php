@@ -44,7 +44,7 @@ try {
     $mail->AltBody = 'La configuración SMTP funciona correctamente.';
 
     $mail->send();
-    echo '<div style="font-family:sans-serif;max-width:500px;margin:50px auto;padding:30px;background:#e8f5e9;border-radius:10px;border-left:5px solid #27ae60">';
+    echo '<div style="font-family:sans-serif;max-width:500px;margin:50px auto;padding:30px;background:#e8f5e9;border-radius:10px;border-left:5px solid #15803D">';
     echo '  <h2 style="color:#1e7e34;margin:0 0 10px">✅ ¡Correo enviado correctamente!</h2>';
     echo '  <p style="margin:0">Se envió un correo de prueba a: <strong>' . htmlspecialchars($correo_prueba) . '</strong></p>';
     echo '</div>';

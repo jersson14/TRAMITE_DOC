@@ -1,27 +1,24 @@
 <?php
 /**
  * Conexión a base de datos - EJEMPLO
- * Copia este archivo como model_conexion.php y ajusta
- * los datos a tu entorno local. Ese archivo NO se sube
- * al repositorio (ver .gitignore).
+ * Copia este archivo como model_conexion.php. Los parámetros se leen de
+ * config/database.php (copia de config/database.example.php).
  */
 class conexionBD {
     private $pdo;
 
     public function conexionPDO() {
-        $host = "localhost";
-        $puerto = "3306";
-        $usuario = "root";
-        $contrasena = "";
-        $bdName = "sistema_tramite";
+        $bd = require __DIR__ . '/../config/database.php';
 
         try {
-            $this->pdo = new PDO("mysql:host=$host;port=$puerto;dbname=$bdName", $usuario, $contrasena);
+            $this->pdo = new PDO("mysql:host={$bd['host']};port={$bd['puerto']};dbname={$bd['nombre']}", $bd['usuario'], $bd['clave']);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->pdo->exec("set names utf8");
             return $this->pdo;
         } catch (PDOException $e) {
-            die('Falló la conexión: ' . $e->getMessage());
+            error_log('[BD] ' . $e->getMessage());
+            http_response_code(500);
+            die('No se pudo conectar con la base de datos.');
         }
     }
 

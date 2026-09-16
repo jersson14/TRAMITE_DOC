@@ -1,4 +1,5 @@
 <?php
+    require_once __DIR__ . '/../_guard_admin.php';
     require '../../model/model_tipo_documento.php';
     $MTD = new Modelo_Tipo_Documento();
     $id = strtoupper(htmlspecialchars($_POST['id'],ENT_QUOTES,'UTF-8'));

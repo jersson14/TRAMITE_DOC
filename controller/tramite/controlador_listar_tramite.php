@@ -1,4 +1,5 @@
 <?php
+    require_once __DIR__ . '/../_guard_admin.php';
     require '../../model/model_tramite.php';
     $MTRA = new Modelo_Tramite();//Instaciamos
     $consulta = $MTRA->Listar_Tramite();

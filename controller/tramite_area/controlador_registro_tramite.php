@@ -1,4 +1,5 @@
 <?php
+    require_once __DIR__ . '/../_guard.php';
     require '../../model/model_tramite_area.php';
     require '../../utilitario/class_notificacion.php';
     $MTRA = new Modelo_TramiteArea();
@@ -9,11 +10,10 @@
     $orig = strtoupper(htmlspecialchars($_POST['orig'],ENT_QUOTES,'UTF-8'));
     $dest = strtoupper(htmlspecialchars($_POST['dest'],ENT_QUOTES,'UTF-8'));
     $desc = strtoupper(htmlspecialchars($_POST['desc'],ENT_QUOTES,'UTF-8'));
-    $idusu = strtoupper(htmlspecialchars($_POST['idusu'],ENT_QUOTES,'UTF-8'));
+    $idusu = Seguridad::usuarioId();
     $tipo = strtoupper(htmlspecialchars($_POST['tipo'],ENT_QUOTES,'UTF-8'));
     $acc = strtoupper(htmlspecialchars($_POST['acc'],ENT_QUOTES,'UTF-8'));
-    $nombrearchivo = strtoupper(htmlspecialchars($_POST['nombrearchivo'],ENT_QUOTES,'UTF-8'));
-    
+
     // Datos extra para el correo (opcionales, se envían si el JS los incluye)
     $asunto_doc   = isset($_POST['asunto'])   ? htmlspecialchars($_POST['asunto'],ENT_QUOTES,'UTF-8')   : '';
     $tipo_doc_txt = isset($_POST['tipo_doc']) ? htmlspecialchars($_POST['tipo_doc'],ENT_QUOTES,'UTF-8') : '';
@@ -22,37 +22,35 @@
 
     // Recibir copias
     $copias = isset($_POST['copias']) ? json_decode($_POST['copias'], true) : [];
-    
-    if($nombrearchivo!=""){
-        $ruta='controller/tramite_area/documentos/'.$nombrearchivo;
-    }else{
-        $ruta='';
+    if(!is_array($copias)){
+        $copias = [];
     }
-    
+
+    // El nombre y el tipo del archivo los determina el servidor, no el navegador
+    try {
+        $nombrearchivo = Seguridad::guardarArchivo('achivoobj', __DIR__ . '/documentos', Seguridad::MIME_PDF, 20 * 1048576, 'ARCH');
+    } catch (RuntimeException $e) {
+        Seguridad::responderError(422, $e->getMessage());
+    }
+    $ruta = $nombrearchivo ? 'controller/tramite_area/documentos/'.$nombrearchivo : '';
+
     // Registrar la derivación principal
     $consulta = $MTRA->Registrar_Deri($iddo,$orig,$dest,$desc,$idusu,$ruta,$tipo,$acc);
-    
+
     if($consulta==1){
-        // Subir archivo si existe
-        if($nombrearchivo!=""){
-            if(move_uploaded_file($_FILES['achivoobj']['tmp_name'],"documentos/".$nombrearchivo));
-        }
-        
         // Registrar copias si existen
-        if(!empty($copias)){
-            foreach($copias as $area_copia){
-                $MTRA->Registrar_Copia($iddo, $orig, $area_copia, $desc, $idusu, $ruta, $acc);
-            }
+        foreach($copias as $area_copia){
+            $MTRA->Registrar_Copia($iddo, $orig, $area_copia, $desc, $idusu, $ruta, $acc);
         }
-        
+
         // ✉️ NOTIFICACIÓN: la clase obtiene automáticamente nombres de área y de usuario
         $NTF->notificarDerivacion($dest, $orig, $idusu, $iddo, '', $desc, $tipo);
-        
+        Bitacora::registrar(Bitacora::DERIVO_TRAMITE, 'documento', $iddo,
+            'del área ' . $orig . ' al área ' . $dest . (count($copias) ? ' (con ' . count($copias) . ' copia(s))' : ''));
+
         // ✉️ NOTIFICACIÓN a áreas que reciben copias
-        if(!empty($copias)){
-            foreach($copias as $area_copia){
-                $NTF->notificarDerivacion($area_copia, $orig, $idusu, $iddo, '', 'COPIA - ' . $desc, $tipo);
-            }
+        foreach($copias as $area_copia){
+            $NTF->notificarDerivacion($area_copia, $orig, $idusu, $iddo, '', 'COPIA - ' . $desc, $tipo);
         }
 
         echo $consulta;

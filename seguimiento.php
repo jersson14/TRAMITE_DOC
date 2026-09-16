@@ -19,12 +19,12 @@
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1E3A5F;
             min-height: 100vh;
         }
         
         .header-banner {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: #1E3A5F;
             padding: 2rem 0;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         }
@@ -59,7 +59,7 @@
         }
         
         .navbar-brand i {
-            color: #10b981;
+            color: #15803D;
             font-size: 1.5rem;
         }
         
@@ -74,7 +74,7 @@
         
         .nav-link:hover {
             background: #f7fafc;
-            color: #667eea !important;
+            color: #1E3A5F !important;
             transform: translateY(-2px);
         }
         
@@ -126,7 +126,7 @@
             padding: 1rem;
             background: #f7fafc;
             border-radius: 12px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #1E3A5F;
         }
         
         .search-card {
@@ -138,7 +138,7 @@
         }
         
         .card-header-search {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1E3A5F;
             color: white;
             padding: 1.8rem 2rem;
             display: flex;
@@ -181,7 +181,7 @@
         }
         
         .form-group-custom label i {
-            color: #667eea;
+            color: #1E3A5F;
         }
         
         .required {
@@ -214,13 +214,13 @@
         
         .form-control-custom:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #1E3A5F;
             background: white;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 4px rgba(30, 58, 95, 0.1);
         }
         
         .btn-search {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: #15803D;
             color: white;
             border: none;
             padding: 1.2rem 2rem;
@@ -229,7 +229,7 @@
             font-size: 1.1rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 4px 15px rgba(21, 128, 61, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -239,7 +239,7 @@
         
         .btn-search:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 6px 20px rgba(21, 128, 61, 0.4);
         }
         
         .btn-search:active {
@@ -276,7 +276,7 @@
         }
         
         .card-header-results {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: #1E3A5F;
             color: white;
             padding: 1.8rem 2rem;
             display: flex;
@@ -310,7 +310,7 @@
             top: 0;
             bottom: 0;
             width: 4px;
-            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            background: #1E3A5F;
         }
         
         .timeline-item {
@@ -324,25 +324,25 @@
             left: 0.75rem;
             width: 2.5rem;
             height: 2.5rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1E3A5F;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-size: 1.2rem;
-            box-shadow: 0 4px 10px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 10px rgba(30, 58, 95, 0.3);
         }
         
         .timeline-content {
             background: #f7fafc;
             padding: 1.5rem;
             border-radius: 12px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid #1E3A5F;
         }
         
         .timeline-date {
-            color: #667eea;
+            color: #1E3A5F;
             font-weight: 600;
             font-size: 0.9rem;
             margin-bottom: 0.5rem;
@@ -384,25 +384,25 @@
         }
         
         .btn-action.primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1E3A5F;
             color: white;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 15px rgba(30, 58, 95, 0.3);
         }
         
         .btn-action.primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(30, 58, 95, 0.4);
         }
         
         .btn-action.success {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: #15803D;
             color: white;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 4px 15px rgba(21, 128, 61, 0.3);
         }
         
         .btn-action.success:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 6px 20px rgba(21, 128, 61, 0.4);
         }
         
         .footer {
@@ -431,7 +431,7 @@
             width: 60px;
             height: 60px;
             border: 4px solid #e2e8f0;
-            border-top-color: #667eea;
+            border-top-color: #1E3A5F;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 1rem;
@@ -716,7 +716,7 @@
                 <!-- Info Card -->
                 <div class="info-card">
                     <div class="info-text">
-                        <i class="fas fa-info-circle" style="color: #667eea; margin-right: 0.5rem;"></i>
+                        <i class="fas fa-info-circle" style="color: #1E3A5F; margin-right: 0.5rem;"></i>
                         La <strong>EMPRESA JMC ABANCAY SA</strong> pone a su disposición el <strong>Sistema de Seguimiento de Documentos</strong>, 
                         para realizar la búsqueda y rastreo de los diferentes documentos registrados en la plataforma. 
                         Debe ingresar correctamente el <strong>CÓDIGO DE SEGUIMIENTO</strong> y el <strong>DNI del remitente</strong> 
@@ -814,7 +814,7 @@
                 <p style="margin: 0;">
                     <strong>Copyright © 2025
                         <a href="" target="_blank" 
-                           style="color: #667eea; text-decoration: none;">
+                           style="color: #1E3A5F; text-decoration: none;">
                             JMC ABANCAY SA
 
                         </a>
@@ -906,7 +906,7 @@
                     
                     cadena += '<div class="timeline">';
                     cadena += '<div class="timeline-item">' +
-                              '<div class="timeline-icon" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">' +
+                              '<div class="timeline-icon" style="background: #B45309;">' +
                               '<i class="fas fa-calendar-alt"></i>' +
                               '</div>' +
                               '<div class="timeline-content">' +
@@ -921,7 +921,8 @@
                         "url": "controller/usuario/controlador_traer_seguimiento_detalle.php",
                         type: 'POST',
                         data: {
-                            codigo: data[0][0]
+                            codigo: data[0][0],
+                            dni: dni
                         }
                     }).done(function(resp) {
                         let datadetalle = JSON.parse(resp);
@@ -940,32 +941,32 @@
                                 
                                                                 if(datadetalle[i][8] == "DERIVADO") {
                                     iconClass = "fas fa-share";
-                                    gradientColor = "background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);";
-                                    statusColor = "#667eea";
+                                    gradientColor = "background: #1E3A5F;";
+                                    statusColor = "#1E3A5F";
                                     actionText = "DERIVADO";
                                     statusText = "El documento fue derivado";
                                 } else if(datadetalle[i][8] == "RECHAZADO") {
                                     iconClass = "fas fa-times-circle";
-                                    gradientColor = "background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);";
-                                    statusColor = "#f5576c";
+                                    gradientColor = "background: #B45309;";
+                                    statusColor = "#B45309";
                                     actionText = "RECHAZADO";
                                     statusText = "El documento fue rechazado";
                                 } else if(datadetalle[i][8] == "FINALIZADO") {
                                     iconClass = "fas fa-check-circle";
-                                    gradientColor = "background: linear-gradient(135deg, #10b981 0%, #059669 100%);";
-                                    statusColor = "#10b981";
+                                    gradientColor = "background: #15803D;";
+                                    statusColor = "#15803D";
                                     actionText = "FINALIZADO";
                                     statusText = "El documento fue finalizado";
                                 } else if(datadetalle[i][8] == "ACEPTADO") {
                                     iconClass = "fas fa-check";
-                                    gradientColor = "background: linear-gradient(135deg, #10b981 0%, #059669 100%);";
-                                    statusColor = "#10b981";
+                                    gradientColor = "background: #15803D;";
+                                    statusColor = "#15803D";
                                     actionText = "ACEPTADO";
                                     statusText = "El documento fue aceptado";
                                 } else {
                                     iconClass = "fas fa-clock";
-                                    gradientColor = "background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);";
-                                    statusColor = "#f59e0b";
+                                    gradientColor = "background: #B45309;";
+                                    statusColor = "#B45309";
                                     actionText = datadetalle[i][8];
                                     statusText = "El documento está pendiente";
                                 }
@@ -985,11 +986,11 @@
                                           '</div>' +
                                           '<div class="timeline-description">' +
                                           '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">' +
-                                          '<div style="background: white; padding: 0.75rem; border-radius: 8px; border-left: 3px solid #3b82f6;">' +
+                                          '<div style="background: white; padding: 0.75rem; border-radius: 8px; border-left: 3px solid #2C5282;">' +
                                           '<div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;"><i class="fas fa-map-marker-alt"></i> ORIGEN</div>' +
                                           '<div style="font-weight: 600; color: #1f2937;">' + areaOrigen + '</div>' +
                                           '</div>' +
-                                          '<div style="background: white; padding: 0.75rem; border-radius: 8px; border-left: 3px solid #10b981;">' +
+                                          '<div style="background: white; padding: 0.75rem; border-radius: 8px; border-left: 3px solid #15803D;">' +
                                           '<div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;"><i class="fas fa-flag-checkered"></i> DESTINO</div>' +
                                           '<div style="font-weight: 600; color: #1f2937;">' + areaDestino + '</div>' +
                                           '</div>' +
@@ -1018,7 +1019,7 @@
                     icon: 'error',
                     title: 'Error',
                     text: 'No se pudo realizar la búsqueda. Intente nuevamente.',
-                    confirmButtonColor: '#667eea'
+                    confirmButtonColor: '#1E3A5F'
                 });
             });
         }
@@ -1031,11 +1032,11 @@
                     icon: 'warning',
                     title: 'Sin Código',
                     text: 'Primero debe realizar una búsqueda',
-                    confirmButtonColor: '#667eea'
+                    confirmButtonColor: '#1E3A5F'
                 });
                 return;
             }
-            window.open("view/MPDF/REPORTE/ticket_tramite.php?codigo=" + codigo + "#zoom=100%", 
+            window.open("view/MPDF/REPORTE/ticket_tramite.php?codigo=" + encodeURIComponent(codigo) + "&dni=" + encodeURIComponent($("#txt_dni").val()) + "#zoom=100%",
                        "Ticket", "scrollbars=NO,width=800,height=600");
         });
 
@@ -1047,11 +1048,11 @@
                     icon: 'warning',
                     title: 'Sin Código',
                     text: 'Primero debe realizar una búsqueda',
-                    confirmButtonColor: '#667eea'
+                    confirmButtonColor: '#1E3A5F'
                 });
                 return;
             }
-            window.open("view/MPDF/REPORTE/ficha_seguimiento_automatico.php?codigo=" + codigo + "#zoom=100%", 
+            window.open("view/MPDF/REPORTE/ficha_seguimiento_automatico.php?codigo=" + encodeURIComponent(codigo) + "&dni=" + encodeURIComponent($("#txt_dni").val()) + "#zoom=100%",
                        "Seguimiento", "scrollbars=NO,width=800,height=600");
         });
 

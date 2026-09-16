@@ -1,7 +1,9 @@
 <?php
-session_start();
-if (!isset($_SESSION['S_ID'])) {
+require_once __DIR__ . '/../lib/Seguridad.php';
+Seguridad::iniciarSesion();
+if (!Seguridad::autenticado()) {
   header('Location: ../index.php');
+  exit;
 }
 ?>
 <!DOCTYPE html>
@@ -15,6 +17,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SISTRAMITE DOC</title>
+  <meta name="csrf-token" content="<?php echo Seguridad::tokenCsrf(); ?>">
 
   <!-- Google Font: Source Sans Pro -->
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -413,7 +416,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <div class="row">
                       <div class="col-lg-3 col-6">
                         <!-- small box -->
-                        <div class="small-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                        <div class="small-box" style="background: #1E3A5F; color: white;">
                           <div class="inner">
                             <b>Total de empleados</b>
                             <h3 id="total_empleados"><sup style="font-size: 20px"></sup></h3>
@@ -428,7 +431,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                       <!-- ./col -->
                       <div class="col-lg-3 col-6">
                         <!-- small box -->
-                        <div class="small-box" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                        <div class="small-box" style="background: #B45309; color: white;">
                           <div class="inner">
                             <b>Nº De Documentos</b>
                             <h3 id="totaldocpendientes"><sup style="font-size: 20px"></sup></h3>
@@ -443,7 +446,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                       <!-- ./col -->
                       <div class="col-lg-3 col-6">
                         <!-- small box -->
-                        <div class="small-box" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                        <div class="small-box" style="background: #2C5282; color: white;">
                           <div class="inner">
 
                             <b>Nº De Documentos</b>
@@ -459,7 +462,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                       <!-- ./col -->
                       <div class="col-lg-3 col-6">
                         <!-- small box -->
-                        <div class="small-box" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white;">
+                        <div class="small-box" style="background: #15803D; color: white;">
                           <div class="inner">
                             <b>Nº De Documentos</b>
                             <h3 id="totaldocfinalizado"><sup style="font-size: 20px"></sup></h3>
@@ -815,6 +818,20 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <script src="../plantilla/plugins//bootstrap/js/bootstrap.bundle.min.js"></script>
   <!-- AdminLTE App -->
   <script src="../plantilla/dist/js/adminlte.min.js"></script>
+  <script>
+    // Todas las peticiones AJAX llevan el token CSRF; los errores de acceso se tratan en un solo lugar
+    $.ajaxSetup({ headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content } });
+    $(document).ajaxError(function (evento, xhr) {
+      if (xhr.status === 401) {
+        window.location.href = '../index.php';
+        return;
+      }
+      if ([403, 422, 429].indexOf(xhr.status) !== -1) {
+        var mensaje = (xhr.responseJSON && xhr.responseJSON.mensaje) || 'No se pudo completar la operación.';
+        Swal.fire('Atención', mensaje, 'warning');
+      }
+    });
+  </script>
   <script src="../js/console_comunicados.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_empleado.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_tramite.js?rev=<?php echo time(); ?>"></script>

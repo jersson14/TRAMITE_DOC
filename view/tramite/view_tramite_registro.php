@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/../../lib/Seguridad.php'; Seguridad::requiereVista([Seguridad::ROL_ADMIN]); ?>
 <script src="../js/console_tramite.js?rev=<?php echo time();?>"></script>
 <link rel="stylesheet" href="../plantilla/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
 <link rel="stylesheet" href="../plantilla/dist/css/modern-admin-theme.css">
@@ -253,7 +254,7 @@
                                 <textarea style="color:red" class="form-control" id="txt_requisitos" readonly rows="2" style="resize:none"></textarea>
                             </div>
                             <div class="col-4 form-group">
-                                <label for="" style="font-size:small;">N° Expediente(*):</label>
+                                <label for="" style="font-size:small;">N° Documento(*):</label>
                                 <input type="text" class="form-control" id="txt_ndocumento" onkeypress="return soloNumeros(event)">
                             </div>
                              <div class="col-4 form-group">

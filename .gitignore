@@ -1,10 +1,17 @@
 sistema_tramite.sql
 *.sql
+# Las migraciones de estructura sí se versionan (no contienen datos)
+!database/migraciones/*.sql
 
 # Archivos de configuración con credenciales reales
 config/config_email.php
 config/gemini_config.php
 model/model_conexion.php
+config/database.php
+
+# Datos de ejecución (límite de intentos, temporales)
+storage/*
+!storage/.htaccess
 
 # Entorno
 .env

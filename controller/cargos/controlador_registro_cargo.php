@@ -1,4 +1,5 @@
 <?php
+    require_once __DIR__ . '/../_guard_admin.php';
     require '../../model/model_cargo.php';
     $MCA = new Modelo_Cargo();//Instaciamos
     $area = strtoupper(htmlspecialchars($_POST['area'],ENT_QUOTES,'UTF-8'));

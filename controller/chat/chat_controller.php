@@ -4,7 +4,11 @@
  * Simula respuestas para probar la funcionalidad
  */
 
-session_start();
+require_once __DIR__ . '/../../lib/Seguridad.php';
+Seguridad::iniciarSesion();
+if (Seguridad::autenticado()) {
+    Seguridad::verificarCsrf();
+}
 
 require_once __DIR__ . '/../../model/model_chat.php';
 

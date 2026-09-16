@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/../../lib/Seguridad.php'; Seguridad::requiereVista(); ?>
 <script src="../js/console_tramite_area.js?rev=<?php echo time();?>"></script>
 <link rel="stylesheet" href="../plantilla/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
 <link rel="stylesheet" href="../plantilla/dist/css/modern-admin-theme.css">
@@ -37,15 +38,15 @@
                 <label for="" style="color:#000000">ALERTAS POR DÍAS TRANSCURRIDOS: </label> 
                 <label for="" style="color:#000000"> 1 día Negro</label>
                 <label for="" style="color:#000000"> | </label> 
-                <label for="" style="color:#008000"> 2 días Verde</label>  
+                <label for="" style="color:#15803D"> 2 días Verde</label>  
                 <label for="" style="color:#000000"> | </label> 
                 <label for="" style="color:#FFC300"> 3 - 4 días Amarillo</label>
                 <label for="" style="color:#000000"> | </label> 
-                <label for="" style="color:#FF0000"> 5 días a más Rojo</label><br>
+                <label for="" style="color:#B91C1C"> 5 días a más Rojo</label><br>
                 <label for="" style="color:#000000">ALERTAS POR DÍAS DE RESPUESTA: </label> 
-                <label for="" style="color:#008000"> Verde = Dentro de tiempo</label>
+                <label for="" style="color:#15803D"> Verde = Dentro de tiempo</label>
                 <label for="" style="color:#000000"> | </label> 
-                <label for="" style="color:#FF0000"> Rojo = Plazo a vencer o vencido</label>             
+                <label for="" style="color:#B91C1C"> Rojo = Plazo a vencer o vencido</label>             
                 </div>
                 
                 </div>
@@ -57,6 +58,7 @@
                             <tr>
                                 <th style="text-align:center">Nro.</th>
                                 <th style="text-align:center">N° Expediente</th>
+                                <th style="text-align:center">N° Documento</th>
                                 <th style="text-align:center">Tipo Documento</th>
                                 <th style="text-align:center">DNI Remit.</th>
                                 <th style="text-align:center">Remitente</th>
@@ -85,7 +87,7 @@
 <div class="modal fade modal-modern" id="modal_seguimiento" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
-      <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+      <div class="modal-header" style="background: #1E3A5F; color: white;">
         <h5 class="modal-title" id="lb_titulo"><i class="fas fa-route mr-2"></i>SEGUIMIENTO DE TRAMITE N°: <span id="nro_expediente_seguimiento"></span></h5>
         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -93,7 +95,7 @@
       </div>
       <div class="modal-body">
         <!-- Legend Section -->
-        <div class="card mb-3" style="background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%); border: none; border-radius: 12px;">
+        <div class="card mb-3" style="background: #EFF4F9; border: none; border-radius: 12px;">
           <div class="card-body p-3">
             <div class="d-flex flex-wrap align-items-center justify-content-center">
               <div class="mr-4 mb-2">
@@ -101,25 +103,25 @@
                 <strong class="text-primary">Leyenda:</strong>
               </div>
               <div class="d-flex flex-wrap gap-3">
-                <span class="badge badge-pill px-3 py-2" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); font-size: 0.85rem;">
+                <span class="badge badge-pill px-3 py-2" style="background: #2C5282; font-size: 0.85rem;">
                   <i class="fas fa-map-marker-alt mr-1"></i> Origen
                 </span>
-                <span class="badge badge-pill px-3 py-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); font-size: 0.85rem;">
+                <span class="badge badge-pill px-3 py-2" style="background: #15803D; font-size: 0.85rem;">
                   <i class="fas fa-map-pin mr-1"></i> Destino
                 </span>
-                <span class="badge badge-pill px-3 py-2" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); font-size: 0.85rem;">
+                <span class="badge badge-pill px-3 py-2" style="background: #B45309; font-size: 0.85rem;">
                   <i class="fas fa-clock mr-1"></i> PENDIENTE
                 </span>
-                <span class="badge badge-pill px-3 py-2" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); font-size: 0.85rem;">
+                <span class="badge badge-pill px-3 py-2" style="background: #15803D; font-size: 0.85rem;">
                   <i class="fas fa-check-circle mr-1"></i> ACEPTADO
                 </span>
-                <span class="badge badge-pill px-3 py-2" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); font-size: 0.85rem;">
+                <span class="badge badge-pill px-3 py-2" style="background: #B91C1C; font-size: 0.85rem;">
                   <i class="fas fa-times-circle mr-1"></i> RECHAZADO
                 </span>
-                <span class="badge badge-pill px-3 py-2" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); font-size: 0.85rem;">
+                <span class="badge badge-pill px-3 py-2" style="background: #1E3A5F; font-size: 0.85rem;">
                   <i class="fas fa-share mr-1"></i> DERIVADO
                 </span>
-                <span class="badge badge-pill px-3 py-2" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); font-size: 0.85rem;">
+                <span class="badge badge-pill px-3 py-2" style="background: #2C5282; font-size: 0.85rem;">
                   <i class="fas fa-flag-checkered mr-1"></i> FINALIZADO
                 </span>
               </div>
@@ -129,7 +131,7 @@
 
         <!-- Historial de Movimientos Section -->
         <div class="card" style="border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-          <div class="card-header" style="background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%); color: white; border-radius: 12px 12px 0 0;">
+          <div class="card-header" style="background: #1E3A5F; color: white; border-radius: 12px 12px 0 0;">
             <h6 class="mb-0"><i class="fas fa-list-ul mr-2"></i> Historial de Movimientos</h6>
           </div>
           <div class="card-body p-0">
@@ -318,7 +320,7 @@
  <div class="modal fade modal-modern" id="modal_derivar" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
-      <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+      <div class="modal-header" style="background: #1E3A5F; color: white;">
         <h5 class="modal-title" id="lb_titulo_derivar"><i class="fas fa-share-square"></i> Derivar Trámite</h5>
         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>

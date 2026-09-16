@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/../../lib/Seguridad.php'; Seguridad::requiereVista([Seguridad::ROL_ADMIN]); ?>
 <script src="../js/console_buscar_fecha_estado.js?rev=<?php echo time();?>"></script>
 <link rel="stylesheet" href="../plantilla/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
 <link rel="stylesheet" href="../plantilla/dist/css/modern-admin-theme.css">

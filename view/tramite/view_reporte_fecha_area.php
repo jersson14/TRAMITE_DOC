@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/../../lib/Seguridad.php'; Seguridad::requiereVista([Seguridad::ROL_ADMIN]); ?>
 <script src="../js/console_buscar_fecha_area.js?rev=<?php echo time();?>"></script>
 <link rel="stylesheet" href="../plantilla/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
 <link rel="stylesheet" href="../plantilla/dist/css/modern-admin-theme.css">
@@ -214,7 +215,7 @@
                         </label>
                         <div class="input-group">
                           <div class="input-group-prepend">
-                            <span class="input-group-text" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">
+                            <span class="input-group-text" style="background: #1E3A5F; color: white; border: none;">
                               <i class="fas fa-folder-open"></i>
                             </span>
                           </div>
@@ -228,7 +229,7 @@
                         </label>
                         <div class="input-group">
                           <div class="input-group-prepend">
-                            <span class="input-group-text" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none;">
+                            <span class="input-group-text" style="background: #15803D; color: white; border: none;">
                               <i class="fas fa-file"></i>
                             </span>
                           </div>
@@ -253,7 +254,7 @@
                 <div class="card shadow-modern-sm" style="border-radius: 15px; border: none;">
                   <div class="card-body p-4">
                     <!-- Datos Personales -->
-                    <h6 class="font-weight-bold mb-3" style="color: #667eea;">
+                    <h6 class="font-weight-bold mb-3" style="color: #1E3A5F;">
                       <i class="fas fa-id-card mr-2"></i>Datos Personales
                     </h6>
                     <div class="row">
@@ -284,7 +285,7 @@
                     </div>
 
                     <!-- Contacto -->
-                    <h6 class="font-weight-bold mb-3 mt-3" style="color: #667eea;">
+                    <h6 class="font-weight-bold mb-3 mt-3" style="color: #1E3A5F;">
                       <i class="fas fa-address-book mr-2"></i>Información de Contacto
                     </h6>
                     <div class="row">
@@ -309,7 +310,7 @@
                     </div>
 
                     <!-- Representación -->
-                    <h6 class="font-weight-bold mb-3 mt-3" style="color: #667eea;">
+                    <h6 class="font-weight-bold mb-3 mt-3" style="color: #1E3A5F;">
                       <i class="fas fa-user-shield mr-2"></i>En Representación
                     </h6>
                     <div class="radio-card-container mb-3">
@@ -335,9 +336,9 @@
 
                     <!-- Datos Jurídicos -->
                     <div id="div_juridico" style="display:none">
-                      <div class="card mt-3" style="background: linear-gradient(135deg, #f093fb15 0%, #f5576c15 100%); border: 2px solid #f093fb50; border-radius: 12px;">
+                      <div class="card mt-3" style="background: #B4530915; border: 2px solid #B4530950; border-radius: 12px;">
                         <div class="card-body">
-                          <h6 class="font-weight-bold mb-3" style="color: #f5576c;">
+                          <h6 class="font-weight-bold mb-3" style="color: #B45309;">
                             <i class="fas fa-briefcase mr-2"></i>Datos de la Empresa
                           </h6>
                           <div class="row">
@@ -382,18 +383,18 @@
 }
 
 #expediente-tabs .nav-link:hover {
-  background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%);
-  border-color: #667eea;
-  color: #667eea;
+  background: #1E3A5F15;
+  border-color: #1E3A5F;
+  color: #1E3A5F;
   transform: translateY(-2px);
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+  box-shadow: 0 4px 15px rgba(30, 58, 95, 0.2);
 }
 
 #expediente-tabs .nav-link.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #1E3A5F15;
   color: white;
-  border-color: #667eea;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  border-color: #1E3A5F;
+  box-shadow: 0 4px 15px rgba(30, 58, 95, 0.3);
 }
 
 /* Disabled Select2 Styling */

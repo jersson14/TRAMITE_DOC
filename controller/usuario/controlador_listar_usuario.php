@@ -1,4 +1,5 @@
 <?php
+    require_once __DIR__ . '/../_guard_admin.php';
     require '../../model/model_usuario.php';
     $MU = new Modelo_Usuario();//Instaciamos
     $consulta = $MU->Listar_Usuario();

@@ -12,16 +12,16 @@
    ===================================================== */
 :root {
   /* Colores Primarios */
-  --primary-start: #667eea;
-  --primary-end: #764ba2;
-  --secondary-start: #10b981;
-  --secondary-end: #059669;
-  --danger-start: #f093fb;
-  --danger-end: #f5576c;
-  --warning-start: #fbbf24;
-  --warning-end: #f59e0b;
-  --info-start: #3b82f6;
-  --info-end: #2563eb;
+  --primary-start: #1E3A5F;
+  --primary-end: #1E3A5F;
+  --secondary-start: #15803D;
+  --secondary-end: #15803D;
+  --danger-start: #B91C1C;
+  --danger-end: #B91C1C;
+  --warning-start: #B45309;
+  --warning-end: #B45309;
+  --info-start: #2C5282;
+  --info-end: #2C5282;
   
   /* Grises */
   --gray-50: #f9fafb;
@@ -151,7 +151,7 @@
 
 .form-control-modern:focus {
   border-color: var(--primary-start) !important;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.1) !important;
   outline: none !important;
 }
 
@@ -200,11 +200,11 @@
 .btn-modern-primary {
   background: linear-gradient(135deg, var(--primary-start) 0%, var(--primary-end) 100%);
   color: white;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  box-shadow: 0 4px 15px rgba(30, 58, 95, 0.3);
 }
 
 .btn-modern-primary:hover {
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 6px 20px rgba(30, 58, 95, 0.4);
   color: white;
 }
 
@@ -212,11 +212,11 @@
 .btn-modern-success {
   background: linear-gradient(135deg, var(--secondary-start) 0%, var(--secondary-end) 100%);
   color: white;
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 4px 15px rgba(21, 128, 61, 0.3);
 }
 
 .btn-modern-success:hover {
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+  box-shadow: 0 6px 20px rgba(21, 128, 61, 0.4);
   color: white;
 }
 
@@ -224,11 +224,11 @@
 .btn-modern-danger {
   background: linear-gradient(135deg, var(--danger-start) 0%, var(--danger-end) 100%);
   color: white;
-  box-shadow: 0 4px 15px rgba(245, 87, 108, 0.3);
+  box-shadow: 0 4px 15px rgba(180, 83, 9, 0.3);
 }
 
 .btn-modern-danger:hover {
-  box-shadow: 0 6px 20px rgba(245, 87, 108, 0.4);
+  box-shadow: 0 6px 20px rgba(180, 83, 9, 0.4);
   color: white;
 }
 
@@ -309,7 +309,7 @@
 }
 
 .badge-finalizado {
-  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  background: #15803D;
   color: white;
 }
 
@@ -427,7 +427,7 @@
 .alert-modern-info {
   background-color: #eff6ff;
   border-left-color: var(--info-start);
-  color: #1e40af;
+  color: #1E3A5F;
 }
 
 .alert-modern-success {
@@ -444,7 +444,7 @@
 
 .alert-modern-danger {
   background-color: #fef2f2;
-  border-left-color: #ef4444;
+  border-left-color: #B91C1C;
   color: #991b1b;
 }
 

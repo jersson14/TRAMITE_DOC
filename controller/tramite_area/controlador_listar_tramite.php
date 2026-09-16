@@ -1,7 +1,8 @@
 <?php
+    require_once __DIR__ . '/../_guard.php';
     require '../../model/model_tramite_area.php';
     $MTRA = new Modelo_TramiteArea();//Instaciamos
-    $idusuario = strtoupper(htmlspecialchars($_POST['idusuario'],ENT_QUOTES,'UTF-8'));
+    $idusuario = Seguridad::usuarioId();
     $consulta = $MTRA->Listar_Tramite($idusuario);
 
     if($consulta){

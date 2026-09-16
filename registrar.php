@@ -23,12 +23,12 @@
         }
         
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1E3A5F;
             min-height: 100vh;
         }
         
         .header-banner {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            background: #1E3A5F;
             padding: 2rem 0;
             box-shadow: 0 4px 20px rgba(0,0,0,0.15);
         }
@@ -63,7 +63,7 @@
         
         .nav-link:hover {
             background: #f7fafc;
-            color: #667eea !important;
+            color: #1E3A5F !important;
             transform: translateY(-2px);
         }
         
@@ -126,7 +126,7 @@
         }
         
         .card-header-custom {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1E3A5F;
             color: white;
             padding: 1.5rem 2rem;
             font-weight: 600;
@@ -134,7 +134,7 @@
         }
         
         .card-header-custom.danger {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: #2C5282;
         }
         
         .card-body-custom {
@@ -161,8 +161,8 @@
         }
         
         .form-control:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #1E3A5F;
+            box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.1);
         }
         
         .input-group-append .btn {
@@ -170,7 +170,7 @@
         }
         
         .btn-search {
-            background: #667eea;
+            background: #1E3A5F;
             border: none;
             color: white;
             padding: 0.75rem 1.5rem;
@@ -178,9 +178,9 @@
         }
         
         .btn-search:hover {
-            background: #5568d3;
+            background: #16304E;
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 15px rgba(30, 58, 95, 0.3);
         }
         
         .radio-group {
@@ -210,9 +210,9 @@
         }
         
         .radio-item input[type="radio"]:checked + label {
-            background: #667eea;
+            background: #1E3A5F;
             color: white;
-            border-color: #667eea;
+            border-color: #1E3A5F;
         }
         
         .select2-container--default .select2-selection--single {
@@ -262,7 +262,7 @@
 }
 
 .file-upload-wrapper:hover {
-    border-color: #667eea;
+    border-color: #1E3A5F;
     background: #f0f4ff;
 }
 
@@ -290,7 +290,7 @@
     background: white;
     border-radius: 8px;
     font-size: 0.85rem;
-    color: #667eea;
+    color: #1E3A5F;
     font-weight: 500;
     display: none;
 }
@@ -316,7 +316,7 @@
         }
         
         .btn-submit {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: #15803D;
             color: white;
             border: none;
             padding: 1rem 3rem;
@@ -324,12 +324,12 @@
             font-weight: 600;
             font-size: 1.1rem;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 4px 15px rgba(21, 128, 61, 0.3);
         }
         
         .btn-submit:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 6px 20px rgba(21, 128, 61, 0.4);
         }
         
         .btn-submit.disabled {
@@ -556,7 +556,7 @@
                 <!-- Welcome Card -->
                 <div class="welcome-card">
                     <h1 class="welcome-title">
-                        <i class="fas fa-file-signature" style="color: #667eea;"></i>
+                        <i class="fas fa-file-signature" style="color: #1E3A5F;"></i>
                         Mesa de Partes Virtual
                     </h1>
                     <p class="welcome-subtitle">
@@ -792,7 +792,7 @@
                 <p style="margin: 0;">
                     <strong>Copyright © 2025 
                         <a href="" target="_blank" 
-                           style="color: #667eea; text-decoration: none;">
+                           style="color: #1E3A5F; text-decoration: none;">
                             JMC ABANCAY SA
                         </a>
                     </strong>
@@ -858,7 +858,7 @@
                     icon: 'warning',
                     title: 'DNI Inválido',
                     text: 'El DNI debe tener 8 dígitos',
-                    confirmButtonColor: '#667eea'
+                    confirmButtonColor: '#1E3A5F'
                 });
                 return;
             }
@@ -879,7 +879,7 @@
                             icon: 'error',
                             title: 'Error',
                             text: 'El DNI tiene que tener 8 dígitos',
-                            confirmButtonColor: '#667eea'
+                            confirmButtonColor: '#1E3A5F'
                         });
                     } else {
                         document.getElementById("txt_nom").value = data.nombres;
@@ -895,7 +895,7 @@
                             icon: 'success',
                             title: 'Datos encontrados',
                             text: 'Se cargaron los datos correctamente',
-                            confirmButtonColor: '#667eea',
+                            confirmButtonColor: '#1E3A5F',
                             timer: 2000
                         });
                     }
@@ -906,7 +906,7 @@
                         icon: 'error',
                         title: 'Error',
                         text: 'No se pudo consultar el DNI',
-                        confirmButtonColor: '#667eea'
+                        confirmButtonColor: '#1E3A5F'
                     });
                 }
             });
@@ -933,7 +933,7 @@
                             icon: 'warning',
                             title: 'Archivo muy pesado',
                             text: 'El archivo no debe superar los 30 MB',
-                            confirmButtonColor: '#667eea'
+                            confirmButtonColor: '#1E3A5F'
                         });
                         $("#txt_archivo").val("");
                         return;
@@ -944,7 +944,7 @@
                         icon: 'error',
                         title: 'Formato no permitido',
                         text: 'Solo se permiten archivos PDF. Extensión detectada: ' + ext,
-                        confirmButtonColor: '#667eea'
+                        confirmButtonColor: '#1E3A5F'
                     });
                 }
             }

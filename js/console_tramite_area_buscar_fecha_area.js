@@ -209,7 +209,7 @@ $('#tabla_tramite').on('click','.delete',function(){
     text: "Una vez aceptado el tramite sera eliminado!",
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#3085d6',
+    confirmButtonColor: '#1E3A5F',
     cancelButtonColor: '#d33',
     confirmButtonText: 'Si, Eliminar'
   }).then((result) => {

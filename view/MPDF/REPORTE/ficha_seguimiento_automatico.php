@@ -1,7 +1,7 @@
 <?php
 require_once  __DIR__ . '/../vendor/autoload.php';
 require_once '../conexion.php';
-$codigo = $_GET['codigo'];
+require __DIR__ . '/_acceso.php';
 $html = "";
 
 $consulta = "SELECT
@@ -78,13 +78,13 @@ while($filas = $resultado->fetch_assoc()) {
                 text-align: center;
                 margin-bottom: 12px;
                 padding-bottom: 8px;
-                border-bottom: 2px solid #667eea;
+                border-bottom: 2px solid #1E3A5F;
             }
             
             .company-name {
                 font-size: 16px;
                 font-weight: bold;
-                color: #667eea;
+                color: #1E3A5F;
                 margin-bottom: 3px;
                 text-transform: uppercase;
                 letter-spacing: 1px;
@@ -110,7 +110,7 @@ while($filas = $resultado->fetch_assoc()) {
             }
             
             .section-title {
-                background: #667eea;
+                background: #1E3A5F;
                 color: white;
                 padding: 4px 8px;
                 font-weight: bold;
@@ -175,7 +175,7 @@ while($filas = $resultado->fetch_assoc()) {
             }
             
             .tracking-table thead {
-                background: #667eea;
+                background: #1E3A5F;
                 color: white;
             }
             
@@ -185,7 +185,7 @@ while($filas = $resultado->fetch_assoc()) {
                 font-weight: bold;
                 font-size: 8px;
                 text-transform: uppercase;
-                border: 1px solid #5568d3;
+                border: 1px solid #16304E;
             }
             
             .tracking-table tbody tr {
@@ -214,22 +214,22 @@ while($filas = $resultado->fetch_assoc()) {
             }
             
             .status-derivado {
-                background: #667eea;
+                background: #1E3A5F;
                 color: white;
             }
             
             .status-rechazado {
-                background: #f5576c;
+                background: #B91C1C;
                 color: white;
             }
             
             .status-finalizado {
-                background: #10b981;
+                background: #15803D;
                 color: white;
             }
             
             .status-pendiente {
-                background: #fbbf24;
+                background: #B45309;
                 color: white;
             }
             

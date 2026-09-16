@@ -315,6 +315,10 @@ function Registrar_Tramite(){
 
     $.ajax({
       url:"controller/tramite/controlador_registro_tramite_externo.php",
+      error:function(xhr){
+        let mensaje = (xhr.responseJSON && xhr.responseJSON.mensaje) || "No se pudo registrar el trámite. Intente nuevamente.";
+        Swal.fire("No se pudo registrar", mensaje, "error");
+      },
       type:'POST',
       data:formData,
       contentType:false,
@@ -323,7 +327,7 @@ function Registrar_Tramite(){
        
         if(resp.length>0){
           Swal.fire("Mensaje de Confirmación","Nueva Tramite Registrado código: "+resp,"success").then((value)=>{
-            window.open("view/MPDF/REPORTE/ticket_tramite.php?codigo="+resp+"#zomm=100");
+            window.open("view/MPDF/REPORTE/ticket_tramite.php?codigo="+encodeURIComponent(resp)+"&dni="+encodeURIComponent(dni)+"#zoom=100");
             $("#contenido_principal").load("registrar.php");
             document.getElementById('txt_dni').value="";
             document.getElementById('txt_nom').value="";

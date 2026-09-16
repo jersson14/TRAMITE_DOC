@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/../../lib/Seguridad.php'; Seguridad::requiereVista([Seguridad::ROL_ADMIN]); ?>
 <script src="../js/console_tipodocumento.js?rev=<?php echo time();?>"></script>
 <link rel="stylesheet" href="../plantilla/dist/css/modern-admin-theme.css">
 
@@ -57,7 +58,7 @@
 <div class="modal fade" id="modal_registro" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+      <div class="modal-header" style="background: #1E3A5F; color: white;">
         <h5 class="modal-title" id="exampleModalLabel"><b>REGISTRO DE TIPO DOCUMENTO</b></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -88,7 +89,7 @@
 <div class="modal fade" id="modal_editar" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
-      <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+      <div class="modal-header" style="background: #1E3A5F; color: white;">
         <h5 class="modal-title" id="exampleModalLabel"><b>EDITAR DATOS TIPO DOCUMENTO</b></h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>

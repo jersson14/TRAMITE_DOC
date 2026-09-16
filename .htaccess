@@ -1,0 +1,27 @@
+Options -Indexes
+ServerSignature Off
+
+# Los errores de PHP se registran en el log del servidor, nunca se muestran al visitante
+<IfModule php_module>
+    php_flag display_errors Off
+    php_flag log_errors On
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Scripts de prueba o diagnóstico: nunca accesibles desde la web
+<FilesMatch "^(_list_models_new|_verify_new_key|test_email|test_gemini_models|prueba|ruc|simple_html_dom)\.php$">
+    Require all denied
+</FilesMatch>
+
+# Respaldos, configuraciones de ejemplo, documentación interna y metadatos del proyecto
+<FilesMatch "(\.(sql|log|bak|env|lock|md)|^composer\.json|\.example\.php)$">
+    Require all denied
+</FilesMatch>
+
+# Carpetas ocultas (.git, .impeccable, etc.)
+RedirectMatch 404 /\.(git|impeccable|claude|vscode)(/|$)

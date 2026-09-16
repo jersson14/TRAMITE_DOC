@@ -1,7 +1,7 @@
 <?php
 require_once  __DIR__ . '/../vendor/autoload.php';
 require_once '../conexion.php';
-$codigo = $_GET['codigo'];
+require __DIR__ . '/_acceso.php';
 $html="";
 $consulta="SELECT
 documento.documento_id,

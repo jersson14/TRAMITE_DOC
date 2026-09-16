@@ -19,6 +19,7 @@ function listar_tramite(){
       
       "columns":[
         {"data":"documento_id"},
+        {"data":"doc_expediente"},
         {"data":"doc_nrodocumento"},
         {"data":"tipodo_descripcion"},
         {"data":"doc_dniremitente"},
@@ -168,6 +169,7 @@ function listar_tramite_buscar(){
     }],
       "columns":[
         {"data":"documento_id"},
+        {"data":"doc_expediente"},
         {"data":"doc_nrodocumento"},
         {"data":"tipodo_descripcion"},
         {"data":"doc_dniremitente"},
@@ -240,7 +242,7 @@ $('#tabla_tramite').on('click','.delete',function(){
     text: "Una vez aceptado el tramite sera eliminado!",
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#3085d6',
+    confirmButtonColor: '#1E3A5F',
     cancelButtonColor: '#d33',
     confirmButtonText: 'Si, Eliminar'
   }).then((result) => {
@@ -714,7 +716,7 @@ function listar_seguimiento_tramite(id){
           render: function(data, type, row){
             // Resaltar si es una copia
             if(data && data.toUpperCase().includes('COPIA')){
-              return '<span style="color: #e74c3c; font-weight: bold;"><i class="fas fa-copy"></i> ' + data + '</span>';
+              return '<span style="color: #B91C1C; font-weight: bold;"><i class="fas fa-copy"></i> ' + data + '</span>';
             }
             return '<span>' + data + '</span>';
           }

@@ -1,27 +1,4 @@
 <?php
-    session_start();
-    $idusuario = htmlspecialchars($_POST['idusuario'],ENT_QUOTES,'UTF-8');
-    $usuario = htmlspecialchars($_POST['usuario'],ENT_QUOTES,'UTF-8');
-    $idarea = htmlspecialchars($_POST['idarea'],ENT_QUOTES,'UTF-8');
-    $rol = htmlspecialchars($_POST['rol'],ENT_QUOTES,'UTF-8');
-    $area = htmlspecialchars($_POST['area'],ENT_QUOTES,'UTF-8');
-    $solonombres = htmlspecialchars($_POST['solonombres'],ENT_QUOTES,'UTF-8');
-    $nombres = htmlspecialchars($_POST['nombres'],ENT_QUOTES,'UTF-8');
-    $foto = htmlspecialchars($_POST['foto'],ENT_QUOTES,'UTF-8');
-    $foto_empresa = htmlspecialchars($_POST['foto_empresa'],ENT_QUOTES,'UTF-8');
-    $razon = htmlspecialchars($_POST['razon'],ENT_QUOTES,'UTF-8');
-
-    $_SESSION['S_ID']=$idusuario;
-    $_SESSION['S_USU']=$usuario;
-    $_SESSION['S_IDAREA']=$idarea;
-    $_SESSION['S_ROL']=$rol;
-    $_SESSION['S_AREA']=$area;
-    $_SESSION['S_APELLIDOS']=$solonombres;
-    $_SESSION['S_NOMBRE']=$nombres;
-    $_SESSION['S_FOTO']=$foto;
-    $_SESSION['S_FOTO_EMPRESA']=$foto_empresa;
-    $_SESSION['S_RAZON']=$razon;
-
-
-
-?>
+    // Obsoleto: la sesión se crea en el servidor al validar las credenciales
+    // (controlador_iniciar_sesion.php). Nunca a partir de datos enviados por el navegador.
+    http_response_code(410);

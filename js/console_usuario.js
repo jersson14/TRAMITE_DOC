@@ -1,96 +1,49 @@
 function Iniciar_Sesion(){
     recuerdame();
-    let usu = document.getElementById("txt_usuario").value;
+    let usu = document.getElementById("txt_usuario").value.trim();
     let con = document.getElementById("txt_contra").value;
     if(usu.length==0 || con.length==0){
-       return  Swal.fire({
-        icon: 'warning',
-        title: 'Mensaje de Advertencia',
-        text: 'Llene todo los campos de la sesión',
-        heightAuto: false
-      });
+       return Swal.fire({icon:'warning', title:'Campos incompletos', text:'Ingrese su usuario y contraseña', heightAuto:false});
     }
+    let boton = document.getElementById("entrar");
+    boton.classList.add("loading");
     $.ajax({
         url:'controller/usuario/controlador_iniciar_sesion.php',
-        type: 'POST',
-        data:{
-            u:usu,
-            c:con
-        }
+        type:'POST',
+        dataType:'json',
+        data:{ u:usu, c:con }
     }).done(function(resp){
-       let data = JSON.parse(resp)
-       if(data.length>0){
-            if(data[0][7]=="INACTIVO"){
-                return  Swal.fire({
-                    icon: 'warning',
-                    title: 'Mensaje de Advertencia',
-                    text: 'El usuario: '+usu+' se encuentra inactivo',
-                    heightAuto: false
-                  });  
-            }$.ajax({
-                url:'controller/usuario/controlador_crear_sesion.php',
-                type: 'POST',
-                data:{
-                    idusuario:data[0][0],
-                    usuario:data[0][1],
-                    idarea:data[0][8],
-                    rol:data[0][9],   
-                    area:data[0][11],
-                    solonombres:data[0][13],
-                    nombres:data[0][16],
-                    foto:data[0][17],
-                    foto_empresa:data[0][18],                  
-                    razon:data[0][19]                     
-
-                }
-            }).done(function(resp){
-                let timerInterval
-                Swal.fire({
-                  title: 'Bienvenido al Sistema',
-                  html: 'Seras redireccionado en <b></b> milliseconds.',
-                  icon: 'success',
-                  timer: 1200,
-                  timerProgressBar: true,
-                  heightAuto: false,
-                  didOpen: () => {
-                    Swal.showLoading()
-                    const b = Swal.getHtmlContainer().querySelector('b')
-                    timerInterval = setInterval(() => {
-                      b.textContent = Swal.getTimerLeft()
-                    }, 100)
-                  },
-                  willClose: () => {
-                    clearInterval(timerInterval)
-                  }
-                }).then((result) => {
-                  /* Read more about handling dismissals below */
-                  if (result.dismiss === Swal.DismissReason.timer) {
-                    location.reload();
-                  }
-                })            
-            })
-       }else{
-        Swal.fire({
-            icon: 'error',
-            title: 'Mensaje de Error',
-            text: 'Usuario o Contraseña Incorrectos',
-            heightAuto: false
-          });
-
-       }
-    })
+        if(resp.status==="ok"){
+            location.reload();
+            return;
+        }
+        boton.classList.remove("loading");
+        let mensajes = {
+            vacio: ['warning','Campos incompletos','Ingrese su usuario y contraseña'],
+            inactivo: ['warning','Usuario inactivo','El usuario '+usu+' se encuentra inactivo. Comuníquese con el administrador.'],
+            bloqueado: ['error','Acceso bloqueado temporalmente','Demasiados intentos fallidos. Intente nuevamente en '+resp.minutos+' minuto(s).'],
+            error: ['error','Credenciales incorrectas','Usuario o contraseña incorrectos']
+        };
+        let m = mensajes[resp.status] || mensajes.error;
+        Swal.fire({icon:m[0], title:m[1], text:m[2], heightAuto:false});
+    }).fail(function(){
+        boton.classList.remove("loading");
+        Swal.fire({icon:'error', title:'Sin conexión', text:'No se pudo contactar con el servidor. Intente nuevamente.', heightAuto:false});
+    });
 }
 
 function recuerdame(){
-    if(rmcheck.checked && usuarioInput.value !="" && passInput.value !=""){
-        localStorage.usuario     = usuarioInput.value;
-        localStorage.pass        = passInput.value;
-        localStorage.checkbox    = rmcheck.value;
-    }else{
-        localStorage.usuario     = "";
-        localStorage.pass        = "";
-        localStorage.checkbox    = "";
-    }
+    // Solo se recuerda el nombre de usuario, nunca la contraseña
+    try {
+        if(rmcheck.checked && usuarioInput.value !=""){
+            localStorage.usuario  = usuarioInput.value;
+            localStorage.checkbox = rmcheck.value;
+        }else{
+            localStorage.removeItem('usuario');
+            localStorage.removeItem('checkbox');
+        }
+        localStorage.removeItem('pass');
+    } catch(e) {}
 }
 
 var tbl_usuario;
@@ -226,7 +179,7 @@ $('#tabla_usuario').on('click','.desactivar',function(){
       text: "Una vez desactivado el usuario no tendra acceso al sistema",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
+      confirmButtonColor: '#1E3A5F',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Si, Desactivar'
     }).then((result) => {
@@ -249,7 +202,7 @@ $('#tabla_usuario').on('click','.activar',function(){
       text: "Una vez activado el usuario tendra acceso al sistema",
       icon: 'warning',
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
+      confirmButtonColor: '#1E3A5F',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Si, Desactivar'
     }).then((result) => {
@@ -458,7 +411,8 @@ function Traer_Datos_Seguimiento(){
         "url":"controller/usuario/controlador_traer_seguimiento_detalle.php",
         type:'POST',
         data:{
-          codigo:data[0][0]
+          codigo:data[0][0],
+          dni:dni
         }
       }).done(function(resp){
         let datadetalle=JSON.parse(resp);
@@ -563,14 +517,15 @@ function Traer_Datos_Seguimiento2(){
         "url":"../controller/usuario/controlador_traer_seguimiento_detalle.php",
         type:'POST',
         data:{
-          codigo:data[0][0]
+          codigo:data[0][0],
+          dni:dni
         }
       }).done(function(resp){
         let datadetalle=JSON.parse(resp);
         if(datadetalle.length>0){
           for (let i = 0; i < datadetalle.length; i++) {
             let iconClass = "fas fa-clock";
-            let cardBg = "linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)";
+            let cardBg = "#B45309";
             let statusBadge = "badge-warning";
             let statusText = "PENDIENTE";
             let statusIcon = "fas fa-clock";
@@ -583,22 +538,22 @@ function Traer_Datos_Seguimiento2(){
             let areaDestino = datadetalle[i][4] || 'N/A';     // area_destino_nombre
             
             if(datadetalle[i][8]=="DERIVADO"){
-              cardBg = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
+              cardBg = "#1E3A5F";
               statusBadge = "badge-primary";
               statusText = "DERIVADO";
               statusIcon = "fas fa-arrow-right";
             } else if(datadetalle[i][8]=="RECHAZADO"){
-              cardBg = "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)";
+              cardBg = "#B45309";
               statusBadge = "badge-danger";
               statusText = "RECHAZADO";
               statusIcon = "fas fa-times-circle";
             } else if(datadetalle[i][8]=="FINALIZADO"){
-              cardBg = "linear-gradient(135deg, #10b981 0%, #059669 100%)";
+              cardBg = "#15803D";
               statusBadge = "badge-success";
               statusText = "FINALIZADO";
               statusIcon = "fas fa-check-circle";
             } else if(datadetalle[i][8]=="ACEPTADO"){
-              cardBg = "linear-gradient(135deg, #10b981 0%, #059669 100%)";
+              cardBg = "#15803D";
               statusBadge = "badge-success";
               statusText = "ACEPTADO";
               statusIcon = "fas fa-check";
@@ -618,7 +573,7 @@ function Traer_Datos_Seguimiento2(){
                       '<div class="card-body" style="padding: 1.5rem; background: #f8f9fa;">'+
                         '<div class="row mb-3">'+
                           '<div class="col-md-6 mb-2">'+
-                            '<div style="background: white; padding: 1rem; border-radius: 10px; border-left: 4px solid #3b82f6;">'+
+                            '<div style="background: white; padding: 1rem; border-radius: 10px; border-left: 4px solid #2C5282;">'+
                               '<div style="font-size: 0.85rem; color: #6b7280; margin-bottom: 0.25rem;">'+
                                 '<i class="fas fa-map-marker-alt"></i> ORIGEN'+
                               '</div>'+
@@ -626,7 +581,7 @@ function Traer_Datos_Seguimiento2(){
                             '</div>'+
                           '</div>'+
                           '<div class="col-md-6 mb-2">'+
-                            '<div style="background: white; padding: 1rem; border-radius: 10px; border-left: 4px solid #10b981;">'+
+                            '<div style="background: white; padding: 1rem; border-radius: 10px; border-left: 4px solid #15803D;">'+
                               '<div style="font-size: 0.85rem; color: #6b7280; margin-bottom: 0.25rem;">'+
                                 '<i class="fas fa-flag-checkered"></i> DESTINO'+
                               '</div>'+
@@ -634,7 +589,7 @@ function Traer_Datos_Seguimiento2(){
                             '</div>'+
                           '</div>'+
                         '</div>'+
-                        '<div style="background: white; padding: 1.25rem; border-radius: 10px; border-left: 4px solid #667eea;">'+
+                        '<div style="background: white; padding: 1.25rem; border-radius: 10px; border-left: 4px solid #1E3A5F;">'+
                           '<div style="font-size: 0.85rem; color: #6b7280; margin-bottom: 0.5rem;">'+
                             '<i class="fas fa-comment-alt"></i> DESCRIPCIÓN'+
                           '</div>'+

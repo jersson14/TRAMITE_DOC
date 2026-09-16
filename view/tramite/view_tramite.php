@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/../../lib/Seguridad.php'; Seguridad::requiereVista([Seguridad::ROL_ADMIN]); ?>
 <script src="../js/console_tramite.js?rev=<?php echo time();?>"></script>
 <link rel="stylesheet" href="../plantilla/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
 <link rel="stylesheet" href="../plantilla/dist/css/modern-admin-theme.css">
@@ -65,15 +66,15 @@
                 <label for="" style="color:#000000">ALERTAS POR DÍAS TRANSCURRIDOS: </label> 
                 <label for="" style="color:#000000"> 1 día Negro</label>
                 <label for="" style="color:#000000"> | </label> 
-                <label for="" style="color:#008000"> 2 días Verde</label>  
+                <label for="" style="color:#15803D"> 2 días Verde</label>  
                 <label for="" style="color:#000000"> | </label> 
                 <label for="" style="color:#FFC300"> 3 - 4 días Amarillo</label>
                 <label for="" style="color:#000000"> | </label> 
-                <label for="" style="color:#FF0000"> 5 días a más Rojo</label><br>
+                <label for="" style="color:#B91C1C"> 5 días a más Rojo</label><br>
                 <label for="" style="color:#000000">ALERTAS POR DÍAS DE RESPUESTA: </label> 
-                <label for="" style="color:#008000"> Verde = Dentro de tiempo</label>
+                <label for="" style="color:#15803D"> Verde = Dentro de tiempo</label>
                 <label for="" style="color:#000000"> | </label> 
-                <label for="" style="color:#FF0000"> Rojo = Plazo a vencer o vencido</label>             
+                <label for="" style="color:#B91C1C"> Rojo = Plazo a vencer o vencido</label>             
                 </div>
                 
                 </div>
@@ -84,6 +85,7 @@
                             <tr>
                                 <th style="text-align:center">Nro.</th>
                                 <th style="text-align:center">N° Expediente</th>
+                                <th style="text-align:center">N° Documento</th>
                                 <th style="text-align:center">Tipo Documento</th>
                                 <th style="text-align:center">DNI Remit.</th>
                                 <th style="text-align:center">Remitente</th>
@@ -114,7 +116,7 @@
 <div class="modal fade" id="modal_seguimiento" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
-      <div class="modal-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+      <div class="modal-header" style="background: #1E3A5F; color: white;">
         <h5 class="modal-title" id="lb_titulo"><i class="fas fa-route"></i> Seguimiento del Trámite</h5>
         <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>

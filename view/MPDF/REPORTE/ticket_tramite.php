@@ -1,7 +1,7 @@
 <?php
 require_once  __DIR__ . '/../vendor/autoload.php';
 require_once '../conexion.php';
-$codigo = $_GET['codigo'];
+require __DIR__ . '/_acceso.php';
 $query ="SELECT
 empresa.empresa_id, 
 empresa.emp_razon, 
@@ -98,11 +98,11 @@ while($row = $resultado2->fetch_assoc()){
             text-align: center;
             margin-bottom: 10px;
             padding-bottom: 8px;
-            border-bottom: 2px solid #667eea;
+            border-bottom: 2px solid #1E3A5F;
         }
         
         .header img {
-            border: 2px solid #667eea;
+            border: 2px solid #1E3A5F;
             padding: 5px;
             border-radius: 8px;
             width: 90%;
@@ -111,7 +111,7 @@ while($row = $resultado2->fetch_assoc()){
         .company-name {
             font-size: 11px;
             font-weight: bold;
-            color: #667eea;
+            color: #1E3A5F;
             text-transform: uppercase;
             margin-top: 8px;
             letter-spacing: 0.5px;
@@ -125,7 +125,7 @@ while($row = $resultado2->fetch_assoc()){
         }
         
         .tracking-code {
-            background: #667eea;
+            background: #1E3A5F;
             color: white;
             padding: 8px;
             text-align: center;
@@ -149,7 +149,7 @@ while($row = $resultado2->fetch_assoc()){
             margin: 8px 0;
             padding: 6px;
             background: #f7fafc;
-            border-left: 3px solid #667eea;
+            border-left: 3px solid #1E3A5F;
             border-radius: 3px;
         }
         

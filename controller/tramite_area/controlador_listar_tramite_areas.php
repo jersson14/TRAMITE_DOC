@@ -1,10 +1,11 @@
 <?php
+    require_once __DIR__ . '/../_guard.php';
     // Iniciar buffer de salida para capturar cualquier output no deseado
     ob_start();
     
     require '../../model/model_tramite_area.php';
     $MTRA = new Modelo_TramiteArea();//Instaciamos
-    $idareas = strtoupper(htmlspecialchars($_POST['idareas'],ENT_QUOTES,'UTF-8'));
+    $idareas = Seguridad::usuarioId();
     
     try {
         $consulta = $MTRA->Listar_Tramite_Areas($idareas);

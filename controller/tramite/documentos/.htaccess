@@ -1,0 +1,8 @@
+# Solo se sirven archivos; nunca se ejecuta código subido.
+<FilesMatch "\.(php\d?|phtml|phar|pht|cgi|pl|py|sh|htaccess)$">
+    Require all denied
+</FilesMatch>
+<IfModule php_module>
+    php_flag engine off
+</IfModule>
+Options -Indexes

@@ -1,3 +1,4 @@
+<?php require_once __DIR__ . '/../../lib/Seguridad.php'; Seguridad::requiereVista([Seguridad::ROL_ADMIN]); ?>
 <script src="../js/console_usuario.js?rev=<?php echo time();?>"></script>
 <link rel="stylesheet" href="../plantilla/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
 
@@ -11,7 +12,7 @@
 }
 
 .search-card-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #1E3A5F;
     color: white;
     padding: 1.5rem 2rem;
 }
@@ -44,7 +45,7 @@
 }
 
 .form-group-custom label i {
-    color: #667eea;
+    color: #1E3A5F;
 }
 
 .form-control-custom {
@@ -55,13 +56,13 @@
 }
 
 .form-control-custom:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    border-color: #1E3A5F;
+    box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.1);
     outline: none;
 }
 
 .btn-search-custom {
-    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    background: #15803D;
     color: white;
     border: none;
     padding: 1rem 2rem;
@@ -70,12 +71,12 @@
     font-size: 1.1rem;
     width: 100%;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    box-shadow: 0 4px 15px rgba(21, 128, 61, 0.3);
 }
 
 .btn-search-custom:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    box-shadow: 0 6px 20px rgba(21, 128, 61, 0.4);
     color: white;
 }
 
@@ -103,7 +104,7 @@
 }
 
 .results-card-header {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background: #1E3A5F;
     color: white;
     padding: 1.5rem 2rem;
 }

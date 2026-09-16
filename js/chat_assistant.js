@@ -137,9 +137,11 @@ class ChatAssistant {
     const formData = new FormData();
     formData.append("message", message);
 
+    const token = document.querySelector('meta[name="csrf-token"]');
     const response = await fetch("../controller/chat/chat_controller.php", {
       method: "POST",
       body: formData,
+      headers: token ? { "X-CSRF-Token": token.content } : {},
     });
 
     if (!response.ok) throw new Error("Network response was not ok");
