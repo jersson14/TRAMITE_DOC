@@ -996,6 +996,10 @@
                                           '</div>' +
                                           '</div>' +
                                           '<p style="margin-bottom: 0.5rem; font-weight: 500;">' + statusText + '</p>' +
+                                          // Acuse de recepción (solo la fecha: no se muestran nombres de funcionarios)
+                                          (datadetalle[i].recibido_fecha
+                                            ? '<p style="margin-bottom: 0.5rem; color: #15803D; font-weight: 600;"><i class="fas fa-inbox"></i> Recibido por el área el ' + datadetalle[i].recibido_fecha + '</p>'
+                                            : (datadetalle[i][8] == "PENDIENTE" ? '<p style="margin-bottom: 0.5rem; color: #718096;"><i class="far fa-clock"></i> Aún sin acuse de recepción</p>' : '')) +
                                           '<p style="margin: 0; padding: 1rem; background: white; border-radius: 8px; border-left: 3px solid ' + statusColor + ';">' +
                                           '<i class="fas fa-comment-alt"></i> <strong>Descripción:</strong><br>' +
                                           datadetalle[i][7] +

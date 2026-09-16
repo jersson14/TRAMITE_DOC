@@ -30,8 +30,9 @@ function Render_Expediente(data, type, row) {
   // En "Recibidos", un trámite que llegó en copia se marca aquí, a la vista:
   // la columna de acciones se oculta en pantallas medianas.
   if (row && row.es_copia == 1) {
-    html += '<span class="badge badge-copia d-block mt-1" title="Recibido en copia, solo para conocimiento">' +
-      '<i class="fas fa-copy"></i> Copia</span>';
+    html += row.acuse_fecha
+      ? '<span class="badge badge-copia d-block mt-1" title="Copia recibida el ' + escaparTextoFormato(row.acuse_fecha) + '"><i class="fas fa-check"></i> Copia recibida</span>'
+      : '<span class="badge badge-copia d-block mt-1" title="Recibido en copia: falta confirmar la recepción"><i class="fas fa-copy"></i> Copia · por confirmar</span>';
   }
   return html;
 }

@@ -11,6 +11,7 @@ function insigniaAccion(accion) {
     DERIVO_TRAMITE: ["badge-primary", "Derivación"],
     CAMBIO_ESTADO: ["badge-warning", "Cambio de estado"],
     ELIMINO_TRAMITE: ["badge-danger", "Eliminación"],
+    RECEPCION: ["badge-success", "Acuse de recepción"],
     REGISTRO: ["badge-primary", "Registro"],
     MODIFICO: ["badge-warning", "Modificación"],
     ELIMINO: ["badge-danger", "Eliminación"],

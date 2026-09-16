@@ -88,7 +88,11 @@ if (!$tramite) {
 $consulta = $mysqli->prepare(
     "SELECT m.movimiento_id, m.mov_fecharegistro, m.mov_descripcion, m.mov_estatus, m.mov_acciones,
             COALESCE(ao.area_nombre, 'EXTERNO') AS origen, ad.area_nombre AS destino,
-            (SELECT COUNT(*) FROM movimiento_anexo ma WHERE ma.movimiento_id = m.movimiento_id) AS anexos
+            (SELECT COUNT(*) FROM movimiento_anexo ma WHERE ma.movimiento_id = m.movimiento_id) AS anexos,
+            m.mov_recibido_fecha AS recibido_fecha,
+            (SELECT COALESCE(NULLIF(TRIM(CONCAT_WS(' ', e.emple_nombre, e.emple_apepat)), ''), u.usu_usuario)
+               FROM usuario u LEFT JOIN empleado e ON e.empleado_id = u.empleado_id
+              WHERE u.usu_id = m.mov_recibido_usuario) AS recibido_por
        FROM movimiento m
        LEFT JOIN area ao ON ao.area_cod = m.area_origen_id
        LEFT JOIN area ad ON ad.area_cod = m.areadestino_id

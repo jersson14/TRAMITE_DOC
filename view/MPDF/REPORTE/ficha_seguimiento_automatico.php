@@ -47,7 +47,11 @@ foreach ($movimientos as $n => $m) {
         . '<td class="centro">' . pdf_e(pdf_fecha_corta($m['mov_fecharegistro'])) . '</td>'
         . '<td>' . pdf_e($m['mov_acciones']) . '</td>'
         . '<td>' . pdf_e($descripcion) . ((int) $m['anexos'] > 0 ? '<br><span class="anexos">' . (int) $m['anexos'] . ' anexo(s)</span>' : '') . '</td>'
-        . '<td class="centro"><span class="estado" style="background:' . pdf_color_estado($m['mov_estatus']) . ';">' . pdf_e($m['mov_estatus']) . '</span></td>'
+        . '<td class="centro"><span class="estado" style="background:' . pdf_color_estado($m['mov_estatus']) . ';">' . pdf_e($m['mov_estatus']) . '</span>'
+        . ($m['recibido_fecha']
+            ? '<br><span class="anexos">Recibido ' . pdf_e(pdf_fecha_corta($m['recibido_fecha'])) . ($m['recibido_por'] ? '<br>' . pdf_e($m['recibido_por']) : '') . '</span>'
+            : '')
+        . '</td>'
         . '</tr>';
 }
 if ($filasRecorrido === '') {

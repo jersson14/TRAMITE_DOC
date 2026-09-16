@@ -50,6 +50,7 @@
                       <option value="DERIVO_TRAMITE">Derivación</option>
                       <option value="CAMBIO_ESTADO">Cambio de estado</option>
                       <option value="ELIMINO_TRAMITE">Eliminación de trámite</option>
+                      <option value="RECEPCION">Acuse de recepción</option>
                     </select>
                   </div>
                   <div class="col-md-3 form-group" style="display:flex; align-items:flex-end;">

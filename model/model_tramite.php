@@ -62,6 +62,49 @@
             return $query->rowCount();
         }
 
+        /**
+         * Acuse de recepción del área de destino: marca el envío principal que le
+         * llegó (no las copias) con la fecha y quién lo recibió. Solo la primera
+         * vez: volver a aceptar no cambia la fecha original.
+         */
+        public function Registrar_Acuse_Destino($documento_id, $usuario_id){
+            $c = conexionBD::conexionPDO();
+            // El envío pasa a ACEPTADO: así el historial no muestra "PENDIENTE" junto
+            // a "Recibido". La derivación (migración 011) cierra envíos PENDIENTE o ACEPTADO.
+            $query = $c->prepare("UPDATE movimiento m
+                                  INNER JOIN documento d ON d.documento_id = m.documento_id
+                                     SET m.mov_recibido_fecha = NOW(), m.mov_recibido_usuario = ?,
+                                         m.mov_estatus = IF(m.mov_estatus = 'PENDIENTE', 'ACEPTADO', m.mov_estatus)
+                                   WHERE m.documento_id = ?
+                                     AND m.areadestino_id = d.area_destino
+                                     AND m.mov_descripcion NOT LIKE 'COPIA - %'
+                                     AND m.mov_recibido_fecha IS NULL");
+            $query->execute([$usuario_id, $documento_id]);
+            return $query->rowCount();
+        }
+
+        /**
+         * Acuse de un área que recibió el trámite en copia. No toca el estado del
+         * trámite: solo deja constancia de que esa área lo vio.
+         * Devuelve -1 si el área no recibió copia de este trámite.
+         */
+        public function Registrar_Acuse_Copia($documento_id, $area_id, $usuario_id){
+            $c = conexionBD::conexionPDO();
+            $existe = $c->prepare("SELECT COUNT(*) FROM movimiento
+                                    WHERE documento_id = ? AND areadestino_id = ? AND mov_descripcion LIKE 'COPIA - %'");
+            $existe->execute([$documento_id, $area_id]);
+            if((int) $existe->fetchColumn() === 0){
+                return -1;
+            }
+            $query = $c->prepare("UPDATE movimiento
+                                     SET mov_recibido_fecha = NOW(), mov_recibido_usuario = ?
+                                   WHERE documento_id = ? AND areadestino_id = ?
+                                     AND mov_descripcion LIKE 'COPIA - %'
+                                     AND mov_recibido_fecha IS NULL");
+            $query->execute([$usuario_id, $documento_id, $area_id]);
+            return $query->rowCount();
+        }
+
         /** Solo el área a la que va dirigido el trámite puede aceptarlo o rechazarlo. */
         public function Es_Area_Destino($documento_id, $area_id){
             $c = conexionBD::conexionPDO();

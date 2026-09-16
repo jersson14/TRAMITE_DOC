@@ -20,6 +20,7 @@ class Bitacora
     const DERIVO_TRAMITE   = 'DERIVO_TRAMITE';
     const CAMBIO_ESTADO    = 'CAMBIO_ESTADO';
     const ELIMINO_TRAMITE  = 'ELIMINO_TRAMITE';
+    const RECEPCION        = 'RECEPCION';
 
     // Acciones sobre el mantenimiento
     const REGISTRO         = 'REGISTRO';

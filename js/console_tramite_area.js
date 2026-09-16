@@ -76,7 +76,10 @@ function listar_tramite(){
         render: function(data,type,row){
                 // Llegó en copia: es para conocimiento, esta área no decide sobre él.
                 if(row.es_copia == 1){
-                  return "<span class='badge badge-copia' title='Recibido en copia, solo para conocimiento'><i class='fas fa-copy'></i> Copia · para conocimiento</span>";
+                  if(row.acuse_fecha){
+                    return "<span class='badge badge-copia' title='Recepción confirmada'><i class='fas fa-check'></i> Copia recibida · "+row.acuse_fecha+"</span>";
+                  }
+                  return "<button class='acuse-copia btn btn-sm btn-archivo' title='Confirmar que su área recibió esta copia'><i class='fas fa-inbox'></i> Confirmar recepción</button>";
                 }
                 if(data=='PENDIENTE'){
                     return "</button>&nbsp;<button  title='Aceptar Documento' class='aceptar btn btn-success  btn-sm'><i class='fa fa-check'></i> Aceptar</button>&nbsp;<button  title='Rechazar Documento' class='rechazar btn btn-danger  btn-sm'><i class='fa fa-search'></i> Rechazar</button>&nbsp;<button hidden class='derivar btn btn-primary  btn-sm' title='Derivar Documento'><i class='fa fa-share-square'></i> Derivar</button>";
@@ -701,23 +704,7 @@ function listar_seguimiento_tramite(id){
             return '<span>' + data + '</span>';
           }
         },
-        {"data":"mov_estatus",
-        render: function(data,type,row){
-                if(data=='PENDIENTE'){
-                    return '<span class="badge bg-warning" style="font-size: 12px; padding: 6px 10px;"><i class="fas fa-clock"></i> PENDIENTE</span>';
-                }else if(data=='RECHAZADO'){
-                    return '<span class="badge bg-danger" style="font-size: 12px; padding: 6px 10px;"><i class="fas fa-times-circle"></i> RECHAZADO</span>';
-                }else if(data=='ACEPTADO'){
-                    return '<span class="badge bg-success" style="font-size: 12px; padding: 6px 10px;"><i class="fas fa-check-circle"></i> ACEPTADO</span>';
-                }else if(data=='FINALIZADO'){
-                  return '<span class="badge bg-primary" style="font-size: 12px; padding: 6px 10px;"><i class="fas fa-flag"></i> FINALIZADO</span>';
-                }else if(data=='DERIVADO'){
-                  return '<span class="badge bg-dark" style="font-size: 12px; padding: 6px 10px;"><i class="fas fa-share"></i> DERIVADO</span>';
-                }
-            
-            }
-             
-        },
+        {"data":"mov_estatus", render: function(data,type,row){ return Render_Estado_Movimiento(data,type,row,true); }},
         {"data":"mov_acciones",
           render: function(data, type, row){
             if(data && data.trim() != ''){
@@ -735,3 +722,20 @@ function listar_seguimiento_tramite(id){
 });
 
 }
+
+/// ACUSE DE COPIA: el área que recibió el trámite en copia confirma que lo recibió
+$('#tabla_tramite').on('click','.acuse-copia',function(){
+  var tr = $(this).closest('tr');
+  if(tr.hasClass('child')){ tr = tr.prev(); } // vista adaptable: el botón vive en la fila hija
+  var data = tbl_tramite.row(tr).data();
+  if(!data){ return; }
+  $.ajax({
+    "url":"../controller/tramite_area/controlador_acuse_copia.php",
+    type:'POST',
+    dataType:"json",
+    data:{ id:data.documento_id }
+  }).done(function(){
+    Swal.fire("Recepción confirmada","Quedó registrado que su área recibió la copia del expediente "+(data.doc_expediente || data.documento_id)+".","success");
+    tbl_tramite.ajax.reload(null,false);
+  });
+});

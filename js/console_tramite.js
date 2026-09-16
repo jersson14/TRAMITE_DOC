@@ -733,23 +733,7 @@ function listar_seguimiento_tramite(id){
             return '<span>' + data + '</span>';
           }
         },
-        {"data":"mov_estatus",
-        render: function(data,type,row){
-                if(data=='PENDIENTE'){
-                    return '<span class="badge bg-warning" style="font-size: 12px; padding: 6px 10px;"><i class="fas fa-clock"></i> PENDIENTE</span>';
-                }else if(data=='RECHAZADO'){
-                    return '<span class="badge bg-danger" style="font-size: 12px; padding: 6px 10px;"><i class="fas fa-times-circle"></i> RECHAZADO</span>';
-                }else if(data=='ACEPTADO'){
-                    return '<span class="badge bg-success" style="font-size: 12px; padding: 6px 10px;"><i class="fas fa-check-circle"></i> ACEPTADO</span>';
-                }else if(data=='FINALIZADO'){
-                  return '<span class="badge bg-primary" style="font-size: 12px; padding: 6px 10px;"><i class="fas fa-flag"></i> FINALIZADO</span>';
-                }else if(data=='DERIVADO'){
-                  return '<span class="badge bg-dark" style="font-size: 12px; padding: 6px 10px;"><i class="fas fa-share"></i> DERIVADO</span>';
-                }
-            
-            }
-             
-        },
+        {"data":"mov_estatus", render: function(data,type,row){ return Render_Estado_Movimiento(data,type,row,true); }},
         {"data":"mov_acciones",
           render: function(data, type, row){
             if(data && data.trim() != ''){

@@ -595,6 +595,10 @@ function Traer_Datos_Seguimiento2(){
                           '</div>'+
                           '<div style="color: #2d3748; line-height: 1.6;">'+datadetalle[i][7]+'</div>'+
                         '</div>'+
+                        // Acuse de recepción del área que recibió este envío
+                        (datadetalle[i].recibido_fecha
+                          ? '<div style="margin-top: 0.75rem; color: #15803D; font-weight: 600;"><i class="fas fa-inbox"></i> Recibido por el área el '+datadetalle[i].recibido_fecha+'</div>'
+                          : (datadetalle[i][8]=="PENDIENTE" ? '<div style="margin-top: 0.75rem; color: #718096;"><i class="far fa-clock"></i> Aún sin acuse de recepción</div>' : ''))+
                       '</div>'+
                     '</div>';
           }

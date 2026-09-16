@@ -184,3 +184,34 @@ function Render_Archivos_Movimiento(data, type, row) {
 
   return html + "</div>";
 }
+
+/**
+ * Columna ESTADO del historial de movimientos, con el acuse de recepción.
+ * Reproduce las dos variantes que había copiadas en 10 archivos: la compacta
+ * (reportes) y la de íconos (conIconos = true).
+ */
+function Render_Estado_Movimiento(data, type, row, conIconos) {
+  if (type !== "display") return data || "";
+  var estilos = {
+    PENDIENTE: ["bg-warning", "fas fa-clock"],
+    RECHAZADO: ["bg-danger", "fas fa-times-circle"],
+    ACEPTADO: ["bg-success", "fas fa-check-circle"],
+    FINALIZADO: ["bg-primary", "fas fa-flag"],
+    DERIVADO: ["bg-dark", "fas fa-share"],
+  };
+  var e = estilos[data];
+  var html = !e
+    ? escaparTexto(data)
+    : conIconos
+      ? '<span class="badge ' + e[0] + '" style="font-size: 12px; padding: 6px 10px;"><i class="' + e[1] + '"></i> ' + data + "</span>"
+      : '<span class="badge ' + e[0] + '">' + data + "</span>";
+
+  if (row && row.recibido_fecha) {
+    html += '<small class="d-block text-muted mt-1" style="white-space:nowrap;"><i class="fas fa-inbox"></i> Recibido ' +
+      escaparTexto(row.recibido_fecha) + "</small>";
+    if (row.recibido_por) html += '<small class="d-block text-muted">' + escaparTexto(row.recibido_por) + "</small>";
+  } else if (row && data === "PENDIENTE" && Object.prototype.hasOwnProperty.call(row, "recibido_fecha")) {
+    html += '<small class="d-block text-muted mt-1">Sin acuse de recepción</small>';
+  }
+  return html;
+}

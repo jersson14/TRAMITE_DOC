@@ -26,4 +26,9 @@
 
     $consulta = $MTRA->Modificar_Estatus_Tramite($id, $estatus);
     Bitacora::registrar(Bitacora::CAMBIO_ESTADO, 'documento', $id, 'nuevo estado: ' . $estatus);
+
+    // Aceptar es recibir: queda el acuse de quién lo recibió y cuándo.
+    if ($consulta && $estatus === 'ACEPTADO' && $MTR->Registrar_Acuse_Destino($id, Seguridad::usuarioId()) > 0) {
+        Bitacora::registrar(Bitacora::RECEPCION, 'documento', $id, 'acuse del área de destino');
+    }
     echo $consulta;

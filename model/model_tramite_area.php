@@ -167,29 +167,20 @@
             conexionBD::cerrar_conexion();
         }
         
+        /**
+         * Copia de una derivación: solo agrega el envío "COPIA - ..." al área copiada.
+         * Antes llamaba a SP_REGISTRAR_TRAMITE_DERIVAR, que además marcaba como
+         * DERIVADO el envío principal recién creado y cambiaba el destino del trámite
+         * al área de la copia: el área real ya no podía aceptarlo y la copiada sí.
+         */
         public function Registrar_Copia($iddo, $orig, $dest_copia, $desc, $idusu, $ruta, $acc){
             $c = conexionBD::conexionPDO();
-            // Usar el mismo stored procedure pero marcando como copia en la descripción
-            $desc_copia = "COPIA - " . $desc;
-            $sql = "CALL SP_REGISTRAR_TRAMITE_DERIVAR(?,?,?,?,?,?,?,?)";
+            $sql = "INSERT INTO movimiento (documento_id, area_origen_id, areadestino_id, mov_fecharegistro,
+                                            mov_descripcion, mov_estatus, usuario_id, mov_archivo, mov_acciones)
+                    VALUES (?, ?, ?, NOW(), ?, 'PENDIENTE', ?, ?, ?)";
             $query = $c->prepare($sql);
-            $query->bindParam(1,$iddo);
-            $query->bindParam(2,$orig);
-            $query->bindParam(3,$dest_copia);
-            $query->bindParam(4,$desc_copia);
-            $query->bindParam(5,$idusu);
-            $query->bindParam(6,$ruta);
-            $tipo_copia = "DERIVAR"; // Las copias siempre se derivan
-            $query->bindParam(7,$tipo_copia);
-            $query->bindParam(8,$acc);
-            
-            $resul = $query->execute();
-            if($resul){
-                return 1;
-            }else{
-                return 0;
-            }
-            conexionBD::cerrar_conexion();
+            $resul = $query->execute([$iddo, $orig, $dest_copia, "COPIA - " . $desc, $idusu, $ruta, $acc]);
+            return $resul ? 1 : 0;
         }
         public function Listar_Tramite_Fecha_Area($fechainicio,$fechafin,$area){
             $c = conexionBD::conexionPDO();
