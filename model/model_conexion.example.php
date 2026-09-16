@@ -14,6 +14,8 @@ class conexionBD {
             $this->pdo = new PDO("mysql:host={$bd['host']};port={$bd['puerto']};dbname={$bd['nombre']}", $bd['usuario'], $bd['clave']);
             $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->pdo->exec("set names utf8");
+            // Meses y días en español en DATE_FORMAT/MONTHNAME ("septiembre", no "September")
+            $this->pdo->exec("SET lc_time_names = 'es_PE'");
             return $this->pdo;
         } catch (PDOException $e) {
             error_log('[BD] ' . $e->getMessage());

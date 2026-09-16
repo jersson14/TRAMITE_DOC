@@ -308,7 +308,7 @@
                             <div class="col-md-4 form-group-custom">
                                 <label>
                                     <i class="fas fa-file-alt"></i>
-                                    N° Expediente / N° Registro
+                                    Expediente (busque por N°, DNI o remitente)
                                     <span style="color: #e53e3e;">*</span>
                                 </label>
                                 <select class="form-control form-control-custom js-example-basic-single" id="txt_expediente" style="width:100%"></select>
@@ -316,7 +316,7 @@
                             <div class="col-md-4 form-group-custom">
                                 <label>
                                     <i class="fas fa-hashtag"></i>
-                                    Número de Documento
+                                    Código de seguimiento
                                     <span style="color: #e53e3e;">*</span>
                                 </label>
                                 <input type="text" class="form-control form-control-custom" id="txt_numero" disabled>

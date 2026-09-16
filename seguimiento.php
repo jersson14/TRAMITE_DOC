@@ -902,7 +902,7 @@
                 if(data.length > 0) {
                     document.getElementById("div_buscador").style.display = "block";
                     $("#div_buscador").addClass('show');
-                    document.getElementById('lbl_titulo').innerHTML = "<b>Seguimiento del Trámite: " + data[0][0] + " - " + data[0][2] + "</b>";
+                    document.getElementById('lbl_titulo').innerHTML = "<b>Expediente " + (data[0].doc_expediente || data[0][0]) + " · Código " + data[0][0] + " · " + data[0][2] + "</b>";
                     
                     cadena += '<div class="timeline">';
                     cadena += '<div class="timeline-item">' +

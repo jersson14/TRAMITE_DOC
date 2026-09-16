@@ -504,7 +504,7 @@ function Traer_Datos_Seguimiento2(){
     var cadena="";
     if(data.length>0){
       document.getElementById("div_buscador").style.display = "block";
-      document.getElementById('lbl_titulo').innerHTML="<i class='fas fa-route'></i> Seguimiento del Trámite N°: "+data[0][0]+" - Remitente: "+data[0][2];
+      document.getElementById('lbl_titulo').innerHTML="<i class='fas fa-route'></i> Expediente "+(data[0].doc_expediente || data[0][0])+" · Código "+data[0][0]+" · Remitente: "+data[0][2];
       
       // Información inicial del documento
       cadena += '<div class="alert alert-info" style="border-left: 4px solid #17a2b8; margin-bottom: 2rem;">'+
@@ -624,7 +624,7 @@ function Cargar_Select_Expedientes(){
     if(data.length>0){
       let cadena ="<option value=''>Seleccionar Expediente</option>";
       for (let i = 0; i < data.length; i++) {
-        cadena+="<option value='"+data[i][0]+"'> Expediente N°: "+data[i][9]+" - DNI: "+data[i][1]+" - Remitente: "+data[i][2]+"</option>";    
+        cadena+="<option value='"+data[i].documento_id+"'>"+(data[i].doc_expediente || data[i].documento_id)+" · Doc. N° "+data[i].doc_nrodocumento+" · DNI "+data[i].doc_dniremitente+" · "+data[i].REMITENTE+"</option>";    
       }
         document.getElementById('txt_expediente').innerHTML=cadena;
     }else{
@@ -644,7 +644,7 @@ function Cargar_Select_Expedientes_Admin(){
     if(data.length>0){
       let cadena ="<option value=''>Seleccionar Expediente</option>";
       for (let i = 0; i < data.length; i++) {
-        cadena+="<option value='"+data[i][0]+"'> Expediente N°: "+data[i][9]+" - DNI: "+data[i][1]+" - Remitente: "+data[i][2]+"</option>";    
+        cadena+="<option value='"+data[i].documento_id+"'>"+(data[i].doc_expediente || data[i].documento_id)+" · Doc. N° "+data[i].doc_nrodocumento+" · DNI "+data[i].doc_dniremitente+" · "+data[i].REMITENTE+"</option>";    
       }
         document.getElementById('txt_expediente').innerHTML=cadena;
     }else{
