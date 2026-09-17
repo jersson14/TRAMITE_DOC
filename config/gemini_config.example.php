@@ -6,6 +6,11 @@
  * repositorio (ver .gitignore).
  */
 
+// OJO: desde la migración 020 estos valores son solo de reserva. El proveedor
+// (ChatGPT u otro), su modelo y su clave se configuran en el panel:
+// Configuración y manual -> Institución y asistente. Lo de aquí solo se usa
+// para Gemini y si en el panel no hay clave guardada.
+
 // API Key de Gemini
 define('GEMINI_API_KEY', 'TU_API_KEY_AQUI');
 

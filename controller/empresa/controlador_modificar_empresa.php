@@ -2,12 +2,18 @@
     require_once __DIR__ . '/../_guard_admin.php';
     require '../../model/model_empresa.php';
     $ME = new Modelo_Empresa();//Instaciamos
-    $id = strtoupper(htmlspecialchars($_POST['id'],ENT_QUOTES,'UTF-8'));
-    $nom = strtoupper(htmlspecialchars($_POST['nom'],ENT_QUOTES,'UTF-8'));
-    $email = strtoupper(htmlspecialchars($_POST['email'],ENT_QUOTES,'UTF-8'));
-    $cod = strtoupper(htmlspecialchars($_POST['cod'],ENT_QUOTES,'UTF-8'));
-    $tel = strtoupper(htmlspecialchars($_POST['tel'],ENT_QUOTES,'UTF-8'));
-    $dir = strtoupper(htmlspecialchars($_POST['dir'],ENT_QUOTES,'UTF-8'));
+    // Se guarda como lo escribió el administrador: antes se forzaba a MAYÚSCULAS
+    // y el nombre de la institución aparece así en el menú, el portal y los PDF.
+    $id = (int) ($_POST['id'] ?? 0);
+    $nom = trim(htmlspecialchars($_POST['nom'] ?? '', ENT_QUOTES, 'UTF-8'));
+    $email = trim(htmlspecialchars($_POST['email'] ?? '', ENT_QUOTES, 'UTF-8'));
+    $cod = trim(htmlspecialchars($_POST['cod'] ?? '', ENT_QUOTES, 'UTF-8'));
+    $tel = trim(htmlspecialchars($_POST['tel'] ?? '', ENT_QUOTES, 'UTF-8'));
+    $dir = trim(htmlspecialchars($_POST['dir'] ?? '', ENT_QUOTES, 'UTF-8'));
+
+    if ($id <= 0 || $nom === '' || $email === '' || $cod === '' || $tel === '' || $dir === '') {
+        Seguridad::responderError(422, 'Complete los datos de la institución.');
+    }
 
     // Horario de recepción (migración 015): HH:MM, apertura antes del cierre
     $hini = (string) ($_POST['hini'] ?? '');

@@ -14,7 +14,7 @@
  * Si la pregunta no se puede responder con datos (un saludo, una duda de uso),
  * se contesta sin consultar nada.
  */
-require_once __DIR__ . '/GeminiClient.php';
+require_once __DIR__ . '/FabricaIA.php';
 require_once __DIR__ . '/ConsultaSegura.php';
 require_once __DIR__ . '/EsquemaConsulta.php';
 require_once __DIR__ . '/Institucion.php';
@@ -26,16 +26,16 @@ class AsistenteBD
     /** Reintentos cuando la consulta generada no pasa la validación. */
     const INTENTOS = 2;
 
-    private $gemini;
+    private $ia;
     private $esAdmin;
     private $areaId;
     private $areaNombre;
     private $rol;
 
-    /** $gemini se recibe aparte para poder probar la cadena sin llamar a la API. */
-    public function __construct(bool $esAdmin, ?int $areaId, string $areaNombre, string $rol, ?GeminiClient $gemini = null)
+    /** El cliente se recibe aparte para poder probar la cadena sin llamar a la API. */
+    public function __construct(bool $esAdmin, ?int $areaId, string $areaNombre, string $rol, ?ClienteIA $ia = null)
     {
-        $this->gemini = $gemini ?: new GeminiClient();
+        $this->ia = $ia ?: FabricaIA::cliente();
         $this->esAdmin = $esAdmin;
         $this->areaId = $areaId;
         $this->areaNombre = $areaNombre;
@@ -44,7 +44,7 @@ class AsistenteBD
 
     public function disponible(): bool
     {
-        return $this->gemini->isConfigured();
+        return $this->ia->disponible();
     }
 
     /**
@@ -112,7 +112,7 @@ class AsistenteBD
         }
         $prompt .= "PREGUNTA: " . $pregunta . "\nSQL:";
 
-        $respuesta = $this->gemini->generarTexto($prompt, 0.0, 700);
+        $respuesta = $this->ia->generarTexto($prompt, 0.0, 700);
         $texto = trim($respuesta);
         if ($texto === '' || stripos($texto, 'NO_CONSULTA') === 0) {
             return null;
@@ -141,7 +141,7 @@ class AsistenteBD
             . json_encode($muestra, JSON_UNESCAPED_UNICODE | JSON_PARTIAL_OUTPUT_ON_ERROR) . "\n\n"
             . "RESPUESTA:";
 
-        $texto = trim($this->gemini->generarTexto($prompt, 0.3, 700));
+        $texto = trim($this->ia->generarTexto($prompt, 0.3, 700));
         if ($texto === '') {
             return $total
                 ? "Encontré $total resultado(s) para tu consulta."
@@ -162,7 +162,7 @@ class AsistenteBD
             . "No inventes cifras: para dar números hace falta consultar, y eso se hace con otra pregunta.\n\n"
             . "MENSAJE: " . $pregunta . "\nRESPUESTA:";
 
-        $texto = trim($this->gemini->generarTexto($prompt, 0.4, 500));
+        $texto = trim($this->ia->generarTexto($prompt, 0.4, 500));
         return $texto !== '' ? $texto : 'Puedo consultar los trámites, plazos y movimientos del sistema. ¿Qué necesitas saber?';
     }
 }

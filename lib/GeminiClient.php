@@ -1,30 +1,59 @@
 <?php
 /**
- * Cliente para Google Gemini API
- * Actualizado para Gemini 2.5 Flash
+ * Cliente para Google Gemini API.
+ *
+ * Es el proveedor alternativo del asistente: la clave y el modelo salen de la
+ * configuración que el administrador edita en el panel, y solo se recurre a
+ * config/gemini_config.php si ahí no hay nada (instalaciones anteriores).
  */
 
-require_once __DIR__ . '/../config/gemini_config.php';
+require_once __DIR__ . '/ClienteIA.php';
+require_once __DIR__ . '/Configuracion.php';
+if (is_file(__DIR__ . '/../config/gemini_config.php')) {
+    require_once __DIR__ . '/../config/gemini_config.php';
+}
 
-class GeminiClient {
+class GeminiClient implements ClienteIA {
     
     private $api_key;
     private $api_url;
     private $model;
     
-    public function __construct() {
-        $this->api_key = GEMINI_API_KEY;
-        $this->model = GEMINI_MODEL; // gemini-2.0-flash-exp
-        
-        // URL para Gemini 1.5 Flash
+    public function __construct(?string $clave = null, ?string $modelo = null) {
+        $this->api_key = $clave !== null ? $clave : self::claveConfigurada();
+        $this->model = $modelo !== null && $modelo !== '' ? $modelo : self::modeloConfigurado();
         $this->api_url = 'https://generativelanguage.googleapis.com/v1beta/models/' . $this->model . ':generateContent?key=' . $this->api_key;
     }
-    
-    /**
-     * Verifica si la API está configurada
-     */
+
+    /** Del panel; si ahí está vacía, de la configuración antigua del archivo. */
+    private static function claveConfigurada(): string {
+        $clave = Configuracion::obtener('ia_clave');
+        if ($clave === '' && defined('GEMINI_API_KEY')) {
+            $clave = GEMINI_API_KEY;
+        }
+        return $clave === 'TU_API_KEY_AQUI' ? '' : $clave;
+    }
+
+    /** El modelo del panel solo sirve si es de Gemini; si no, el del archivo. */
+    private static function modeloConfigurado(): string {
+        $modelo = Configuracion::obtener('ia_modelo');
+        if (strpos($modelo, 'gemini') !== 0) {
+            $modelo = defined('GEMINI_MODEL') ? GEMINI_MODEL : 'gemini-2.5-flash';
+        }
+        return $modelo;
+    }
+
+    public function disponible(): bool {
+        return trim((string) $this->api_key) !== '';
+    }
+
+    public function descripcion(): string {
+        return 'Gemini (Google) · ' . $this->model;
+    }
+
+    /** Se mantiene el nombre anterior por compatibilidad. */
     public function isConfigured() {
-        return !empty($this->api_key) && $this->api_key !== 'TU_API_KEY_AQUI';
+        return $this->disponible();
     }
     
     /**
@@ -89,8 +118,8 @@ class GeminiClient {
         $payload = [
             'contents' => [['parts' => [['text' => $prompt]]]],
             'generationConfig' => [
-                'temperature' => $temperatura !== null ? $temperatura : GEMINI_TEMPERATURE,
-                'maxOutputTokens' => $maxTokens !== null ? $maxTokens : GEMINI_MAX_TOKENS,
+                'temperature' => $temperatura !== null ? $temperatura : 0.3,
+                'maxOutputTokens' => $maxTokens !== null ? $maxTokens : 900,
                 'topP' => 0.95,
             ],
         ];

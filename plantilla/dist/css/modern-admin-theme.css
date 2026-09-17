@@ -2001,3 +2001,22 @@ a.notificacion:hover {
   white-space: pre-wrap;
   word-break: break-word;
 }
+
+/* ===== Pantalla de configuración ===== */
+/* El logo se ve como lo verá el menú: contenido, sobre blanco. */
+.cfg-logo {
+  max-width: 100%;
+  max-height: 90px;
+  object-fit: contain;
+  background: #fff;
+  border: 1px solid #DDE3EC;
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+.cfg-color {
+  width: 58px;
+  min-width: 58px;
+  padding: 2px 4px;
+  height: calc(2.25rem + 4px);
+}

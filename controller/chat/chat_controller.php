@@ -14,6 +14,7 @@
 require_once __DIR__ . '/../_guard.php';
 require_once __DIR__ . '/../../lib/Bitacora.php';
 require_once __DIR__ . '/../../lib/AsistenteBD.php';
+require_once __DIR__ . '/../../lib/Configuracion.php';
 require_once __DIR__ . '/../../model/model_chat.php';
 
 header('Content-Type: application/json; charset=utf-8');
@@ -37,7 +38,8 @@ $rol = (string) ($_SESSION['S_ROL'] ?? 'Usuario');
 
 $asistente = new AsistenteBD($esAdmin, $areaId, $areaNombre, $rol);
 
-if (!$asistente->disponible()) {
+// El asistente inteligente puede estar apagado o sin clave: entonces, lo básico
+if (Configuracion::obtener('ia_activo') !== '1' || !$asistente->disponible()) {
     echo json_encode([
         'success' => true,
         'modo'    => 'basico',
@@ -48,7 +50,7 @@ if (!$asistente->disponible()) {
 
 try {
     $r = $asistente->responder($pregunta);
-    Bitacora::registrar('CONSULTA_ASISTENTE', 'chat', '', mb_substr($pregunta, 0, 150)
+    Bitacora::registrar('CONSULTA_ASISTENTE', 'chat', Configuracion::obtener('ia_proveedor'), mb_substr($pregunta, 0, 150)
         . ($r['sql'] ? ' · ' . mb_substr($r['sql'], 0, 300) : ' · sin consulta'));
 
     echo json_encode([
@@ -79,8 +81,8 @@ try {
 /** Tope de consultas por minuto y por día, contadas en la sesión. */
 function limiteDeConsultas(): bool
 {
-    $porMinuto = defined('CHAT_MAX_REQUESTS_PER_MINUTE') ? CHAT_MAX_REQUESTS_PER_MINUTE : 10;
-    $porDia = defined('CHAT_MAX_REQUESTS_PER_DAY') ? CHAT_MAX_REQUESTS_PER_DAY : 100;
+    $porMinuto = Configuracion::entero('ia_limite_minuto', 10);
+    $porDia = Configuracion::entero('ia_limite_dia', 100);
 
     $ahora = time();
     $conteo = $_SESSION['S_CHAT_CONTEO'] ?? ['minuto' => 0, 'desde' => $ahora, 'dia' => 0, 'fecha' => date('Y-m-d')];
@@ -102,7 +104,7 @@ function limiteDeConsultas(): bool
 
 /**
  * Respuestas sin IA: las consultas fijas que ya existían.
- * Sirven cuando no hay clave de Gemini configurada.
+ * Sirven cuando el asistente está apagado, sin clave o el proveedor falla.
  */
 function respuestaBasica(string $pregunta, int $areaId, string $areaNombre): string
 {
