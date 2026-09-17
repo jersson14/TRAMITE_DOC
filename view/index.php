@@ -480,118 +480,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
           </div>
         </div>
 
-        <!-- Main content -->
-        <div class="content">
-          <div class="container-fluid">
-            <div class="row">
-              <!-- /.col-md-6 -->
-              <div class="col-lg-12">
-                  <div class="card card-modern">
-                    <div class="card-header">
-                      <h5 class="m-0" style="font-family:cooper;text-align:center"><i class="fas fa-list-ol"></i> DATOS IMPORTANTES</b></h5>
-                  </div>
-                  <div class="card-body" style="background-color:white">
-                    <div class="row">
-                      <div class="col-lg-3 col-6">
-                        <!-- small box -->
-                        <div class="small-box" style="background: #1E3A5F; color: white;">
-                          <div class="inner">
-                            <b>Total de empleados</b>
-                            <h3 id="total_empleados"><sup style="font-size: 20px"></sup></h3>
-
-                          </div>
-                          <div class="icon">
-                            <i class="fas fa-users"></i>
-                          </div>
-                          <a href="#" onclick="cargar_contenido('contenido_principal','empleado/view_empleado.php')" class="small-box-footer"><b>Ver Empleados</b>&nbsp;<i class="fas fa-arrow-circle-right"></i></a>
-                        </div>
-                      </div>
-                      <!-- ./col -->
-                      <div class="col-lg-3 col-6">
-                        <!-- small box -->
-                        <div class="small-box" style="background: #B45309; color: white;">
-                          <div class="inner">
-                            <b>Nº De Documentos</b>
-                            <h3 id="totaldocpendientes"><sup style="font-size: 20px"></sup></h3>
-
-                          </div>
-                          <div class="icon">
-                            <i class="fas fa-file"></i>
-                          </div>
-                          <a href="#" onclick="window.FILTRO_ESTADO_INICIAL='PENDIENTE'; cargar_contenido('contenido_principal','tramite/view_movimiento.php')" class="small-box-footer"><b>Documentos Pendientes</b>&nbsp;<i class="fas fa-arrow-circle-right"></i></a>
-                        </div>
-                      </div>
-                      <!-- ./col -->
-                      <div class="col-lg-3 col-6">
-                        <!-- small box -->
-                        <div class="small-box" style="background: #2C5282; color: white;">
-                          <div class="inner">
-
-                            <b>Nº De Documentos</b>
-                            <h3 id="totaldocpaceptados"><sup style="font-size: 20px"></sup></h3>
-
-                          </div>
-                          <div class="icon">
-                            <i class="fas fa-file"></i>
-                          </div>
-                          <a href="#" onclick="window.FILTRO_ESTADO_INICIAL='ACEPTADO'; cargar_contenido('contenido_principal','tramite/view_movimiento.php')" class="small-box-footer"><b>Documentos Aceptados</b>&nbsp; <i class="fas fa-arrow-circle-right"></i></a>
-                        </div>
-                      </div>
-                      <!-- ./col -->
-                      <div class="col-lg-3 col-6">
-                        <!-- small box -->
-                        <div class="small-box" style="background: #15803D; color: white;">
-                          <div class="inner">
-                            <b>Nº De Documentos</b>
-                            <h3 id="totaldocfinalizado"><sup style="font-size: 20px"></sup></h3>
-
-                          </div>
-                          <div class="icon">
-                            <i class="fas fa-file"></i>
-                          </div>
-                          <a href="#" onclick="window.FILTRO_ESTADO_INICIAL='FINALIZADO'; cargar_contenido('contenido_principal','tramite/view_movimiento.php')" class="small-box-footer"><b>Documentos Finalizados</b>&nbsp; <i class="fas fa-arrow-circle-right"></i></a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-              <!-- /.col-md-6 -->
-            </div>
-            <!-- /.row -->
-          </div><!-- /.container-fluid -->
-        </div>
-        <div class="content">
-          <div class="container-fluid">
-            <div class="row">
-              <!-- /.col-md-6 -->
-              <div class="col-lg-12">
-                  <div class="card card-modern">
-                    <div class="card-header">
-                      <h5 class="m-0" style="font-family:cooper;text-align:center"><i class="fas fa-bullhorn"></i><b> COMUNICADOS</b></h5>
-                  </div>
-                  <div class="table-responsive" style="text-align:center">
-                    <div class="card-body">
-                      <table id="tabla_comunicados_listar" class="table table-modern table-striped table-bordered" style="width:100%">
-                        <thead>
-                          <tr>
-                            <th style="text-align:center">Título</th>
-                            <th style="text-align:center">Descripción</th>
-                            <th style="text-align:center">Fecha</th>
-                            <th style="text-align:center">Enlace</th>
-                            <th style="text-align:center">Estado</th>
-                          </tr>
-                        </thead>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-                <!-- /.col-md-6 -->
-              </div>
-              <!-- /.row -->
-            </div><!-- /.container-fluid -->
-          </div>
 
           <!-- /.content -->
         </div>
@@ -601,42 +489,10 @@ scratch. This page gets rid of all links and provides the needed markup only.
       ?>
       <?php if ($_SESSION['S_ROL'] == "Secretario (a)") { ?>
 
-        <!-- Main content -->
-
+        <!-- Tablero del área (js/console_indicadores.js) -->
         <div class="content">
           <div class="container-fluid">
-            <div class="row">
-              <!-- /.col-md-6 -->
-              <div class="col-lg-12">
-                <div class="card-primary"><br>
-                  <div class="card-header">
-
-                    <h5 class="m-0" style="font-family:cooper;text-align:center"><i class="fas fa-bullhorn"></i><b> COMUNICADOS</b></h5>
-                  </div>
-                  <div class="table-responsive" style="text-align:center">
-                    <div class="card-body">
-                      <table id="tabla_comunicados_listar" class="table table-modern table-striped table-bordered" style="width:100%">
-                        <thead>
-                          <tr>
-                            <th style="text-align:center">Título</th>
-                            <th style="text-align:center">Descripción</th>
-                            <th style="text-align:center">Fecha</th>
-                            <th style="text-align:center">Enlace</th>
-
-                            <th style="text-align:center">Estado</th>
-                          </tr>
-                        </thead>
-                      </table>
-                <img src="../img/empre.jpg" width="100%"><br>
-
-                    </div>
-                  </div>
-
-                </div>
-                <!-- /.col-md-6 -->
-              </div>
-              <!-- /.row -->
-            </div><!-- /.container-fluid -->
+            <div id="panel_indicadores"></div>
           </div>
         </div>
 
@@ -939,14 +795,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 </html>
 <script>
-  $(document).ready(function() {
-    listar_comunicado_dash();
-    Total_empleados();
-    Total_documentos_pendientes();
-    Total_documentos_aceptados();
-    Total_documentos_finalizado();
-  });
-
   <?php if ($_SESSION['S_ROL'] == "Secretario (a)") { ?>
   <?php
   }

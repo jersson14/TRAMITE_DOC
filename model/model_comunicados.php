@@ -36,20 +36,6 @@
             return $arreglo;
         }
 
-        /** Los comunicados vigentes que le toca ver a un usuario (para el tablero). */
-        public function Listar_Comunicados2(){
-            $c = conexionBD::conexionPDO();
-            $sql = "SELECT id_comunicado, titulo, descripcion, enlace, estado, fecha_registro,
-                           DATE_FORMAT(fecha_registro, '%d/%m/%Y') AS fecha_formateada
-                      FROM comunicados
-                     ORDER BY fecha_registro DESC, id_comunicado DESC";
-            $arreglo = array('data' => array());
-            foreach($c->query($sql)->fetchAll(PDO::FETCH_ASSOC) as $fila){
-                $arreglo['data'][] = $fila;
-            }
-            return $arreglo;
-        }
-
         /**
          * Condición SQL que decide si un comunicado le corresponde a un usuario.
          * Se usa igual en la alerta, en las notificaciones y en el tablero.

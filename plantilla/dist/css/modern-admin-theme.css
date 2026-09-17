@@ -1998,3 +1998,102 @@ a.notificacion:hover {
   padding: 2px 4px;
   height: calc(2.25rem + 4px);
 }
+
+/* ===== Tablero: accesos rápidos y lo que requiere atención ===== */
+.accesos-rapidos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.accesos-rapidos .acceso-rapido {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px;
+  border-radius: 6px;
+  background: #F4F6F9;
+  border: 1px solid #DDE3EC;
+  color: #1E3A5F;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.accesos-rapidos .acceso-rapido:hover {
+  background: #1E3A5F;
+  border-color: #1E3A5F;
+  color: #fff;
+}
+
+/* Lista de pendientes: el número primero, porque es lo que se busca */
+.pendientes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pendiente {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #DDE3EC;
+  border-left-width: 4px;
+  background: #fff;
+  color: #16181A;
+  font-size: 0.8rem;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.pendiente:hover {
+  background: #F7F9FC;
+  color: #16181A;
+}
+
+.pendiente-total {
+  min-width: 34px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: right;
+}
+
+.pendiente-texto {
+  flex: 1 1 auto;
+  line-height: 1.25;
+}
+
+.pendiente i {
+  color: #8FA3BC;
+  font-size: 0.7rem;
+}
+
+.pendiente-urgente {
+  border-left-color: #B91C1C;
+}
+
+.pendiente-urgente .pendiente-total {
+  color: #B91C1C;
+}
+
+.pendiente-aviso {
+  border-left-color: #B45309;
+}
+
+.pendiente-aviso .pendiente-total {
+  color: #B45309;
+}
+
+/* Sin nada pendiente no debe llamar la atención */
+.pendiente-cero {
+  border-left-color: #CBD5E0;
+  color: #6B7A90;
+}
+
+.pendiente-cero .pendiente-total {
+  color: #A0AEC0;
+}
