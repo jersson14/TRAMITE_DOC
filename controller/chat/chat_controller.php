@@ -60,8 +60,7 @@ try {
         'tabla'     => $r['tabla'],
         'total'     => $r['total'],
         'recortada' => $r['recortada'],
-        // El SQL se muestra solo al administrador, para que pueda revisarlo
-        'sql'       => $esAdmin ? $r['sql'] : null,
+        // La consulta usada no se le muestra a nadie en el chat: queda en la bitácora
     ], JSON_UNESCAPED_UNICODE);
 } catch (RuntimeException $e) {
     // La consulta generada no pasó la validación: se le dice al usuario

@@ -1980,28 +1980,6 @@ a.notificacion:hover {
   border-top: 1px solid #DDE3EC;
 }
 
-/* La consulta usada, plegada, solo para el administrador */
-.chat-sql {
-  margin-top: 8px;
-  font-size: 0.7rem;
-}
-
-.chat-sql summary {
-  cursor: pointer;
-  color: #2C5282;
-}
-
-.chat-sql pre {
-  margin: 6px 0 0;
-  padding: 8px;
-  background: #16283F;
-  color: #D7E3F4;
-  border-radius: 6px;
-  font-size: 0.68rem;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
 /* ===== Pantalla de configuración ===== */
 /* El logo se ve como lo verá el menú: contenido, sobre blanco. */
 .cfg-logo {

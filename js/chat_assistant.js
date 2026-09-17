@@ -176,10 +176,6 @@ class ChatAssistant {
     if (datos && datos.tabla && datos.tabla.filas && datos.tabla.filas.length) {
       content.appendChild(this.buildTable(datos));
     }
-    if (datos && datos.sql) {
-      content.appendChild(this.buildSql(datos.sql));
-    }
-
     const time = document.createElement("div");
     time.className = "message-time";
     time.textContent = this.getCurrentTime();
@@ -242,14 +238,6 @@ class ChatAssistant {
     return caja;
   }
 
-  /** La consulta usada, plegada; solo llega al administrador. */
-  buildSql(sql) {
-    const detalle = document.createElement("details");
-    detalle.className = "chat-sql";
-    detalle.innerHTML =
-      "<summary>Ver la consulta usada</summary><pre>" + this.escape(sql) + "</pre>";
-    return detalle;
-  }
 
   addErrorMessage(errorText) {
     const errorDiv = document.createElement("div");
