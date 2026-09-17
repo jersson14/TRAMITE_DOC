@@ -64,19 +64,6 @@
             }
             conexionBD::cerrar_conexion();
         }
-        public function Listar_notificacion(){
-            $c = conexionBD::conexionPDO();
-            $sql = "CALL SP_LISTAR_NOTIFICACION_COMUNICADO()";
-            $arreglo = array();
-            $query  = $c->prepare($sql);
-            $query->execute();
-            $resultado = $query->fetchAll();
-            foreach($resultado as $resp){
-                $arreglo[]=$resp;
-            }
-            return $arreglo;
-            conexionBD::cerrar_conexion();
-        }
     }
 
 

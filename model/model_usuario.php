@@ -164,20 +164,6 @@
             return $arreglo;
             conexionBD::cerrar_conexion();
         }
-        public function Listar_notificacion_tramite($idarea){
-            $c = conexionBD::conexionPDO();
-            $sql = "CALL SP_LISTAR_NOTIFICACION_TRAMITE(?)";
-            $arreglo = array();
-            $query  = $c->prepare($sql);
-            $query ->bindParam(1,$idarea);
-            $query->execute();
-            $resultado = $query->fetchAll();
-            foreach($resultado as $resp){
-                $arreglo[]=$resp;
-            }
-            return $arreglo;
-            conexionBD::cerrar_conexion();
-        }
     }
 
 

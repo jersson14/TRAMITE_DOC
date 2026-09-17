@@ -46,19 +46,33 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </ul>
         <!-- Right navbar links -->
         <ul class="navbar-nav ml-auto">
-          <!-- Notifications Dropdown Menu -->
-          <li class="nav-item dropdown" style="text-align:justify;">
-            <a class="nav-link" data-toggle="dropdown" href="#" style="text-align:justify;">
-              <i class="far fa-comments" title="Comunicados"></i>
-              <span class="badge badge-danger navbar-badge" id="lbl_contador" style="text-align:justify"></span>
+          <!-- Comunicados -->
+          <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" href="#" title="Comunicados">
+              <i class="far fa-comments"></i>
+              <span class="badge badge-danger navbar-badge" id="lbl_contador" style="display:none;"></span>
             </a>
-            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="text-align:justify">
-              <div id="div_cuerpo" style="text-align:justify; border: 1px solid #333333;width: 100%;font-size: 100%;overflow-x: scroll;">
-              </div>
-
-
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right caja-notificaciones">
+              <span class="dropdown-item dropdown-header">Comunicados</span>
               <div class="dropdown-divider"></div>
-              <a href="" class="dropdown-item dropdown-footer" onclick="listar_comunicado_dash()"><b><u>Ver Comunicados</u></b></a>
+              <div id="div_cuerpo"></div>
+              <div class="dropdown-divider"></div>
+              <a href="#/comunicados" class="dropdown-item dropdown-footer"><b>Ver todos los comunicados</b></a>
+            </div>
+          </li>
+
+          <!-- Pendientes de la institución -->
+          <li class="nav-item dropdown">
+            <a class="nav-link" data-toggle="dropdown" href="#" title="Pendientes de atención">
+              <i class="far fa-bell"></i>
+              <span class="badge badge-warning navbar-badge" id="lbl_contador_pendientes" style="display:none;"></span>
+            </a>
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right caja-notificaciones">
+              <span class="dropdown-item dropdown-header">Pendientes de la institución</span>
+              <div class="dropdown-divider"></div>
+              <div id="div_cuerpo_tramite"></div>
+              <div class="dropdown-divider"></div>
+              <a href="#/movimientos" class="dropdown-item dropdown-footer"><b>Ver todos los trámites</b></a>
             </div>
           </li>
           <li class="nav-item dropdown">
@@ -93,33 +107,31 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
         <!-- Right navbar links -->
         <ul class="navbar-nav ml-auto">
-          <!-- Notifications Dropdown Menu -->
+          <!-- Comunicados -->
           <li class="nav-item dropdown">
-            <a class="nav-link" data-toggle="dropdown" href="#">
-              <i class="far fa-comments" title="Comunicados"></i>
-              <span class="badge badge-danger navbar-badge" id="lbl_contador"></span>
+            <a class="nav-link" data-toggle="dropdown" href="#" title="Comunicados">
+              <i class="far fa-comments"></i>
+              <span class="badge badge-danger navbar-badge" id="lbl_contador" style="display:none;"></span>
             </a>
-            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-              <div id="div_cuerpo" style="max-height: 300px; overflow-y: auto; padding: 10px;">
-              </div>
-
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right caja-notificaciones">
+              <span class="dropdown-item dropdown-header">Comunicados</span>
               <div class="dropdown-divider"></div>
-              <a href="#" class="dropdown-item dropdown-footer" onclick="listar_comunicado_dash(); return false;"><b><u>Ver Comunicados</u></b></a>
+              <div id="div_cuerpo"></div>
             </div>
           </li>
-          
-          <li class="nav-item">
-            <span class="nav-link" style="padding: 0 5px;">|</span>
-          </li>
-          
+
+          <!-- Pendientes del área -->
           <li class="nav-item dropdown">
-            <a class="nav-link" data-toggle="dropdown" href="#">
-              <i class="far fa-bell" title="Documentos pendientes"></i>
-              <span class="badge badge-warning navbar-badge" id="lbl_contador_pendientes"></span>
+            <a class="nav-link" data-toggle="dropdown" href="#" title="Pendientes de mi área">
+              <i class="far fa-bell"></i>
+              <span class="badge badge-warning navbar-badge" id="lbl_contador_pendientes" style="display:none;"></span>
             </a>
-            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
-              <div id="div_cuerpo_tramite" style="max-height: 300px; overflow-y: auto; padding: 10px;">
-              </div>
+            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right caja-notificaciones">
+              <span class="dropdown-item dropdown-header">Pendientes de mi área</span>
+              <div class="dropdown-divider"></div>
+              <div id="div_cuerpo_tramite"></div>
+              <div class="dropdown-divider"></div>
+              <a href="#/recibidos" class="dropdown-item dropdown-footer"><b>Ver trámites recibidos</b></a>
             </div>
           </li>
 
@@ -986,6 +998,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <script src="../js/firma.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/filtros_bandeja.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_indicadores.js?rev=<?php echo time(); ?>"></script>
+  <script src="../js/console_notificaciones.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_comunicados.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_empleado.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_tramite.js?rev=<?php echo time(); ?>"></script>
@@ -1010,41 +1023,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
   });
 
   <?php if ($_SESSION['S_ROL'] == "Administrador") { ?>
-    TraerNotificacionComunicado();
-
-    function TraerNotificacionComunicado() {
-      $.ajax({
-        "url": "../controller/usuario/controlador_traer_notificacion_comunicado.php",
-        type: 'POST',
-      }).done(function(resp) {
-
-        let data = JSON.parse(resp);
-        document.getElementById('lbl_contador').innerHTML = data.length;
-        let llenardata = "";
-        if (data.length > 0) {
-          let cadena = "";
-          for (let i = 0; i < data.length; i++) {
-            llenardata += '<a href="#" class="dropdown-item">' +
-              '<div class="media">' +
-              '<div class="media-body">' +
-              '<h3 class="dropdown-item-title" >' +
-              '<b>Título: </b>' + data[i][1] + '' +
-              '<span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>' +
-              '</h3>' +
-              '<p class="text-sm"><b>Descripción: </b>' + data[i][2] + '</p>' +
-              '<p class="text-sm text-muted"><i class="far fa-clock mr-1"></i><b>Fecha: </b>' + data[i][4] + '</p>' +
-              '</div>' +
-              '</div>' +
-              '</a>';
-          }
-          document.getElementById('div_cuerpo').innerHTML = llenardata;
-
-        } else {
-          document.getElementById('div_cuerpo').innerHTML = llenardata;
-
-        }
-      })
-    }
     document.getElementById("txt_foto").addEventListener("change", () => {
       var fileName = document.getElementById("txt_foto").value;
       var idxDot = fileName.lastIndexOf(".") + 1;
@@ -1061,87 +1039,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
   }
   ?>
   <?php if ($_SESSION['S_ROL'] == "Secretario (a)") { ?>
-    TraerNotificacionComunicado();
-
-    function TraerNotificacionComunicado() {
-      $.ajax({
-        "url": "../controller/usuario/controlador_traer_notificacion_comunicado.php",
-        type: 'POST',
-      }).done(function(resp) {
-
-        let data = JSON.parse(resp);
-        document.getElementById('lbl_contador').innerHTML = data.length;
-        let llenardata = "";
-        if (data.length > 0) {
-          let cadena = "";
-          for (let i = 0; i < data.length; i++) {
-            llenardata += '<a href="#" class="dropdown-item">' +
-              '<div class="media">' +
-              '<div class="media-body">' +
-              '<h3 class="dropdown-item-title" >' +
-              '<b>Título: </b>' + data[i][1] + '' +
-              '<span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>' +
-              '</h3>' +
-              '<p class="text-sm"><b>Descripción: </b>' + data[i][2] + '</p>' +
-              '<p class="text-sm text-muted"><i class="far fa-clock mr-1"></i><b>Fecha: </b>' + data[i][4] + '</p>' +
-              '</div>' +
-              '</div>' +
-              '</a>';
-          }
-          document.getElementById('div_cuerpo').innerHTML = llenardata;
-
-        } else {
-          document.getElementById('div_cuerpo').innerHTML = llenardata;
-
-        }
-      })
-    }
-
-
-
-    TraerNotificacionDocumentos();
-
-    function TraerNotificacionDocumentos() {
-      let idarea = document.getElementById('txtidprincipalarea').value;
-      $.ajax({
-        "url": "../controller/usuario/controlador_traer_notificacion_tramite.php",
-        type: 'POST',
-        data: {
-          idarea: idarea
-        }
-      }).done(function(resp) {
-        let data = JSON.parse(resp);
-        document.getElementById('lbl_contador_pendientes').innerHTML = data.length;
-        let llenardata = "";
-        if (data.length > 0) {
-          let cadena = "";
-          for (let i = 0; i < data.length; i++) {
-            llenardata += '<a href="#" class="dropdown-item">' +
-              '<div class="media">' +
-              '<div class="media-body">' +
-              '<h3 class="dropdown-item-title" >' +
-              '<b>DNI: </b>' + data[i][1] + '' +
-              '<span class="float-right text-sm text-danger"><i class="fas fa-star"></i></span>' +
-              '</h3>' +
-              '<p class="text-sm"><b>Remitente: </b>' + data[i][2] + '</p>' +
-              '<p class="text-sm"><b>Area Origén: </b>' + data[i][24] + '</p>' +
-              '<p class="text-sm"><b>Asunto: </b>' + data[i][18] + '</p>' +
-              '<p class="text-sm"><b>Estado: </b>' + data[i][8] + '</p>' +
-
-              '<p class="text-sm text-muted"><i class="far fa-clock mr-1"></i><b>Fecha: </b>' + data[i][20] + '</p>' +
-              '</div>' +
-              '</div>' +
-              '</a>';
-          }
-          document.getElementById('div_cuerpo_tramite').innerHTML = llenardata;
-
-        } else {
-          document.getElementById('div_cuerpo_tramite').innerHTML = llenardata;
-
-        }
-      })
-    }
-
   <?php
   }
   ?>
