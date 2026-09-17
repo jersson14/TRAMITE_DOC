@@ -1289,3 +1289,129 @@ input[type="file"]:disabled::file-selector-button {
     background: #16304E;
     border-color: #16304E;
 }
+
+/* ============================================================
+   Filtros de las bandejas (js/filtros_bandeja.js)
+   ============================================================ */
+.filtros-bandeja {
+    background: #F7FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 10px;
+    padding: 0.9rem 1rem 0.6rem;
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.filtros-fila {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: 0.6rem;
+}
+
+.filtro {
+    flex: 1 1 160px;
+    min-width: 0;
+}
+
+.filtro.filtro-texto {
+    flex: 3 1 320px;
+}
+
+.filtro.filtro-fecha {
+    flex: 1 1 150px;
+}
+
+.filtro.filtro-acciones {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: flex-end;
+}
+
+.filtros-bandeja label {
+    display: block;
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: #4A5568;
+    margin-bottom: 0.2rem;
+}
+
+.filtros-bandeja .form-control {
+    height: calc(1.5em + 0.75rem + 2px);
+    font-size: 0.88rem;
+    border-color: #CBD5E0;
+    background-color: #fff;
+}
+
+.filtros-bandeja .form-control:focus {
+    border-color: #1E3A5F;
+    box-shadow: 0 0 0 0.15rem rgba(30, 58, 95, 0.2);
+}
+
+.filtro-caja-texto {
+    position: relative;
+}
+
+.filtro-caja-texto > i {
+    position: absolute;
+    left: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #718096;
+    font-size: 0.85rem;
+    pointer-events: none;
+}
+
+.filtro-caja-texto .form-control {
+    padding-left: 2.1rem;
+}
+
+.filtros-bandeja .fb-limpiar {
+    height: calc(1.5em + 0.75rem + 2px);
+    white-space: nowrap;
+}
+
+.filtros-bandeja .fb-limpiar:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.filtros-bandeja .fb-limpiar:disabled:hover {
+    background: #fff;
+    color: #1E3A5F;
+}
+
+.filtros-resumen {
+    font-size: 0.8rem;
+    color: #4A5568;
+}
+
+.filtros-resumen b {
+    color: #1E3A5F;
+}
+
+.filtros-sin-resultados {
+    color: #B45309;
+    font-weight: 600;
+}
+
+/* El panel reemplaza al buscador propio de DataTables */
+.bandeja-filtrada .dataTables_filter {
+    display: none;
+}
+
+@media (max-width: 576px) {
+    .filtro,
+    .filtro.filtro-texto,
+    .filtro.filtro-fecha {
+        flex-basis: 100%;
+    }
+
+    .filtro.filtro-acciones .fb-limpiar {
+        width: 100%;
+    }
+
+    .filtro.filtro-acciones {
+        flex-basis: 100%;
+    }
+}

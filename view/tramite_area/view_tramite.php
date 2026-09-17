@@ -32,7 +32,10 @@
               <h3 class="card-title"><i class="fas fa-file-signature"></i>&nbsp;&nbsp;<b>Listado de Trámites</b></h3>
                 <button class="btn btn-gradient-success float-right" onclick="cargar_contenido('contenido_principal','tramite_area/view_tramite_registro.php')"><i class="fas fa-plus"></i> Nuevo Registro</button>
                 
-              </div><br>
+              </div>
+              <div class="card-body pb-0">
+                <div id="filtros_bandeja" data-tipos="1"></div>
+              </div>
               <div class="row">
                 <div class="col-lg-12 form-group" style="text-align:right">
                 <label style="color:#1A202C;">PLAZO DE RESPUESTA (días hábiles):</label>
@@ -528,6 +531,7 @@
     <script>
     $(document).ready(function () {
       listar_tramite();
+      Filtros_Bandeja.montar("#filtros_bandeja", "#tabla_tramite");
       $('.js-example-basic-single').select2();
       Cargar_Select_Area_REMI();
       Cargar_Select_Area();   

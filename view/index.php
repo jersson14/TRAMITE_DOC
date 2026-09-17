@@ -448,7 +448,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                           <div class="icon">
                             <i class="fas fa-file"></i>
                           </div>
-                          <a href="#" onclick="cargar_contenido('contenido_principal','tramite/view_movimiento.php')" class="small-box-footer"><b>Documentos Pendientes</b>&nbsp;<i class="fas fa-arrow-circle-right"></i></a>
+                          <a href="#" onclick="window.FILTRO_ESTADO_INICIAL='PENDIENTE'; cargar_contenido('contenido_principal','tramite/view_movimiento.php')" class="small-box-footer"><b>Documentos Pendientes</b>&nbsp;<i class="fas fa-arrow-circle-right"></i></a>
                         </div>
                       </div>
                       <!-- ./col -->
@@ -464,7 +464,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                           <div class="icon">
                             <i class="fas fa-file"></i>
                           </div>
-                          <a href="#" onclick="cargar_contenido('contenido_principal','tramite/view_movimiento.php')" class="small-box-footer"><b>Documentos Aceptados</b>&nbsp; <i class="fas fa-arrow-circle-right"></i></a>
+                          <a href="#" onclick="window.FILTRO_ESTADO_INICIAL='ACEPTADO'; cargar_contenido('contenido_principal','tramite/view_movimiento.php')" class="small-box-footer"><b>Documentos Aceptados</b>&nbsp; <i class="fas fa-arrow-circle-right"></i></a>
                         </div>
                       </div>
                       <!-- ./col -->
@@ -479,7 +479,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                           <div class="icon">
                             <i class="fas fa-file"></i>
                           </div>
-                          <a href="#" onclick="cargar_contenido('contenido_principal','tramite/view_movimiento.php')" class="small-box-footer"><b>Documentos Finalizados</b>&nbsp; <i class="fas fa-arrow-circle-right"></i></a>
+                          <a href="#" onclick="window.FILTRO_ESTADO_INICIAL='FINALIZADO'; cargar_contenido('contenido_principal','tramite/view_movimiento.php')" class="small-box-footer"><b>Documentos Finalizados</b>&nbsp; <i class="fas fa-arrow-circle-right"></i></a>
                         </div>
                       </div>
                     </div>
@@ -843,6 +843,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <script src="../js/formato.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/anexos.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/firma.js?rev=<?php echo time(); ?>"></script>
+  <script src="../js/filtros_bandeja.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_comunicados.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_empleado.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_tramite.js?rev=<?php echo time(); ?>"></script>

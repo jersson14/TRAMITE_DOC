@@ -482,20 +482,6 @@
         conexionBD::cerrar_conexion();
     }
     
-    public function Listar_Tramite_Estado($estados){
-        $c = conexionBD::conexionPDO();
-        $sql = "CALL SP_LISTAR_TRAMITE_ESTADO(?)";
-        $arreglo = array();
-        $query  = $c->prepare($sql);
-        $query->bindParam(1,$estados);
-        $query->execute();
-        $resultado = $query->fetchAll(PDO::FETCH_ASSOC);
-        foreach($resultado as $resp){
-            $arreglo["data"][]=$resp;
-        }
-        return $arreglo;
-        conexionBD::cerrar_conexion();
-    }
     public function Rechazar_Tramite($id2,$desc2,$loc){
         $c = conexionBD::conexionPDO();
         $sql = "CALL SP_RECHAZAR_TRAMITE(?,?,?)";

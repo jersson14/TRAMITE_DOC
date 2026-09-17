@@ -34,33 +34,7 @@
               </div>
                 <div class="table-responsive" style="text-align:left">
                   <div class="card-body">
-                  <div class="row">
-                <div class="col-12 col-md-8" role="document">
-                    <div class="form-group" style="text-align:center">
-                    <label for="txtfechainicio">Estado:</label>
-                        <div class="input-group mb-2">
-                         <div class="input-group-prepend">
-                            <div class="input-group-text">
-                                <i class="fas fa-file"></i>
-                            </div>
-                        </div>
-                              <select class="form-control" id="select_buscar_estado">
-                                <option value="PENDIENTE">PENDIENTE</option>
-                                <option value="ACEPTADO">ACEPTADO</option>
-                                <option value="RECHAZADO">RECHAZADO</option>
-                                <option value="FINALIZADO">FINALIZADO</option>
-                              </select>
-                              <div class="valid-input invalid-feedback"></div>
-                        </div>
-                    </div>
-                </div>
-                
-                
-                <div class="col-12 col-md-4" role="document">
-                    <label for="">&nbsp;</label><br>
-                    <button onclick="listar_tramite_buscar_area()" class="btn btn-gradient-primary btn-modern mr-2" style="width:100%" onclick><i class="fas fa-search mr-1"></i>Buscar por Estado de Documento</button>
-                </div>
-                </div>
+                  <div id="filtros_bandeja"></div>
                 <div class="row">
                 <div class="col-lg-12 form-group" style="text-align:right">
                 <label style="color:#1A202C;">PLAZO DE RESPUESTA (días hábiles):</label>
@@ -336,6 +310,7 @@
     <script>
     $(document).ready(function () {
       listar_tramite();
+      Filtros_Bandeja.montar("#filtros_bandeja", "#tabla_tramite");
       $('.js-example-basic-single').select2();
       Cargar_Select_Area_REMI();
       Cargar_Select_Area();   
