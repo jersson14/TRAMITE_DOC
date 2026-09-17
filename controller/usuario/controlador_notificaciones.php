@@ -23,15 +23,15 @@ $area = Seguridad::areaId();
 $esAdmin = Seguridad::esAdmin();
 $LIMITE = 6;
 
-// --- Comunicados vigentes ---
-$comunicados = $pdo->query(
-    "SELECT id_comunicado, titulo, descripcion, enlace,
-            DATE_FORMAT(fecha_registro, '%d/%m/%Y') AS fecha
-       FROM comunicados
-      WHERE estado = 'NUEVO'
-      ORDER BY fecha_registro DESC, id_comunicado DESC
-      LIMIT $LIMITE"
-)->fetchAll(PDO::FETCH_ASSOC);
+// --- Comunicados vigentes dirigidos a esta persona (migración 018) ---
+require_once __DIR__ . '/../../model/model_comunicados.php';
+$comunicados = array_slice(
+    (new Modelo_Comunicados())->Para_Usuario(Seguridad::usuarioId(), $area, $esAdmin),
+    0,
+    $LIMITE
+);
+// La insignia cuenta solo los que aún no confirmó leer
+$sinLeer = count(array_filter($comunicados, fn($c) => (int) $c['leido'] === 0));
 
 $grupos = [];
 
@@ -180,7 +180,7 @@ foreach ($grupos as $g) {
 }
 
 echo json_encode([
-    'comunicados' => ['total' => count($comunicados), 'items' => $comunicados],
+    'comunicados' => ['total' => $sinLeer, 'items' => $comunicados],
     'grupos'      => $grupos,
     'por_atender' => $porAtender,
     'es_admin'    => $esAdmin,

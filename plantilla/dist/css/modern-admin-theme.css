@@ -1717,3 +1717,36 @@ a.notificacion:hover {
         justify-content: center;
     }
 }
+
+/* ============================================================
+   Alerta de comunicados (js/console_comunicados_alerta.js)
+   ============================================================ */
+.comunicado-titulo {
+    color: #1E3A5F;
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.comunicado-datos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 1.25rem;
+    font-size: 0.8rem;
+    color: #718096;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #E2E8F0;
+    margin-bottom: 0.9rem;
+}
+
+.comunicado-texto {
+    color: #2D3748;
+    line-height: 1.6;
+    max-height: 45vh;
+    overflow-y: auto;
+    text-align: justify;
+}
+
+#modal_comunicado_alerta .modal-footer {
+    justify-content: space-between;
+}

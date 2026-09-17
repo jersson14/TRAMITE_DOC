@@ -1014,6 +1014,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <script src="../js/console_indicadores.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_notificaciones.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/exportaciones.js?rev=<?php echo time(); ?>"></script>
+  <script src="../js/console_comunicados_alerta.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_comunicados.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_empleado.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_tramite.js?rev=<?php echo time(); ?>"></script>
@@ -1058,6 +1059,38 @@ scratch. This page gets rid of all links and provides the needed markup only.
   }
   ?>
 </script>
+
+<!-- Alerta de comunicados (js/console_comunicados_alerta.js) -->
+<div class="modal fade" id="modal_comunicado_alerta" tabindex="-1" role="dialog" aria-labelledby="comunicado_titulo" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="background:#1E3A5F; color:#fff;">
+        <h5 class="modal-title"><i class="fas fa-bullhorn mr-2"></i><span id="comunicado_contador">Comunicado</span></h5>
+        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Cerrar" title="Cerrar; volverá a mostrarse">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h4 id="comunicado_titulo" class="comunicado-titulo"></h4>
+        <div class="comunicado-datos">
+          <span><i class="far fa-calendar-alt"></i> <span id="comunicado_fecha"></span></span>
+          <span><i class="fas fa-users"></i> <span id="comunicado_destino"></span></span>
+          <span id="comunicado_vigencia"></span>
+        </div>
+        <div id="comunicado_texto" class="comunicado-texto"></div>
+        <a id="comunicado_enlace" class="btn btn-archivo mt-3" href="#" target="_blank" rel="noopener" hidden>
+          <i class="fas fa-external-link-alt"></i> Ver más información
+        </a>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Ver después</button>
+        <button type="button" class="btn btn-success" id="comunicado_boton" onclick="Confirmar_Comunicado()">
+          <i class="fas fa-check"></i> Entendido
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Chat Widget CSS -->
 <link rel="stylesheet" href="../plantilla/dist/css/chat_widget.css?v=<?php echo time(); ?>">
