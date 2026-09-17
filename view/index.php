@@ -17,6 +17,10 @@ $partesNombre = preg_split('/\s+/', $nombreUsuario, -1, PREG_SPLIT_NO_EMPTY) ?: 
 $iniciales = mb_strtoupper(mb_substr($partesNombre[0] ?? 'U', 0, 1) . mb_substr($partesNombre[1] ?? '', 0, 1));
 $fotoUsuario = (string) ($_SESSION['S_FOTO'] ?? '');
 $hayFoto = $fotoUsuario !== '' && is_file(__DIR__ . '/../' . $fotoUsuario);
+
+// Hora del sistema en zona de Perú: la barra superior la muestra y el navegador
+// solo la adelanta desde este valor.
+$horaPeru = (new DateTimeImmutable('now', new DateTimeZone('America/Lima')))->format('Y-m-d H:i:s');
 ?>
 <!DOCTYPE html>
 <!--
@@ -54,6 +58,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <ul class="navbar-nav">
           <li class="nav-item">
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+          </li>
+          <!-- Hora del sistema (js/reloj.js): la pone el servidor en zona de Perú -->
+          <li class="nav-item">
+            <span class="reloj-barra" id="reloj_peru" title="Hora de Perú, según el servidor del sistema"
+                  data-ahora="<?php echo $horaPeru; ?>"></span>
           </li>
         </ul>
         <!-- Right navbar links -->
@@ -114,6 +123,11 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <ul class="navbar-nav">
           <li class="nav-item">
             <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+          </li>
+          <!-- Hora del sistema (js/reloj.js): la pone el servidor en zona de Perú -->
+          <li class="nav-item">
+            <span class="reloj-barra" id="reloj_peru" title="Hora de Perú, según el servidor del sistema"
+                  data-ahora="<?php echo $horaPeru; ?>"></span>
           </li>
         </ul>
 
@@ -781,6 +795,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <script src="../js/anexos.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/firma.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/filtros_bandeja.js?rev=<?php echo time(); ?>"></script>
+  <script src="../js/reloj.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_indicadores.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_notificaciones.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/exportaciones.js?rev=<?php echo time(); ?>"></script>

@@ -75,51 +75,6 @@ function accesosIndicadores(rol) {
   }).join("");
 }
 
-/* ---- Reloj del tablero, en hora de Perú ---- */
-var RELOJ_DESFASE = 0; // milisegundos entre el reloj del servidor y el de esta máquina
-var RELOJ_LATIDO = null;
-var RELOJ_DIAS = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
-var RELOJ_MESES = ["enero", "febrero", "marzo", "abril", "mayo", "junio",
-  "julio", "agosto", "setiembre", "octubre", "noviembre", "diciembre"];
-
-/**
- * Arranca el reloj desde la hora que dio el servidor (zona América/Lima).
- * Solo se guarda la diferencia con el reloj local y después se avanza aquí, así
- * no hace falta consultar al servidor cada segundo ni importa si la
- * computadora del usuario tiene la hora mal puesta.
- */
-function Iniciar_Reloj(ahora) {
-  if (!ahora) return;
-  var partes = String(ahora).match(/(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})/);
-  if (!partes) return;
-  var servidor = new Date(+partes[1], +partes[2] - 1, +partes[3], +partes[4], +partes[5], +partes[6]);
-  RELOJ_DESFASE = servidor.getTime() - Date.now();
-  if (RELOJ_LATIDO) clearInterval(RELOJ_LATIDO);
-  Latir_Reloj();
-  RELOJ_LATIDO = setInterval(Latir_Reloj, 1000);
-}
-
-function Latir_Reloj() {
-  var caja = document.getElementById("reloj_tablero");
-  if (!caja) {
-    if (RELOJ_LATIDO) clearInterval(RELOJ_LATIDO);
-    RELOJ_LATIDO = null;
-    return;
-  }
-  var f = new Date(Date.now() + RELOJ_DESFASE);
-  var dos = function (n) { return ("0" + n).slice(-2); };
-  var horas = f.getHours();
-  var sufijo = horas < 12 ? "a.m." : "p.m.";
-  var doce = horas % 12 === 0 ? 12 : horas % 12;
-
-  caja.innerHTML =
-    '<i class="far fa-clock"></i>' +
-    '<span><span class="reloj-hora">' + dos(doce) + ":" + dos(f.getMinutes()) + ":" + dos(f.getSeconds()) +
-      " " + sufijo + "</span><br>" +
-      '<span class="reloj-fecha">' + RELOJ_DIAS[f.getDay()] + " " + f.getDate() + " de " +
-      RELOJ_MESES[f.getMonth()] + " de " + f.getFullYear() + " · hora de Perú</span></span>";
-}
-
 function Pintar_Indicadores(r) {
   var caja = document.getElementById("panel_indicadores");
   if (!caja) return;
@@ -236,11 +191,8 @@ function Pintar_Indicadores(r) {
 
   caja.innerHTML =
     '<div class="card card-modern">' +
-      '<div class="card-header"><div class="cabecera-tablero">' +
-        '<h5><i class="fas fa-chart-line"></i> <b>' +
-          (esAdmin ? "TABLERO DE GESTIÓN" : "TABLERO DE " + textoIndicador(r.area || "MI ÁREA")) + "</b></h5>" +
-        '<span class="reloj-tablero" id="reloj_tablero"></span>' +
-      "</div></div>" +
+      '<div class="card-header"><h5 class="m-0" style="text-align:center;"><i class="fas fa-chart-line"></i> <b>' +
+        (esAdmin ? "TABLERO DE GESTIÓN" : "TABLERO DE " + textoIndicador(r.area || "MI ÁREA")) + "</b></h5></div>" +
       '<div class="card-body">' +
         avisos +
         '<div class="accesos-rapidos">' + accesosIndicadores(r.rol) + "</div>" +
@@ -278,8 +230,6 @@ function Pintar_Indicadores(r) {
         "</div>" +
       "</div>" +
     "</div>";
-
-  Iniciar_Reloj(r.ahora);
 }
 
 function Cargar_Indicadores() {

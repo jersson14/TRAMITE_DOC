@@ -2128,41 +2128,48 @@ a.notificacion:hover {
   font-weight: 600;
 }
 
-/* ===== Reloj del tablero (hora de Perú) ===== */
-.reloj-tablero {
+/* ===== Reloj de la barra superior (hora de Perú) ===== */
+/* La hora del sistema es la que decide si un documento entró dentro del
+   horario de recepción, así que se muestra siempre, en todas las pantallas. */
+.reloj-barra {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 5px 12px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.14);
-  color: #fff;
-  font-size: 0.78rem;
-  line-height: 1.2;
+  gap: 9px;
+  padding: 4px 14px;
+  margin-left: 4px;
+  border-left: 1px solid #DDE3EC;
+  color: #1E3A5F;
+  line-height: 1.15;
   white-space: nowrap;
 }
 
-.reloj-tablero .reloj-hora {
+.reloj-barra > i {
+  font-size: 1.05rem;
+  color: #2C5282;
+}
+
+.reloj-barra .reloj-textos {
+  display: flex;
+  flex-direction: column;
+}
+
+.reloj-barra .reloj-hora {
   font-size: 0.95rem;
   font-weight: 700;
-  letter-spacing: 0.4px;
+  letter-spacing: 0.3px;
+  font-variant-numeric: tabular-nums;
 }
 
-.reloj-tablero .reloj-fecha {
-  opacity: 0.85;
+.reloj-barra .reloj-fecha {
+  font-size: 0.68rem;
+  color: #6B7A90;
 }
 
-/* La cabecera del tablero lleva el título y el reloj en la misma línea */
-.cabecera-tablero {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px 16px;
-}
-
-.cabecera-tablero h5 {
-  margin: 0;
+/* En pantallas angostas la barra necesita el espacio para las notificaciones */
+@media (max-width: 767px) {
+  .reloj-barra {
+    display: none;
+  }
 }
 
 @media (max-width: 575px) {
