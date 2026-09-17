@@ -42,6 +42,7 @@
                     <th style="text-align:center">Nro.</th>
                     <th style="text-align:center">Título</th>
                     <th style="text-align:center">Contenido</th>
+                    <th style="text-align:center">Imagen</th>
                     <th style="text-align:center">Dirigido a</th>
                     <th style="text-align:center">Publicado</th>
                     <th style="text-align:center">Vigencia</th>
@@ -107,6 +108,17 @@
           <div class="col-12 form-group" id="bloque_areas_comunicado" hidden>
             <label for="select_areas_comunicado">Áreas destinatarias(*):</label>
             <select class="form-control" id="select_areas_comunicado" multiple style="width:100%"></select>
+          </div>
+          <div class="col-12 form-group">
+            <label for="archivo_imagen">Imagen <small class="text-muted">(opcional; JPG, PNG o WEBP, hasta 5 MB)</small>:</label>
+            <input type="file" class="form-control-file" id="archivo_imagen" accept="image/jpeg,image/png,image/webp">
+            <div id="bloque_imagen_comunicado" class="comunicado-imagen-previa mt-2" hidden>
+              <img id="vista_imagen_comunicado" alt="Imagen del comunicado">
+              <div class="custom-control custom-checkbox mt-2" id="bloque_quitar_imagen" hidden>
+                <input type="checkbox" class="custom-control-input" id="chk_quitar_imagen">
+                <label class="custom-control-label" for="chk_quitar_imagen">Quitar la imagen al guardar</label>
+              </div>
+            </div>
           </div>
           <div class="col-md-6 form-group">
             <label for="txt_desde_comunicado">Vigente desde <small class="text-muted">(opcional)</small>:</label>

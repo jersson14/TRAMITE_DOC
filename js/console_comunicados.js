@@ -45,6 +45,15 @@ function listar_comunicado() {
         },
       },
       {
+        data: "com_imagen",
+        render: function (data) {
+          if (!data) return '<span class="text-muted">—</span>';
+          var ruta = "../" + escaparComunicado(data);
+          return '<a href="' + ruta + '" target="_blank" title="Ver la imagen en grande">' +
+            '<img src="' + ruta + '" alt="Imagen del comunicado" class="comunicado-miniatura"></a>';
+        },
+      },
+      {
         data: "com_destino",
         render: function (data, type, row) {
           var d = DESTINOS[data] || ["badge-light", data];
@@ -131,26 +140,44 @@ function Abrir_Comunicado(fila) {
   document.getElementById("txt_desde_comunicado").value = fila && fila.com_desde ? fila.com_desde : "";
   document.getElementById("txt_hasta_comunicado").value = fila && fila.com_hasta ? fila.com_hasta : "";
   $("#select_areas_comunicado").val(fila && fila.areas_id ? String(fila.areas_id).split(",") : []).trigger("change");
+  Mostrar_Imagen_Comunicado(fila && fila.com_imagen ? "../" + fila.com_imagen : "", !!(fila && fila.com_imagen));
   Cambio_Destino_Comunicado();
   $("#modal_comunicado").modal({ backdrop: "static", keyboard: true, show: true });
 }
+
+/**
+ * Muestra la vista previa de la imagen.
+ * El "quitar imagen" solo tiene sentido cuando la imagen ya está guardada.
+ */
+function Mostrar_Imagen_Comunicado(ruta, esGuardada) {
+  document.getElementById("archivo_imagen").value = "";
+  document.getElementById("chk_quitar_imagen").checked = false;
+  document.getElementById("bloque_quitar_imagen").hidden = !esGuardada;
+  document.getElementById("bloque_imagen_comunicado").hidden = !ruta;
+  document.getElementById("vista_imagen_comunicado").src = ruta || "";
+}
+
+/** Al elegir un archivo se ve antes de guardarlo. */
+$(document).on("change", "#archivo_imagen", function () {
+  var archivo = this.files && this.files[0];
+  if (!archivo) return;
+  if (archivo.size > 5 * 1048576) {
+    this.value = "";
+    return Swal.fire("Mensaje de Advertencia", "La imagen no debe pesar más de 5 MB", "warning");
+  }
+  document.getElementById("chk_quitar_imagen").checked = false;
+  document.getElementById("bloque_imagen_comunicado").hidden = false;
+  document.getElementById("vista_imagen_comunicado").src = URL.createObjectURL(archivo);
+});
 
 function Guardar_Comunicado() {
   var id = document.getElementById("txt_id_comun").value;
   var destino = document.getElementById("cbo_destino").value;
   var areas = $("#select_areas_comunicado").val() || [];
-  var datos = {
-    titulo: document.getElementById("txt_titulo").value.trim(),
-    descri: document.getElementById("txt_descripcion").value.trim(),
-    enlace: document.getElementById("txt_enlace").value.trim(),
-    destino: destino,
-    estado: document.getElementById("cbo_estado_comunicado").value,
-    desde: document.getElementById("txt_desde_comunicado").value,
-    hasta: document.getElementById("txt_hasta_comunicado").value,
-    "areas[]": areas,
-  };
+  var titulo = document.getElementById("txt_titulo").value.trim();
+  var descri = document.getElementById("txt_descripcion").value.trim();
 
-  if (datos.titulo.length < 4 || datos.descri.length < 4) {
+  if (titulo.length < 4 || descri.length < 4) {
     return Swal.fire("Mensaje de Advertencia", "Escriba el título y el contenido del comunicado", "warning");
   }
   if (destino === "AREAS" && areas.length === 0) {
@@ -158,7 +185,21 @@ function Guardar_Comunicado() {
   }
 
   var nuevo = !id;
-  if (!nuevo) datos.id = id;
+  // Va como FormData porque el comunicado puede llevar una imagen adjunta
+  var datos = new FormData();
+  datos.append("titulo", titulo);
+  datos.append("descri", descri);
+  datos.append("enlace", document.getElementById("txt_enlace").value.trim());
+  datos.append("destino", destino);
+  datos.append("estado", document.getElementById("cbo_estado_comunicado").value);
+  datos.append("desde", document.getElementById("txt_desde_comunicado").value);
+  datos.append("hasta", document.getElementById("txt_hasta_comunicado").value);
+  areas.forEach(function (a) { datos.append("areas[]", a); });
+  if (!nuevo) datos.append("id", id);
+
+  var archivo = document.getElementById("archivo_imagen").files[0];
+  if (archivo) datos.append("imagen", archivo);
+  if (document.getElementById("chk_quitar_imagen").checked) datos.append("quitar_imagen", "1");
 
   $.ajax({
     url: nuevo
@@ -167,6 +208,8 @@ function Guardar_Comunicado() {
     type: "POST",
     dataType: "json",
     data: datos,
+    contentType: false,
+    processData: false,
   }).done(function () {
     $("#modal_comunicado").modal("hide");
     Swal.fire("Mensaje de Confirmación", nuevo ? "Comunicado publicado" : "Comunicado actualizado", "success");

@@ -23,3 +23,5 @@ controller/tramite/documentos/*
 !controller/tramite/documentos/.htaccess
 controller/tramite_area/documentos/*
 !controller/tramite_area/documentos/.htaccess
+controller/comunicados/imagenes/*
+!controller/comunicados/imagenes/.htaccess

@@ -1750,3 +1750,41 @@ a.notificacion:hover {
 #modal_comunicado_alerta .modal-footer {
     justify-content: space-between;
 }
+
+/* ===== Imagen de los comunicados ===== */
+/* La imagen del aviso: ancho completo pero limitada en alto, para que el texto
+   y el botón "Entendido" sigan visibles sin desplazar la ventana. */
+.comunicado-imagen {
+  display: block;
+  margin: 0 0 14px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f4f6f9;
+  border: 1px solid #dde3ec;
+}
+
+.comunicado-imagen img {
+  display: block;
+  width: 100%;
+  max-height: 340px;
+  object-fit: contain;
+  margin: 0 auto;
+}
+
+/* Vista previa dentro del formulario del administrador */
+.comunicado-imagen-previa img {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 6px;
+  border: 1px solid #dde3ec;
+  background: #f4f6f9;
+}
+
+/* Miniatura en la lista de comunicados */
+.comunicado-miniatura {
+  width: 56px;
+  height: 42px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #dde3ec;
+}

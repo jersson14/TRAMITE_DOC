@@ -17,8 +17,20 @@
     }
 
     $datos = datosComunicado();
+    $anterior = $MC->Imagen_De($id);
+    $imagen = imagenComunicado();
+    $quitar = !empty($_POST['quitar_imagen']);
+
+    // Sin imagen nueva se conserva la que tenía, salvo que pidan quitarla
+    $rutaImagen = $imagen ?: ($quitar ? null : $anterior);
+
     $MC->Modificar_Comunicado($id, $datos['titulo'], $datos['descripcion'], $datos['enlace'],
-        $datos['destino'], $datos['desde'], $datos['hasta'], $datos['areas'], $estado);
+        $datos['destino'], $datos['desde'], $datos['hasta'], $datos['areas'], $estado, $rutaImagen);
+
+    // La imagen reemplazada o quitada se borra del servidor
+    if ($anterior && $anterior !== $rutaImagen) {
+        Seguridad::borrarArchivoEn(carpetaImagenes(), $anterior);
+    }
 
     Bitacora::registrar(Bitacora::MODIFICO, 'comunicado', (string) $id,
         mb_substr($datos['titulo'], 0, 100) . ' · para ' . $datos['destino'] . ' · ' . $estado);

@@ -18,7 +18,7 @@
             $c = conexionBD::conexionPDO();
             $sql = "SELECT c.id_comunicado, c.titulo, c.descripcion, c.enlace, c.estado,
                            c.fecha_registro, DATE_FORMAT(c.fecha_registro, '%d/%m/%Y') AS fecha_formateada,
-                           c.com_destino, c.com_desde, c.com_hasta,
+                           c.com_destino, c.com_desde, c.com_hasta, c.com_imagen,
                            DATE_FORMAT(c.com_desde, '%d/%m/%Y') AS desde_texto,
                            DATE_FORMAT(c.com_hasta, '%d/%m/%Y') AS hasta_texto,
                            (SELECT COUNT(*) FROM comunicado_leido l WHERE l.id_comunicado = c.id_comunicado) AS leidos,
@@ -71,7 +71,7 @@
         public function Para_Usuario(int $usuarioId, int $areaId, bool $esAdmin, bool $soloPendientes = false): array
         {
             $c = conexionBD::conexionPDO();
-            $sql = "SELECT c.id_comunicado, c.titulo, c.descripcion, c.enlace, c.com_destino,
+            $sql = "SELECT c.id_comunicado, c.titulo, c.descripcion, c.enlace, c.com_destino, c.com_imagen,
                            DATE_FORMAT(c.fecha_registro, '%d/%m/%Y') AS fecha,
                            DATE_FORMAT(c.com_hasta, '%d/%m/%Y') AS hasta,
                            (SELECT COUNT(*) FROM comunicado_leido l
@@ -122,17 +122,17 @@
         }
 
         /** Crea el comunicado con sus destinatarios. Devuelve su id. */
-        public function Registrar_Comunicado($titulo, $descri, $idusu, $enlace, $destino, $desde, $hasta, array $areas)
+        public function Registrar_Comunicado($titulo, $descri, $idusu, $enlace, $destino, $desde, $hasta, array $areas, $imagen = null)
         {
             $c = conexionBD::conexionPDO();
             $c->beginTransaction();
             try {
                 $query = $c->prepare(
                     "INSERT INTO comunicados (titulo, descripcion, enlace, fecha_registro, id_usuario, estado,
-                                              com_destino, com_desde, com_hasta)
-                     VALUES (?,?,?,CURDATE(),?, 'NUEVO', ?,?,?)"
+                                              com_destino, com_desde, com_hasta, com_imagen)
+                     VALUES (?,?,?,CURDATE(),?, 'NUEVO', ?,?,?,?)"
                 );
-                $query->execute([$titulo, $descri, $enlace, $idusu ?: null, $destino, $desde, $hasta]);
+                $query->execute([$titulo, $descri, $enlace, $idusu ?: null, $destino, $desde, $hasta, $imagen]);
                 $id = (int) $c->lastInsertId();
                 $this->guardarAreas($c, $id, $destino, $areas);
                 $c->commit();
@@ -144,17 +144,18 @@
         }
 
         /** Actualiza el comunicado y sus destinatarios. */
-        public function Modificar_Comunicado($id, $titulo, $descri, $enlace, $destino, $desde, $hasta, array $areas, $estado)
+        public function Modificar_Comunicado($id, $titulo, $descri, $enlace, $destino, $desde, $hasta, array $areas, $estado, $imagen = null)
         {
             $c = conexionBD::conexionPDO();
             $c->beginTransaction();
             try {
                 $query = $c->prepare(
                     "UPDATE comunicados
-                        SET titulo = ?, descripcion = ?, enlace = ?, com_destino = ?, com_desde = ?, com_hasta = ?, estado = ?
+                        SET titulo = ?, descripcion = ?, enlace = ?, com_destino = ?, com_desde = ?, com_hasta = ?,
+                            estado = ?, com_imagen = ?
                       WHERE id_comunicado = ?"
                 );
-                $query->execute([$titulo, $descri, $enlace, $destino, $desde, $hasta, $estado, $id]);
+                $query->execute([$titulo, $descri, $enlace, $destino, $desde, $hasta, $estado, $imagen, $id]);
                 $c->prepare("DELETE FROM comunicado_area WHERE id_comunicado = ?")->execute([$id]);
                 $this->guardarAreas($c, (int) $id, $destino, $areas);
                 $c->commit();
@@ -175,6 +176,16 @@
             foreach ($areas as $area) {
                 $query->execute([$id, (int) $area]);
             }
+        }
+
+        /** Ruta de la imagen que tiene guardada un comunicado. */
+        public function Imagen_De($id): ?string
+        {
+            $c = conexionBD::conexionPDO();
+            $query = $c->prepare("SELECT com_imagen FROM comunicados WHERE id_comunicado = ?");
+            $query->execute([$id]);
+            $ruta = $query->fetchColumn();
+            return $ruta ?: null;
         }
 
         /** Archiva o reactiva un comunicado. */

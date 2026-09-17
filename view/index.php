@@ -1077,6 +1077,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <span><i class="fas fa-users"></i> <span id="comunicado_destino"></span></span>
           <span id="comunicado_vigencia"></span>
         </div>
+        <a id="comunicado_imagen_enlace" class="comunicado-imagen" href="#" target="_blank" rel="noopener" hidden>
+          <img id="comunicado_imagen" alt="Imagen del comunicado">
+        </a>
         <div id="comunicado_texto" class="comunicado-texto"></div>
         <a id="comunicado_enlace" class="btn btn-archivo mt-3" href="#" target="_blank" rel="noopener" hidden>
           <i class="fas fa-external-link-alt"></i> Ver más información

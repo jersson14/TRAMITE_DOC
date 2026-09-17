@@ -62,3 +62,23 @@ function datosComunicado(): array
         'areas'       => $areas,
     ];
 }
+
+/** Carpeta donde se guardan las imágenes de los comunicados. */
+function carpetaImagenes(): string
+{
+    return __DIR__ . '/imagenes';
+}
+
+/**
+ * Guarda la imagen adjunta, si vino alguna, y devuelve su ruta relativa.
+ * JPG, PNG o WEBP, hasta 5 MB; el nombre lo pone el servidor.
+ */
+function imagenComunicado(): ?string
+{
+    try {
+        $nombre = Seguridad::guardarArchivo('imagen', carpetaImagenes(), Seguridad::MIME_IMAGEN, 5 * 1048576, 'COM');
+    } catch (RuntimeException $e) {
+        Seguridad::responderError(422, 'La imagen no es válida: ' . $e->getMessage());
+    }
+    return $nombre ? 'controller/comunicados/imagenes/' . $nombre : null;
+}

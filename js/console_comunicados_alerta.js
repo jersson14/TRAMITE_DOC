@@ -42,6 +42,17 @@ function Mostrar_Comunicado() {
   document.getElementById("comunicado_destino").textContent = DESTINOS_COMUNICADO[c.com_destino] || c.com_destino;
   document.getElementById("comunicado_vigencia").textContent = c.hasta ? "Vigente hasta el " + c.hasta : "";
 
+  // La imagen, si la tiene, se muestra sobre el texto y se puede abrir en grande
+  var caja = document.getElementById("comunicado_imagen_enlace");
+  if (c.com_imagen) {
+    caja.href = "../" + c.com_imagen;
+    document.getElementById("comunicado_imagen").src = "../" + c.com_imagen;
+    caja.hidden = false;
+  } else {
+    caja.hidden = true;
+    document.getElementById("comunicado_imagen").removeAttribute("src");
+  }
+
   var enlace = document.getElementById("comunicado_enlace");
   if (c.enlace) {
     enlace.href = c.enlace;
