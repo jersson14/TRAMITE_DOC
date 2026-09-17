@@ -11,9 +11,28 @@
  *     return { desde: ..., hasta: ..., area: ... };   // null si falta algo
  *   });
  */
+/**
+ * Filtros de la última búsqueda hecha en la pantalla. Las pantallas de reporte
+ * muestran la lista completa al abrirse, pero dejan la fecha de hoy escrita en
+ * los filtros; si el archivo tomara esos campos, saldría vacío sin que el
+ * usuario haya filtrado nada. Cada búsqueda registra aquí lo que aplicó.
+ */
+var Exportaciones_Aplicados = null;
+
+function Exportaciones_Recordar(filtros) {
+  Exportaciones_Aplicados = filtros;
+}
+
+/** Los filtros de la búsqueda hecha, o ninguno para exportar la lista completa. */
+function Exportaciones_Vigentes() {
+  return Exportaciones_Aplicados || {};
+}
+
 function Exportaciones_Montar(selector, reporte, obtenerFiltros) {
   var caja = document.querySelector(selector);
   if (!caja) return;
+  // Al abrir la pantalla no hay búsqueda hecha: se exporta la lista completa
+  Exportaciones_Aplicados = null;
 
   caja.innerHTML =
     '<span class="exportaciones-rotulo"><i class="fas fa-download"></i> Exportar:</span>' +

@@ -65,6 +65,8 @@ function listar_fechas_busqueda(){
     let fechafin = document.getElementById('txtfechafin').value;
     let estado = document.getElementById('select_buscar_estado').value;
     let area = document.getElementById('txtidprincipalarea').value;
+    // La exportación usa los filtros de esta búsqueda, no lo que quede escrito en los campos
+    Exportaciones_Recordar({ desde: fechainicio, hasta: fechafin, estado: estado });
 
   tbl_tramite = $("#tabla_tramite").DataTable({
       "ordering":false,   
@@ -503,12 +505,5 @@ function listar_seguimiento_tramite(id){
 // La vista se carga dentro de la página con $.load, cuando DOMContentLoaded ya ocurrió
 $(function () {
   if (typeof Exportaciones_Montar !== "function") return;
-  Exportaciones_Montar("#exportar_reporte", "fecha_estado", function () {
-    var f = { desde: document.getElementById('txtfechainicio').value, hasta: document.getElementById('txtfechafin').value, estado: document.getElementById('select_buscar_estado').value };
-    if (!f.desde || !f.hasta) {
-      Swal.fire("Mensaje de Advertencia", "Elija el rango de fechas antes de exportar", "warning");
-      return null;
-    }
-    return f;
-  });
+  Exportaciones_Montar("#exportar_reporte", "fecha_estado", Exportaciones_Vigentes);
 });

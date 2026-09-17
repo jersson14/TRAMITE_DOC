@@ -2,18 +2,22 @@
 /**
  * Exportación de reportes a PDF, Excel y CSV (lib/Exportador.php).
  *
- * Recibe el reporte y los mismos filtros que la pantalla, vuelve a consultar en
- * el servidor y devuelve el archivo con todos los resultados, no solo la página
- * visible. Un área solo puede exportar su propia información: el área sale de la
- * sesión, no de lo que manda el navegador.
+ * El archivo reproduce la lista que muestra la pantalla: los filtros (fechas,
+ * área, estado o tipo de documento) son opcionales y, si no se eligen, se
+ * exporta la lista completa. Antes exigía un rango de fechas, así que al
+ * exportar sin filtrar el archivo salía sin filas.
+ *
+ * La consulta se arma aquí y no con los procedimientos de las pantallas porque
+ * aquellos usan BETWEEN con fechas sin hora: dejaban fuera los trámites
+ * registrados el mismo día final después de las 00:00.
+ *
+ * Un área solo puede exportar su propia información: el área sale de la sesión.
  */
 require_once __DIR__ . '/../_guard.php';
 require_once __DIR__ . '/../../lib/Exportador.php';
 require_once __DIR__ . '/../../lib/Plazos.php';
 require_once __DIR__ . '/../../lib/ReportePlazos.php';
 require_once __DIR__ . '/../../model/model_conexion.php';
-require '../../model/model_tramite.php';
-require '../../model/model_tramite_area.php';
 
 $reporte = strtolower(trim((string) ($_POST['reporte'] ?? '')));
 $formato = strtolower(trim((string) ($_POST['formato'] ?? 'pdf')));
@@ -28,8 +32,14 @@ function fechaValida(string $fecha): bool
     return $d && $d->format('Y-m-d') === $fecha;
 }
 
-if (!fechaValida($desde) || !fechaValida($hasta) || $desde > $hasta) {
-    Seguridad::responderError(422, 'Elija un rango de fechas válido (la fecha inicial no puede ser posterior a la final).');
+if ($desde !== '' && !fechaValida($desde)) {
+    Seguridad::responderError(422, 'La fecha inicial no es válida.');
+}
+if ($hasta !== '' && !fechaValida($hasta)) {
+    Seguridad::responderError(422, 'La fecha final no es válida.');
+}
+if ($desde !== '' && $hasta !== '' && $desde > $hasta) {
+    Seguridad::responderError(422, 'La fecha inicial no puede ser posterior a la final.');
 }
 
 $pdo = (new conexionBD())->conexionPDO();
@@ -76,20 +86,82 @@ function resumenEstados(array $filas): array
     return $resumen;
 }
 
-$fechas = ['Desde' => date('d/m/Y', strtotime($desde)), 'Hasta' => date('d/m/Y', strtotime($hasta))];
+/**
+ * Trámites con los filtros elegidos. $condiciones son pares SQL => valor que se
+ * agregan al WHERE; el área del usuario se aplica siempre que no sea administrador.
+ */
+function listarTramites(PDO $pdo, string $desde, string $hasta, array $condiciones, bool $esAdmin, int $areaUsuario): array
+{
+    // Las pantallas de un área muestran al abrirse solo sus trámites recibidos y,
+    // al buscar, también los que envió. El archivo sigue el mismo criterio para
+    // que coincida con lo que se ve.
+    $hayFiltros = $desde !== '' || $hasta !== '' || $condiciones !== [];
+    $where = ['1 = 1'];
+    $parametros = [];
+
+    if ($desde !== '') {
+        $where[] = 'd.doc_fecharegistro >= ?';
+        $parametros[] = $desde . ' 00:00:00';
+    }
+    if ($hasta !== '') {
+        // Hasta el final del día: con BETWEEN por fecha se perdían los del mismo día
+        $where[] = 'd.doc_fecharegistro <= ?';
+        $parametros[] = $hasta . ' 23:59:59';
+    }
+    foreach ($condiciones as $sql => $valor) {
+        $where[] = $sql;
+        $parametros[] = $valor;
+    }
+    if (!$esAdmin) {
+        if ($hayFiltros) {
+            $where[] = '(d.area_origen = ? OR d.area_destino = ?)';
+            $parametros[] = $areaUsuario;
+            $parametros[] = $areaUsuario;
+        } else {
+            // Igual que la bandeja de Recibidos: lo que está en el área y lo que llegó
+            // en copia o con atención pedida
+            $where[] = '(d.area_destino = ? OR EXISTS (SELECT 1 FROM movimiento m
+                            WHERE m.documento_id = d.documento_id AND m.areadestino_id = ?
+                              AND m.mov_tipo IN (\'COPIA\', \'ATENCION\')))';
+            $parametros[] = $areaUsuario;
+            $parametros[] = $areaUsuario;
+        }
+    }
+
+    $consulta = $pdo->prepare(
+        "SELECT d.documento_id, d.doc_expediente, d.doc_nrodocumento, d.doc_asunto, d.doc_estatus,
+                d.doc_dniremitente, d.doc_folio,
+                DATE_FORMAT(d.doc_fecharegistro, '%d/%m/%Y %H:%i') AS fecha_formateada,
+                CONCAT_WS(' ', d.doc_nombreremitente, d.doc_apepatremitente, d.doc_apematremitente) AS REMITENTE,
+                td.tipodo_descripcion,
+                COALESCE(o.area_nombre, 'MESA DE PARTES VIRTUAL') AS origen,
+                COALESCE(dst.area_nombre, '—') AS destino
+           FROM documento d
+           INNER JOIN tipo_documento td ON td.tipodocumento_id = d.tipodocumento_id
+           LEFT JOIN area o ON o.area_cod = d.area_origen
+           LEFT JOIN area dst ON dst.area_cod = d.area_destino
+          WHERE " . implode(' AND ', $where) . "
+          ORDER BY d.doc_fecharegistro DESC"
+    );
+    $consulta->execute($parametros);
+    return $consulta->fetchAll(PDO::FETCH_ASSOC);
+}
+
+$fechas = [
+    'Desde' => $desde !== '' ? date('d/m/Y', strtotime($desde)) : 'Sin límite',
+    'Hasta' => $hasta !== '' ? date('d/m/Y', strtotime($hasta)) : 'Sin límite',
+];
+$areaUsuario = Seguridad::areaId();
 
 if ($reporte === 'fecha_area') {
-    $area = $esAdmin ? (int) ($_POST['area'] ?? 0) : Seguridad::areaId();
-    if ($esAdmin) {
-        $consulta = (new Modelo_Tramite())->Listar_Tramite_Fecha_Area($desde, $hasta, $area);
-    } else {
-        $consulta = (new Modelo_TramiteArea())->Listar_Tramite_Fecha_Area($desde, $hasta, $area);
-    }
-    $filas = $consulta['data'] ?? [];
+    $area = $esAdmin ? (int) ($_POST['area'] ?? 0) : $areaUsuario;
+    // En el reporte del administrador el área es la localización actual del trámite
+    $condiciones = ($esAdmin && $area > 0) ? ['d.area_destino = ?' => $area] : [];
+    $filas = listarTramites($pdo, $desde, $hasta, $condiciones, $esAdmin, $areaUsuario);
     Exportador::entregar($formato, [
         'titulo'   => 'Trámites por fecha y área',
         'archivo'  => 'tramites_por_area',
-        'filtros'  => $fechas + ['Área' => nombreArea($pdo, $area)],
+        'filtros'  => $fechas + ['Área' => $esAdmin ? nombreArea($pdo, $area) : nombreArea($pdo, $areaUsuario)],
         'resumen'  => resumenEstados($filas),
         'columnas' => columnasTramites(),
         'filas'    => $filas,
@@ -98,22 +170,18 @@ if ($reporte === 'fecha_area') {
 
 if ($reporte === 'fecha_estado') {
     $estado = strtoupper(trim((string) ($_POST['estado'] ?? '')));
-    if (!in_array($estado, ['PENDIENTE', 'ACEPTADO', 'FINALIZADO', 'RECHAZADO'], true)) {
-        Seguridad::responderError(422, 'Elija un estado válido.');
+    if ($estado !== '' && !in_array($estado, ['PENDIENTE', 'ACEPTADO', 'FINALIZADO', 'RECHAZADO'], true)) {
+        Seguridad::responderError(422, 'El estado elegido no es válido.');
     }
-    if ($esAdmin) {
-        $consulta = (new Modelo_Tramite())->Listar_Tramite_Fecha_Estado($desde, $hasta, $estado);
-        $area = 0;
-    } else {
-        $area = Seguridad::areaId();
-        $consulta = (new Modelo_TramiteArea())->Listar_Tramite_Fecha_Estado($desde, $hasta, $estado, $area);
-    }
-    $filas = $consulta['data'] ?? [];
+    $filas = listarTramites($pdo, $desde, $hasta, $estado !== '' ? ['d.doc_estatus = ?' => $estado] : [], $esAdmin, $areaUsuario);
     Exportador::entregar($formato, [
         'titulo'   => 'Trámites por fecha y estado',
         'archivo'  => 'tramites_por_estado',
-        'filtros'  => $fechas + ['Estado' => $estado, 'Área' => nombreArea($pdo, $area)],
-        'resumen'  => ['Total de trámites' => count($filas)],
+        'filtros'  => $fechas + [
+            'Estado' => $estado !== '' ? $estado : 'Todos',
+            'Área'   => $esAdmin ? 'Todas' : nombreArea($pdo, $areaUsuario),
+        ],
+        'resumen'  => resumenEstados($filas),
         'columnas' => columnasTramites(),
         'filas'    => $filas,
     ]);
@@ -121,23 +189,20 @@ if ($reporte === 'fecha_estado') {
 
 if ($reporte === 'fecha_tipodoc') {
     $tipo = (int) ($_POST['tipodoc'] ?? 0);
-    if ($tipo <= 0) {
-        Seguridad::responderError(422, 'Elija un tipo de documento.');
+    $filas = listarTramites($pdo, $desde, $hasta, $tipo > 0 ? ['d.tipodocumento_id = ?' => $tipo] : [], $esAdmin, $areaUsuario);
+    $nombreTipo = 'Todos';
+    if ($tipo > 0) {
+        $consulta = $pdo->prepare('SELECT tipodo_descripcion FROM tipo_documento WHERE tipodocumento_id = ?');
+        $consulta->execute([$tipo]);
+        $nombreTipo = (string) ($consulta->fetchColumn() ?: 'Todos');
     }
-    if ($esAdmin) {
-        $consulta = (new Modelo_Tramite())->Listar_Tramite_Fecha_Tipodoc($desde, $hasta, $tipo);
-        $area = 0;
-    } else {
-        $area = Seguridad::areaId();
-        $consulta = (new Modelo_TramiteArea())->Listar_Tramite_Fecha_TipoDoc($desde, $hasta, $tipo, $area);
-    }
-    $filas = $consulta['data'] ?? [];
-    $nombreTipo = $pdo->prepare('SELECT tipodo_descripcion FROM tipo_documento WHERE tipodocumento_id = ?');
-    $nombreTipo->execute([$tipo]);
     Exportador::entregar($formato, [
         'titulo'   => 'Trámites por fecha y tipo de documento',
         'archivo'  => 'tramites_por_tipo',
-        'filtros'  => $fechas + ['Tipo de documento' => (string) ($nombreTipo->fetchColumn() ?: '—'), 'Área' => nombreArea($pdo, $area)],
+        'filtros'  => $fechas + [
+            'Tipo de documento' => $nombreTipo,
+            'Área'              => $esAdmin ? 'Todas' : nombreArea($pdo, $areaUsuario),
+        ],
         'resumen'  => resumenEstados($filas),
         'columnas' => columnasTramites(),
         'filas'    => $filas,
@@ -145,7 +210,11 @@ if ($reporte === 'fecha_tipodoc') {
 }
 
 if ($reporte === 'plazos') {
-    $area = $esAdmin ? (int) ($_POST['area'] ?? 0) : Seguridad::areaId();
+    // El reporte de plazos sí necesita un período: mide lo ocurrido en él
+    if ($desde === '' || $hasta === '') {
+        Seguridad::responderError(422, 'Elija el rango de fechas del reporte.');
+    }
+    $area = $esAdmin ? (int) ($_POST['area'] ?? 0) : $areaUsuario;
     $datos = ReportePlazos::calcular($desde, $hasta, $area > 0 ? $area : null);
     $t = $datos['totales'];
 
@@ -154,11 +223,11 @@ if ($reporte === 'plazos') {
         'archivo'  => 'plazos_por_area',
         'filtros'  => $fechas + ['Área' => nombreArea($pdo, $area)],
         'resumen'  => [
-            'Recibidos'          => $t['recibidos'],
-            'Despachados'        => $t['despachados'],
-            'En curso hoy'       => $t['en_curso'],
-            'Vencidos hoy'       => $t['vencidos'],
-            'Dentro del plazo'   => $t['cumplimiento'] === null ? 'sin datos' : $t['cumplimiento'] . '%',
+            'Recibidos'        => $t['recibidos'],
+            'Despachados'      => $t['despachados'],
+            'En curso hoy'     => $t['en_curso'],
+            'Vencidos hoy'     => $t['vencidos'],
+            'Dentro del plazo' => $t['cumplimiento'] === null ? 'sin datos' : $t['cumplimiento'] . '%',
         ],
         'subtitulo' => 'Resumen por área',
         'columnas' => [
@@ -178,12 +247,12 @@ if ($reporte === 'plazos') {
         'bloques'  => [[
             'titulo'   => 'Trámites con plazo vencido (' . count($datos['vencidos']) . ')',
             'columnas' => [
-                ['clave' => 'expediente', 'titulo' => 'N° Expediente', 'ancho' => 12],
-                ['clave' => 'asunto',     'titulo' => 'Asunto',        'ancho' => 26],
-                ['clave' => 'remitente',  'titulo' => 'Remitente',     'ancho' => 18],
-                ['clave' => 'area',       'titulo' => 'Área',          'ancho' => 14],
-                ['clave' => 'estado',     'titulo' => 'Estado',        'ancho' => 9, 'alineacion' => 'centro'],
-                ['clave' => 'limite',     'titulo' => 'Venció el',     'ancho' => 9, 'alineacion' => 'centro'],
+                ['clave' => 'expediente', 'titulo' => 'N° Expediente',  'ancho' => 12],
+                ['clave' => 'asunto',     'titulo' => 'Asunto',         'ancho' => 26],
+                ['clave' => 'remitente',  'titulo' => 'Remitente',      'ancho' => 18],
+                ['clave' => 'area',       'titulo' => 'Área',           'ancho' => 14],
+                ['clave' => 'estado',     'titulo' => 'Estado',         'ancho' => 9, 'alineacion' => 'centro'],
+                ['clave' => 'limite',     'titulo' => 'Venció el',      'ancho' => 9, 'alineacion' => 'centro'],
                 ['clave' => 'atraso',     'titulo' => 'Días de atraso', 'ancho' => 9, 'alineacion' => 'centro', 'numero' => true],
             ],
             'filas'    => $datos['vencidos'],

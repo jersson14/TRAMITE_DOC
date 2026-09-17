@@ -62,7 +62,7 @@ class Exportador
     private static function nombreArchivo(array $reporte, string $extension): string
     {
         $base = $reporte['archivo'] ?? 'reporte';
-        return $base . '_' . date('Ymd_Hi') . '.' . $extension;
+        return $base . '_' . date('Ymd_His') . '.' . $extension;
     }
 
     /** Todos los bloques del reporte: el principal y los adicionales. */
