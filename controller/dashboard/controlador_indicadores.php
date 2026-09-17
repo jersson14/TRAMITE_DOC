@@ -293,7 +293,12 @@ if ($esAdmin) {
     }
 }
 
+// La hora la pone el servidor en zona de Perú: el reloj del tablero no debe
+// depender de cómo tenga configurado el reloj cada computadora.
+$ahora = new DateTimeImmutable('now', new DateTimeZone('America/Lima'));
+
 echo json_encode([
+    'ahora' => $ahora->format('Y-m-d H:i:s'),
     'rol'  => $esAdmin ? 'admin' : 'area',
     'area' => $esAdmin ? null : ($_SESSION['S_AREA'] ?? ''),
     'contadores' => $contadores + [

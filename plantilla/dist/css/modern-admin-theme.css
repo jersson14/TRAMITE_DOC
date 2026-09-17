@@ -2097,3 +2097,77 @@ a.notificacion:hover {
 .pendiente-cero .pendiente-total {
   color: #A0AEC0;
 }
+
+/* ===== Pie del sistema ===== */
+/* El botón flotante del asistente ocupa la esquina inferior derecha: el pie
+   reserva ese espacio para que no le tape la versión. */
+.main-footer.pie-sistema {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 16px;
+  padding: 12px 1rem;
+  padding-right: 100px;
+  font-size: 0.78rem;
+  color: #4A5568;
+  border-top: 1px solid #DDE3EC;
+  background: #fff;
+}
+
+.pie-institucion strong {
+  color: #1E3A5F;
+}
+
+.pie-credito {
+  color: #6B7A90;
+}
+
+.pie-credito a {
+  color: #2C5282;
+  font-weight: 600;
+}
+
+/* ===== Reloj del tablero (hora de Perú) ===== */
+.reloj-tablero {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  font-size: 0.78rem;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.reloj-tablero .reloj-hora {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+
+.reloj-tablero .reloj-fecha {
+  opacity: 0.85;
+}
+
+/* La cabecera del tablero lleva el título y el reloj en la misma línea */
+.cabecera-tablero {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.cabecera-tablero h5 {
+  margin: 0;
+}
+
+@media (max-width: 575px) {
+  .main-footer.pie-sistema {
+    padding-right: 84px;
+    font-size: 0.72rem;
+  }
+}

@@ -514,13 +514,16 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- /.control-sidebar -->
 
     <!-- Main Footer -->
-    <footer class="main-footer">
-      <!-- To the right -->
-      <div class="float-right d-none d-sm-inline">
-        <em>Versión 1.0.0</em>
-      </div>
-      <!-- Default to the left -->
-      <strong>Copyright &copy; 2025 <a href="https://web.facebook.com/jerzhitho.cm/" target="_blank"><em>DESARROLLADO POR JCM</em></a></strong>
+    <!-- El año sale de la fecha: estaba fijo en 2025. El espacio de la derecha
+         deja libre el botón del asistente, que antes tapaba la versión. -->
+    <footer class="main-footer pie-sistema">
+      <span class="pie-institucion">
+        <strong><?php echo htmlspecialchars($institucion['sigla']); ?></strong> · Trámite documentario
+      </span>
+      <span class="pie-credito">
+        <?php echo Institucion::PRODUCTO; ?> 1.0.0 · &copy; <?php echo date('Y'); ?>
+        <a href="https://web.facebook.com/jerzhitho.cm/" target="_blank" rel="noopener">JCM</a>
+      </span>
     </footer>
   </div>
   <!-- ./wrapper -->
