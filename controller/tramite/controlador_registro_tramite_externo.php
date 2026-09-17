@@ -5,6 +5,13 @@
     require '../../utilitario/class_notificacion.php';
     Seguridad::iniciarSesion();
 
+    // Si el envío supera post_max_size, PHP descarta todos los datos: se avisa en vez de pedir "adjunte el documento"
+    $limitePost = ini_get('post_max_size');
+    $bytesPost = (int) $limitePost * (stripos($limitePost, 'G') !== false ? 1073741824 : (stripos($limitePost, 'M') !== false ? 1048576 : (stripos($limitePost, 'K') !== false ? 1024 : 1)));
+    if (empty($_POST) && (int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > $bytesPost) {
+        Seguridad::responderError(422, 'Los archivos superan el tamaño permitido. El documento y los anexos no deben pasar de 35 MB en total.');
+    }
+
     // Registro público: máximo 10 trámites por hora desde una misma IP
     $clave = 'registro_externo|' . Seguridad::ipCliente();
     if (Seguridad::esperaIntentos($clave, 10, 3600) > 0) {
@@ -74,6 +81,30 @@
         Bitacora::registrar(Bitacora::REGISTRO_TRAMITE, 'documento', $consulta,
             'mesa de partes virtual · asunto: ' . $asu, 'ciudadano DNI ' . $dni);
 
-        echo $consulta;
+        // Datos para la pantalla de confirmación y el cargo de recepción
+        $pdo = (new conexionBD())->conexionPDO();
+        $datos = $pdo->prepare("SELECT doc_expediente, DATE_FORMAT(doc_fecharegistro, '%d/%m/%Y %H:%i') AS fecha FROM documento WHERE documento_id = ?");
+        $datos->execute([$consulta]);
+        $registro = $datos->fetch(PDO::FETCH_ASSOC) ?: ['doc_expediente' => null, 'fecha' => date('d/m/Y H:i')];
+
+        $consultaCargo = 'codigo=' . rawurlencode($consulta) . '&dni=' . rawurlencode($dni);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode([
+            'status'     => 'ok',
+            'codigo'     => $consulta,
+            'expediente' => $registro['doc_expediente'],
+            'fecha'      => $registro['fecha'],
+            'correo'     => $ema,
+            'archivos'   => 1 + count($anexos),
+            'cargo'      => 'view/MPDF/REPORTE/cargo_recepcion.php?' . $consultaCargo,
+            'ticket'     => 'view/MPDF/REPORTE/ticket_tramite.php?' . $consultaCargo,
+            'seguimiento'=> 'seguimiento.php?codigo=' . rawurlencode($registro['doc_expediente'] ?: $consulta),
+        ]);
+    } else {
+        Seguridad::borrarArchivoEn(__DIR__ . '/documentos', (string) $nombrearchivo);
+        foreach ($anexos as $anexo) {
+            Seguridad::borrarArchivoEn(__DIR__ . '/documentos', $anexo['nombre']);
+        }
+        Seguridad::responderError(500, 'No se pudo registrar el trámite. Intente nuevamente.');
     }
 ?>

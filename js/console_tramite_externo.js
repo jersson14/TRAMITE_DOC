@@ -292,6 +292,17 @@ function Registrar_Tramite(){
     if(tip.length==0 ||  ndo.length==0 || asu.length==0 || fol.length==0){
         return Swal.fire("Mensaje de Advertencia","Llene todo los campos del documento","warning")
     }
+    // El correo es obligatorio: ahí se envían el código y las respuestas
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ema)){
+        return Swal.fire("Mensaje de Advertencia","Ingrese un correo electrónico válido: ahí recibirá su código y la respuesta.","warning")
+    }
+    // PHP descarta un envío de más de 40 MB; se avisa antes de subir
+    var pesoTotal = $("#txt_archivo")[0].files[0] ? $("#txt_archivo")[0].files[0].size : 0;
+    var listaPeso = $("#txt_anexos").length ? $("#txt_anexos")[0].files : [];
+    for(var iPeso=0; iPeso<listaPeso.length; iPeso++){ pesoTotal += listaPeso[iPeso].size; }
+    if(pesoTotal > 35 * 1048576){
+        return Swal.fire("Mensaje de Advertencia","El documento y los anexos no deben superar los 35 MB en total.","warning")
+    }
 
     let formData = new FormData();
     let achivoobj = $("#txt_archivo")[0].files[0];//El objeto del archivo adjuntado
@@ -326,6 +337,7 @@ function Registrar_Tramite(){
     $.ajax({
       url:"controller/tramite/controlador_registro_tramite_externo.php",
       error:function(xhr){
+        $("#btn_registro").prop("disabled", !$("#checkboxSuccess1").is(":checked"));
         let mensaje = (xhr.responseJSON && xhr.responseJSON.mensaje) || "No se pudo registrar el trámite. Intente nuevamente.";
         Swal.fire("No se pudo registrar", mensaje, "error");
       },
@@ -333,33 +345,47 @@ function Registrar_Tramite(){
       data:formData,
       contentType:false,
       processData:false,
-      success:function(resp){
-       
-        if(resp.length>0){
-          Swal.fire("Mensaje de Confirmación","Nueva Tramite Registrado código: "+resp,"success").then((value)=>{
-            window.open("view/MPDF/REPORTE/ticket_tramite.php?codigo="+encodeURIComponent(resp)+"&dni="+encodeURIComponent(dni)+"#zoom=100");
-            $("#contenido_principal").load("registrar.php");
-            document.getElementById('txt_dni').value="";
-            document.getElementById('txt_nom').value="";
-            document.getElementById('txt_apepat').value="";
-            document.getElementById('txt_apemat').value="";
-            document.getElementById('txt_celular').value="";
-            document.getElementById('txt_email').value="";
-            document.getElementById('txt_dire').value="";
-            document.getElementById('txt_ruc').value;
-            document.getElementById('txt_razon').value="";
-  //DATOS DEL REMITENTE
-            document.getElementById('select_tipo').value="";
-            document.getElementById('txt_ndocumento').value="";
-            document.getElementById('txt_asunto').value="";
-            document.getElementById('txt_folio').value="";
-          });
-        }else{
-          Swal.fire("Mensaje de Advertencia","No se pudo realizar el","warning");
+      dataType:'json',
+      beforeSend:function(){
+        $("#btn_registro").prop("disabled", true).html('<i class="fas fa-spinner fa-spin"></i> Enviando...');
+      },
+      complete:function(){
+        $("#btn_registro").html('<i class="fas fa-paper-plane"></i> REGISTRAR TRÁMITE');
+      },
+      success:function(r){
+        if(!r || r.status !== "ok"){
+          $("#btn_registro").prop("disabled", false);
+          return Swal.fire("No se pudo registrar","No se pudo registrar el trámite. Intente nuevamente.","error");
         }
+        Mostrar_Cargo_Recepcion(r);
       }
     });
     return false;
+}
+
+/**
+ * Tras registrar: reemplaza el formulario por la confirmación con el cargo de
+ * recepción. Antes se abría el ticket en una ventana emergente, que el navegador
+ * suele bloquear, y el ciudadano se quedaba solo con un aviso.
+ */
+function Mostrar_Cargo_Recepcion(r){
+  var expediente = r.expediente || r.codigo;
+  $("#cr_expediente").text(expediente);
+  $("#cr_codigo").text(r.codigo);
+  $("#cr_fecha").text(r.fecha);
+  $("#cr_detalle").text(
+    "Recibimos " + r.archivos + (r.archivos === 1 ? " archivo" : " archivos") + ". " +
+    (r.correo ? "Enviaremos las notificaciones a " + r.correo + "." : "")
+  );
+  $("#cr_cargo").attr({ href: r.cargo + "&descargar=1", download: "Cargo_" + expediente + ".pdf" });
+  $("#cr_ver").attr("href", r.cargo);
+  $("#cr_seguimiento").attr("href", r.seguimiento);
+
+  $("#formulario_registro, #bienvenida_registro").attr("hidden", true).hide();
+  var panel = document.getElementById("confirmacion_registro");
+  panel.hidden = false;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  panel.focus({ preventScroll: true });
 }
 
 //SEGUIMIENTO TRAMITE

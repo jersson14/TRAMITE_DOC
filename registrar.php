@@ -1,9 +1,15 @@
+<?php
+require_once __DIR__ . '/lib/Seguridad.php';
+require_once __DIR__ . '/lib/Institucion.php';
+$inst = Institucion::datos();
+$e = [Seguridad::class, 'e'];
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Mesa de Partes Virtual | JMC ABANCAY</title>
+    <title>Mesa de Partes Virtual | <?= $e($inst['sigla']) ?></title>
     
     <!-- Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
@@ -15,7 +21,7 @@
     <link rel="stylesheet" href="plantilla/dist/css/modern-theme.css">
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <link rel="icon" href="img/empre.jpg" type="image/jpg">
+    <link rel="icon" href="<?= $e($inst['logo']) ?>">
     
     <style>
         * {
@@ -41,9 +47,34 @@
             display: inline-block;
         }
         
+        .cargo-card { border-top: 6px solid #15803D; }
+        .cargo-card:focus { outline: none; }
+        .cargo-encabezado { display: flex; gap: 1rem; align-items: flex-start; }
+        .cargo-encabezado > i { font-size: 2.4rem; color: #15803D; }
+        .cargo-titulo { font-size: 1.6rem; font-weight: 700; color: #1E3A5F; margin: 0; }
+        .cargo-sub { color: #4a5568; margin: 0.25rem 0 0; }
+        .cargo-claves { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 1.5rem 0 1rem; }
+        .cargo-clave { flex: 1 1 200px; border: 2px solid #e2e8f0; border-radius: 12px; padding: 0.9rem 1rem; }
+        .cargo-clave span { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.04em; color: #718096; font-weight: 600; }
+        .cargo-clave strong { display: block; font-size: 1.25rem; color: #1E3A5F; overflow-wrap: anywhere; }
+        .cargo-clave.principal { background: #1E3A5F; border-color: #1E3A5F; }
+        .cargo-clave.principal span { color: #cbd5e0; }
+        .cargo-clave.principal strong { color: #fff; font-size: 1.5rem; }
+        .cargo-detalle { color: #4a5568; margin-bottom: 1.25rem; }
+        .cargo-acciones { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+        .btn-cargo { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1.1rem; border-radius: 10px;
+                     border: 2px solid #1E3A5F; color: #1E3A5F; font-weight: 600; text-decoration: none; }
+        .btn-cargo:hover { background: #EFF4F9; color: #1E3A5F; text-decoration: none; }
+        .btn-cargo.principal { background: #1E3A5F; color: #fff; }
+        .btn-cargo.principal:hover { background: #16304E; color: #fff; }
+        @media (max-width: 576px) { .btn-cargo { flex: 1 1 100%; justify-content: center; } }
+
         .logo-container img {
-            max-width: 180px;
+            max-width: 320px;
+            max-height: 90px;
+            width: 100%;
             height: auto;
+            object-fit: contain;
         }
         
         .navigation-bar {
@@ -74,6 +105,8 @@
         .content-wrapper {
             background: transparent;
             padding: 2rem 0;
+            /* Página pública sin menú lateral: AdminLTE reserva 250 px a la izquierda */
+            margin-left: 0 !important;
         }
         
         .main-container {
@@ -524,7 +557,7 @@
     <div class="header-banner">
         <div class="container text-center">
             <div class="logo-container">
-                <img src="img/empre.jpg" alt="JERSSON Logo">
+                <img src="<?= $e($inst['logo']) ?>" alt="<?= $e($inst['razon']) ?>">
             </div>
         </div>
     </div>
@@ -554,26 +587,49 @@
         <div class="main-container">
             <div class="container">
                 <!-- Welcome Card -->
-                <div class="welcome-card">
+                <div class="welcome-card" id="bienvenida_registro">
                     <h1 class="welcome-title">
                         <i class="fas fa-file-signature" style="color: #1E3A5F;"></i>
                         Mesa de Partes Virtual
                     </h1>
                     <p class="welcome-subtitle">
-                        La EMPRESA JMC pone a su disposición la <strong>Mesa de Partes Virtual</strong> 
-                        para la recepción de documentos y solicitudes. Los documentos serán atendidos y recepcionados 
-                        de manera eficiente. Es obligatorio registrar su correo electrónico para dar respuesta a su solicitud.
+                        <?= $e($inst['sigla']) ?> pone a su disposición la <strong>Mesa de Partes Virtual</strong>
+                        para la recepción de documentos y solicitudes. Al registrar recibirá un cargo de recepción con su
+                        número de expediente. Es obligatorio registrar su correo electrónico para dar respuesta a su solicitud.
                     </p>
-                    
+
                     <div class="alert-box">
                         <i class="fas fa-exclamation-triangle"></i>
-                        <strong>Importante:</strong> Enviar los documentos en un solo archivo en formato PDF. 
-                        El tamaño máximo no debe superar los 30MB.
+                        <strong>Importante:</strong> Adjunte su documento principal en PDF (máximo 20 MB) y, si corresponde,
+                        hasta 5 anexos en PDF. Entre todos los archivos no deben superar los 35 MB.
+                    </div>
+                </div>
+
+                <!-- Confirmación y cargo de recepción (se muestra al registrar) -->
+                <div class="welcome-card cargo-card" id="confirmacion_registro" hidden tabindex="-1" aria-live="polite">
+                    <div class="cargo-encabezado">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <h2 class="cargo-titulo">Trámite recibido</h2>
+                            <p class="cargo-sub">Guarde su cargo de recepción: con el N° de expediente y su DNI puede consultar el estado.</p>
+                        </div>
+                    </div>
+                    <div class="cargo-claves">
+                        <div class="cargo-clave principal"><span>N° de expediente</span><strong id="cr_expediente"></strong></div>
+                        <div class="cargo-clave"><span>Código de seguimiento</span><strong id="cr_codigo"></strong></div>
+                        <div class="cargo-clave"><span>Recibido el</span><strong id="cr_fecha"></strong></div>
+                    </div>
+                    <p class="cargo-detalle" id="cr_detalle"></p>
+                    <div class="cargo-acciones">
+                        <a class="btn-cargo principal" id="cr_cargo" href="#" download><i class="fas fa-file-download"></i> Descargar cargo de recepción (PDF)</a>
+                        <a class="btn-cargo" id="cr_ver" href="#" target="_blank" rel="noopener"><i class="fas fa-eye"></i> Ver cargo</a>
+                        <a class="btn-cargo" id="cr_seguimiento" href="#"><i class="fas fa-route"></i> Consultar estado</a>
+                        <a class="btn-cargo" href="registrar.php"><i class="fas fa-plus"></i> Registrar otro trámite</a>
                     </div>
                 </div>
 
                 <!-- Forms Row -->
-                <div class="row">
+                <div class="row" id="formulario_registro">
                     <!-- Remitente Form -->
                     <div class="col-lg-6">
                         <div class="form-card">
@@ -683,7 +739,7 @@
                                 <div class="info-box">
                                     <i class="fas fa-phone"></i>
                                     <strong>Consultas:</strong> Para mayor información, comuníquese a nuestra 
-                                    central telefónica al (083) 321117.
+                                    central telefónica<?= $inst['telefono'] !== '' ? ' al ' . $e($inst['telefono']) : '' ?><?= $inst['email'] !== '' ? ' o escriba a ' . $e(strtolower($inst['email'])) : '' ?>.
                                 </div>
                             </div>
                         </div>
@@ -743,7 +799,7 @@
                                                 <p style="margin: 1rem 0 0 0; color: #4a5568;">
                                                     <strong>Click para seleccionar archivo</strong>
                                                 </p>
-                                                <small style="color: #718096;">PDF | Máx. 30MB</small>
+                                                <small style="color: #718096;">PDF | Máx. 20 MB</small>
                                             </div>
                                             <input type="file" id="txt_archivo" accept=".pdf" style="display: none;">
                                             <div class="file-name-display" id="file-name-display"></div>
@@ -760,6 +816,21 @@
                                                placeholder="000" onkeypress="return soloNumeros(event)">
                                     </div>
 
+
+                                    <div class="col-12 form-group">
+                                        <label for="txt_anexos">Anexos <small style="color: #718096;">(opcional · hasta 5 PDF, 20 MB cada uno)</small></label>
+                                        <div class="file-upload-wrapper" onclick="document.getElementById('txt_anexos').click()" style="padding: 1rem;">
+                                            <div class="file-upload-content">
+                                                <i class="fas fa-paperclip fa-2x" style="color: #cbd5e0;"></i>
+                                                <p style="margin: 0.5rem 0 0 0; color: #4a5568;">
+                                                    <strong>Click para adjuntar anexos</strong>
+                                                </p>
+                                                <small style="color: #718096;">Requisitos, sustentos u otros documentos</small>
+                                            </div>
+                                            <input type="file" id="txt_anexos" accept=".pdf" multiple style="display: none;" onclick="event.stopPropagation()">
+                                            <div class="file-name-display" id="anexos-lista"></div>
+                                        </div>
+                                    </div>
 
                                     <div class="col-12">
                                         <div class="checkbox-custom">
@@ -790,15 +861,10 @@
         <div class="container">
             <div class="footer-content">
                 <p style="margin: 0;">
-                    <strong>Copyright © 2025 
-                        <a href="" target="_blank" 
-                           style="color: #1E3A5F; text-decoration: none;">
-                            JMC ABANCAY SA
-                        </a>
-                    </strong>
+                    <strong>© <?= date('Y') ?> <?= $e($inst['razon']) ?></strong>
                 </p>
                 <p style="margin: 0.5rem 0 0 0; color: #718096;">
-                    <em>Versión 1.0.0</em>
+                    <em>Mesa de Partes Virtual · SISTRAMITE</em>
                 </p>
             </div>
         </div>
@@ -810,7 +876,7 @@
     <script src="plantilla/dist/js/adminlte.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-    <script src="js/console_tramite_externo.js"></script>
+    <script src="js/console_tramite_externo.js?v=<?= @filemtime(__DIR__ . '/js/console_tramite_externo.js') ?>"></script>
 
     <script>
         // Focus en DNI al cargar
@@ -923,16 +989,41 @@
         }
 
         // Validación de archivo
-        $('input[type="file"]').on('change', function() {
+        // Límites del servidor: 20 MB por archivo, 5 anexos y 35 MB en total (PHP admite 40 MB por envío)
+        var MAX_ARCHIVO = 20 * 1048576, MAX_ANEXOS = 5, MAX_TOTAL = 35 * 1048576;
+
+        $('#txt_anexos').on('change', function() {
+            var archivos = this.files, total = 0, nombres = [];
+            var archivoPrincipal = $('#txt_archivo')[0].files[0];
+            if (archivoPrincipal) total += archivoPrincipal.size;
+            var error = '';
+            if (archivos.length > MAX_ANEXOS) error = 'Puede adjuntar hasta ' + MAX_ANEXOS + ' anexos.';
+            for (var i = 0; i < archivos.length && !error; i++) {
+                if (!/\.pdf$/i.test(archivos[i].name)) error = 'Los anexos deben ser PDF: «' + archivos[i].name + '» no lo es.';
+                else if (archivos[i].size > MAX_ARCHIVO) error = 'El anexo «' + archivos[i].name + '» supera los 20 MB.';
+                total += archivos[i].size;
+                nombres.push(archivos[i].name);
+            }
+            if (!error && total > MAX_TOTAL) error = 'Entre el documento y los anexos no deben superar los 35 MB.';
+            if (error) {
+                this.value = '';
+                $('#anexos-lista').removeClass('show').text('');
+                Swal.fire({ icon: 'warning', title: 'Revise los anexos', text: error, confirmButtonColor: '#1E3A5F' });
+                return;
+            }
+            $('#anexos-lista').text(nombres.length ? '📎 ' + nombres.join(' · ') : '').toggleClass('show', nombres.length > 0);
+        });
+
+        $('#txt_archivo').on('change', function() {
             var ext = $(this).val().split('.').pop();
-            
+
             if($(this).val() != '') {
                 if(ext == "PDF" || ext == "pdf") {
-                    if($(this)[0].files[0].size > 31457280) {
+                    if($(this)[0].files[0].size > MAX_ARCHIVO) {
                         Swal.fire({
                             icon: 'warning',
                             title: 'Archivo muy pesado',
-                            text: 'El archivo no debe superar los 30 MB',
+                            text: 'El documento no debe superar los 20 MB',
                             confirmButtonColor: '#1E3A5F'
                         });
                         $("#txt_archivo").val("");

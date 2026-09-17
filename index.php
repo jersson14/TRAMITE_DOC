@@ -1,10 +1,12 @@
 <?php
   require_once __DIR__ . '/lib/Seguridad.php';
+  require_once __DIR__ . '/lib/Institucion.php';
   Seguridad::iniciarSesion();
   if (Seguridad::autenticado()) {
     header('Location: view/index.php');
     exit;
   }
+  $inst = Institucion::datos();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -19,7 +21,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- AdminLTE -->
     <link rel="stylesheet" href="plantilla/dist/css/adminlte.min.css">
-    <link rel="icon" href="img/empre.jpg" type="image/jpg">
+    <link rel="icon" href="<?= Seguridad::e($inst['logo']) ?>">
     
     <style>
         * {
@@ -36,15 +38,16 @@
             justify-content: center;
             background: #1E3A5F;
             position: relative;
-            overflow: hidden;
+            /* El fondo animado es más grande que la pantalla: solo se oculta el sobrante horizontal */
+            overflow-x: hidden;
         }
-        
+
         /* Animated Background */
         body::before {
             content: '';
-            position: absolute;
-            width: 200%;
-            height: 200%;
+            position: fixed;
+            inset: -60px;
+            pointer-events: none;
             background: 
                 radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
@@ -127,7 +130,8 @@
             border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             margin-bottom: 2rem;
-            width: 200px;
+            width: 280px;
+            max-width: 100%;
         }
         
         .brand-logo img {
@@ -444,7 +448,7 @@
         <!-- Left Side - Branding -->
         <div class="login-brand">
             <div class="brand-logo">
-                <img src="img/empre.jpg" alt="JERSSON LOGO">
+                <img src="<?= Seguridad::e($inst['logo']) ?>" alt="<?= Seguridad::e($inst['razon']) ?>">
             </div>
             <h1 class="brand-title">Sistema de Trámite Documentario Web</h1>
             <p class="brand-subtitle">Gestión eficiente y moderna de documentos administrativos</p>

@@ -1,9 +1,15 @@
+<?php
+require_once __DIR__ . '/lib/Seguridad.php';
+require_once __DIR__ . '/lib/Institucion.php';
+$inst = Institucion::datos();
+$e = [Seguridad::class, 'e'];
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Seguimiento de Trámite | JMC ABANCAY</title>
+    <title>Seguimiento de Trámite | <?= $e($inst['sigla']) ?></title>
     
     <!-- Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
@@ -11,7 +17,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- AdminLTE -->
     <link rel="stylesheet" href="plantilla/dist/css/adminlte.min.css">
-    <link rel="icon" href="img/empre.jpg" type="image/jpg">
+    <link rel="icon" href="<?= $e($inst['logo']) ?>">
     
     <style>
         * {
@@ -35,7 +41,7 @@
             border-radius: 15px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.1);
             display: inline-block;
-            max-width: 200px;
+            max-width: 360px;
         }
         
         .logo-container img {
@@ -85,6 +91,8 @@
         .content-wrapper {
             background: transparent;
             padding: 2rem 0;
+            /* Página pública sin menú lateral: AdminLTE reserva 250 px a la izquierda */
+            margin-left: 0 !important;
         }
         
         .main-container {
@@ -250,6 +258,29 @@
             font-size: 1.3rem;
         }
         
+        /* Resumen de la consulta pública */
+        .resumen-estado { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; border: 2px solid; border-radius: 14px; padding: 1.1rem 1.25rem; margin-bottom: 1.25rem; }
+        .resumen-estado > i { font-size: 2rem; }
+        .resumen-principal { flex: 1 1 220px; }
+        .resumen-rotulo { display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; color: #718096; font-weight: 600; }
+        .resumen-estado strong { display: block; font-size: 1.3rem; }
+        .resumen-area { display: block; margin-top: 0.25rem; color: #4a5568; }
+        .resumen-plazo { padding: 0.35rem 0.8rem; border-radius: 999px; font-weight: 600; font-size: 0.85rem; border: 1px solid; }
+        .plazo-verde { color: #15803D; background: #F0FDF4; border-color: #15803D; }
+        .plazo-ambar { color: #B45309; background: #FFFBEB; border-color: #B45309; }
+        .plazo-rojo { color: #B91C1C; background: #FEF2F2; border-color: #B91C1C; }
+        .plazo-gris { color: #4A5568; background: #F7FAFC; border-color: #CBD5E0; }
+        .resumen-datos { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem 1.25rem; margin: 0 0 1.75rem; }
+        .resumen-datos .ancho { grid-column: 1 / -1; }
+        .resumen-datos dt { font-size: 0.75rem; color: #718096; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
+        .resumen-datos dd { margin: 0.1rem 0 0; color: #1a202c; font-weight: 500; overflow-wrap: anywhere; }
+        .recorrido-titulo { font-size: 1.05rem; font-weight: 700; color: #1E3A5F; margin: 0 0 1rem; }
+        .movimiento-areas { display: flex; flex-wrap: wrap; gap: 0.5rem 1.5rem; margin-bottom: 0.5rem; }
+        .movimiento-acuse { color: #15803D; font-weight: 600; margin: 0 0 0.5rem; }
+        .movimiento-sin-acuse { color: #718096; margin: 0 0 0.5rem; }
+        .movimiento-nota { margin: 0; padding: 0.75rem 1rem; background: #fff; border-radius: 8px; color: #4a5568; overflow-wrap: anywhere; }
+        a.btn-action { text-decoration: none; }
+
         .results-card {
             background: white;
             border-radius: 20px;
@@ -673,7 +704,7 @@
     <div class="header-banner">
         <div class="container text-center">
             <div class="logo-container">
-                <img src="img/empre.jpg" alt="JMC Logo">
+                <img src="<?= $e($inst['logo']) ?>" alt="<?= $e($inst['razon']) ?>">
             </div>
         </div>
     </div>
@@ -717,10 +748,9 @@
                 <div class="info-card">
                     <div class="info-text">
                         <i class="fas fa-info-circle" style="color: #1E3A5F; margin-right: 0.5rem;"></i>
-                        La <strong>EMPRESA JMC ABANCAY SA</strong> pone a su disposición el <strong>Sistema de Seguimiento de Documentos</strong>, 
-                        para realizar la búsqueda y rastreo de los diferentes documentos registrados en la plataforma. 
-                        Debe ingresar correctamente el <strong>CÓDIGO DE SEGUIMIENTO</strong> y el <strong>DNI del remitente</strong> 
-                        sin espacios en blanco para realizar la búsqueda correcta de su documento.
+                        <strong><?= $e($inst['sigla']) ?></strong> pone a su disposición la consulta del estado de sus trámites.
+                        Ingrese el <strong>N° de expediente</strong> (por ejemplo EXP-2026-000123) o el <strong>código de seguimiento</strong>
+                        que figura en su cargo de recepción, y el <strong>DNI del remitente</strong>.
                     </div>
                 </div>
 
@@ -735,7 +765,7 @@
                             <div class="form-group-custom">
                                 <label>
                                     <i class="fas fa-barcode"></i>
-                                    Código de Seguimiento
+                                    N° de expediente o código de seguimiento
                                     <span class="required">*</span>
                                 </label>
                                 <div class="input-wrapper">
@@ -743,7 +773,7 @@
                                     <input type="text" 
                                            class="form-control-custom" 
                                            id="txt_numero" 
-                                           placeholder="Ej: D0000001"
+                                           placeholder="Ej.: EXP-2026-000123 o D0000123" autocomplete="off"
                                            required>
                                 </div>
                             </div>
@@ -787,19 +817,22 @@
                         <h2 id="lbl_titulo">Seguimiento del Trámite</h2>
                     </div>
                     <div class="card-body-results">
-                        <!-- Timeline will be inserted here -->
+                        <!-- Resumen del trámite -->
+                        <div id="div_resumen"></div>
+
+                        <h3 class="recorrido-titulo"><i class="fas fa-route"></i> Recorrido del trámite</h3>
                         <div id="div_seguimiento"></div>
 
-                        <!-- Action Buttons -->
+                        <!-- Documentos para descargar -->
                         <div class="action-buttons">
-                            <button class="btn-action primary" id="ticket">
-                                <i class="fas fa-ticket-alt"></i>
-                                <span>Imprimir Ticket de Atención</span>
-                            </button>
-                            <button class="btn-action success" id="seguimiento">
+                            <a class="btn-action primary" id="btn_cargo" href="#" target="_blank" rel="noopener">
+                                <i class="fas fa-file-download"></i>
+                                <span>Cargo de recepción</span>
+                            </a>
+                            <a class="btn-action success" id="btn_hoja" href="#" target="_blank" rel="noopener">
                                 <i class="fas fa-print"></i>
-                                <span>Imprimir Seguimiento</span>
-                            </button>
+                                <span>Hoja de seguimiento</span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -812,16 +845,10 @@
         <div class="container">
             <div class="footer-content">
                 <p style="margin: 0;">
-                    <strong>Copyright © 2025
-                        <a href="" target="_blank" 
-                           style="color: #1E3A5F; text-decoration: none;">
-                            JMC ABANCAY SA
-
-                        </a>
-                    </strong>
+                    <strong>© <?= date('Y') ?> <?= $e($inst['razon']) ?></strong>
                 </p>
                 <p style="margin: 0.5rem 0 0 0; color: #718096;">
-                    <em>Versión 1.0.0</em>
+                    <em>Mesa de Partes Virtual · SISTRAMITE</em>
                 </p>
             </div>
         </div>
@@ -833,7 +860,6 @@
     <script src="plantilla/dist/js/adminlte.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="js/console_usuario.js"></script>
-    <script src="js/console_horario.js"></script>
 
     <script>
         // Limitar DNI a 8 dígitos
@@ -874,194 +900,124 @@
             return patron.test(tecla_final);
         }
 
-        // Función de búsqueda con tu lógica original
+        function textoSeguro(valor) {
+            return String(valor === null || valor === undefined ? '' : valor)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        }
+
+        var ESTILOS_ESTADO = {
+            PENDIENTE:  { color: '#B45309', icono: 'fas fa-clock', texto: 'Pendiente de atención' },
+            ACEPTADO:   { color: '#15803D', icono: 'fas fa-check', texto: 'Aceptado por el área' },
+            DERIVADO:   { color: '#1E3A5F', icono: 'fas fa-share', texto: 'Derivado a otra área' },
+            FINALIZADO: { color: '#2C5282', icono: 'fas fa-flag-checkered', texto: 'Finalizado' },
+            RECHAZADO:  { color: '#B91C1C', icono: 'fas fa-times-circle', texto: 'Observado / rechazado' }
+        };
+
+        function textoPlazo(t) {
+            if (t.plazo_semaforo === 'CERRADO') return { clase: 'gris', texto: 'Trámite cerrado' };
+            if (t.plazo_semaforo === 'SIN_PLAZO' || !t.plazo_limite) return { clase: 'gris', texto: 'Sin plazo definido' };
+            if (t.plazo_semaforo === 'ROJO') return { clase: 'rojo', texto: 'Plazo vencido el ' + t.plazo_limite };
+            if (t.plazo_restante === 0) return { clase: 'ambar', texto: 'Vence hoy (' + t.plazo_limite + ')' };
+            return { clase: t.plazo_semaforo === 'AMBAR' ? 'ambar' : 'verde', texto: 'Plazo hasta el ' + t.plazo_limite };
+        }
+
+        function Pintar_Consulta(r) {
+            var t = r.tramite;
+            var estilo = ESTILOS_ESTADO[t.estado] || ESTILOS_ESTADO.PENDIENTE;
+            var plazo = textoPlazo(t);
+
+            document.getElementById('lbl_titulo').textContent = 'Expediente ' + (t.expediente || t.codigo);
+
+            document.getElementById('div_resumen').innerHTML =
+                '<div class="resumen-estado" style="border-color:' + estilo.color + ';">' +
+                    '<i class="' + estilo.icono + '" style="color:' + estilo.color + ';"></i>' +
+                    '<div class="resumen-principal"><span class="resumen-rotulo">Estado actual</span>' +
+                    '<strong style="color:' + estilo.color + ';">' + textoSeguro(t.estado_texto) + '</strong>' +
+                    (t.area_actual && t.estado !== 'FINALIZADO' ? '<span class="resumen-area"><i class="fas fa-map-marker-alt"></i> Se encuentra en: <b>' + textoSeguro(t.area_actual) + '</b></span>' : '') +
+                    '</div>' +
+                    '<span class="resumen-plazo plazo-' + plazo.clase + '">' + textoSeguro(plazo.texto) + '</span>' +
+                '</div>' +
+                '<dl class="resumen-datos">' +
+                    '<div><dt>N° de expediente</dt><dd>' + textoSeguro(t.expediente || '—') + '</dd></div>' +
+                    '<div><dt>Código de seguimiento</dt><dd>' + textoSeguro(t.codigo) + '</dd></div>' +
+                    '<div><dt>Registrado el</dt><dd>' + textoSeguro(t.fecha_registro) + '</dd></div>' +
+                    '<div><dt>Documento</dt><dd>' + textoSeguro(t.tipo) + (t.numero ? ' N° ' + textoSeguro(t.numero) : '') + '</dd></div>' +
+                    '<div class="ancho"><dt>Asunto</dt><dd>' + textoSeguro(t.asunto) + '</dd></div>' +
+                    '<div><dt>Remitente</dt><dd>' + textoSeguro(t.remitente) + '</dd></div>' +
+                    '<div><dt>Archivos</dt><dd>' + (1 + t.anexos) + ' (' + (t.anexos === 1 ? '1 anexo' : t.anexos + ' anexos') + ')</dd></div>' +
+                '</dl>';
+
+            var cadena = '<div class="timeline">' +
+                '<div class="timeline-item"><div class="timeline-icon" style="background:#2C5282;"><i class="fas fa-inbox"></i></div>' +
+                '<div class="timeline-content" style="border-left-color:#2C5282;">' +
+                '<div class="timeline-date"><i class="fas fa-calendar"></i> ' + textoSeguro(t.fecha_registro) + '</div>' +
+                '<div class="timeline-title" style="color:#2C5282;">Trámite registrado</div>' +
+                '<div class="timeline-description">Se recibió el documento y se generó el expediente.</div></div></div>';
+
+            r.movimientos.forEach(function (m) {
+                var e = ESTILOS_ESTADO[m.estado] || ESTILOS_ESTADO.PENDIENTE;
+                cadena +=
+                    '<div class="timeline-item"><div class="timeline-icon" style="background:' + e.color + ';"><i class="' + e.icono + '"></i></div>' +
+                    '<div class="timeline-content" style="border-left-color:' + e.color + ';">' +
+                    '<div class="timeline-date"><i class="fas fa-clock"></i> ' + textoSeguro(m.fecha) + '</div>' +
+                    '<div class="timeline-title" style="color:' + e.color + ';">' + textoSeguro(e.texto) + '</div>' +
+                    '<div class="timeline-description">' +
+                        (m.origen === m.destino
+                            ? '<div class="movimiento-areas"><span><i class="fas fa-map-marker-alt"></i> En: <b>' + textoSeguro(m.destino) + '</b></span></div>'
+                            : '<div class="movimiento-areas"><span><i class="fas fa-map-marker-alt"></i> De: <b>' + textoSeguro(m.origen) + '</b></span>' +
+                              '<span><i class="fas fa-flag-checkered"></i> A: <b>' + textoSeguro(m.destino || '—') + '</b></span></div>') +
+                        (m.recibido
+                            ? '<p class="movimiento-acuse"><i class="fas fa-check-double"></i> Recibido por el área el ' + textoSeguro(m.recibido) + '</p>'
+                            : (m.estado === 'PENDIENTE' ? '<p class="movimiento-sin-acuse"><i class="far fa-clock"></i> El área aún no confirma la recepción</p>' : '')) +
+                        (m.descripcion ? '<p class="movimiento-nota">' + textoSeguro(m.descripcion) + '</p>' : '') +
+                    '</div></div></div>';
+            });
+            cadena += '</div>';
+            document.getElementById('div_seguimiento').innerHTML = cadena;
+
+            document.getElementById('btn_cargo').href = r.cargo;
+            document.getElementById('btn_hoja').href = r.hoja;
+
+            var resultados = document.getElementById('div_buscador');
+            resultados.style.display = 'block';
+            resultados.classList.add('show');
+            resultados.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
         function Traer_Datos_Seguimiento() {
-            let numero = document.getElementById('txt_numero').value;
-            let dni = document.getElementById('txt_dni').value;
-            
-            if(numero.length == 0 || dni.length == 0) {
-                return Swal.fire("Mensaje de Advertencia", "Llene el N° de Documento y DNI para buscar el documento", "warning");
+            var numero = document.getElementById('txt_numero').value.trim();
+            var dni = document.getElementById('txt_dni').value.trim();
+            if (!numero || !dni) {
+                return Swal.fire({ icon: 'warning', title: 'Faltan datos', text: 'Ingrese el N° de expediente (o código) y el DNI del remitente.', confirmButtonColor: '#1E3A5F' });
+            }
+            if (!/^\d{8}$/.test(dni)) {
+                return Swal.fire({ icon: 'warning', title: 'DNI no válido', text: 'El DNI debe tener 8 dígitos.', confirmButtonColor: '#1E3A5F' });
             }
 
-            // Mostrar loading
-            $("#loading").addClass('show');
-            $("#div_buscador").removeClass('show');
-            
+            $('#loading').addClass('show');
+            $('#div_buscador').removeClass('show').hide();
+
             $.ajax({
-                "url": "controller/usuario/controlador_traer_seguimiento.php",
+                url: 'controller/tramite/controlador_consulta_publica.php',
                 type: 'POST',
-                data: {
-                    numero: numero,
-                    dni: dni
+                dataType: 'json',
+                data: { numero: numero, dni: dni }
+            }).done(function (r) {
+                $('#loading').removeClass('show');
+                if (!r.encontrado) {
+                    return Swal.fire({ icon: 'info', title: 'No encontrado', text: r.mensaje, confirmButtonColor: '#1E3A5F' });
                 }
-            }).done(function(resp) {
-                $("#loading").removeClass('show');
-                let data = JSON.parse(resp);
-                var cadena = "";
-                
-                if(data.length > 0) {
-                    document.getElementById("div_buscador").style.display = "block";
-                    $("#div_buscador").addClass('show');
-                    document.getElementById('lbl_titulo').innerHTML = "<b>Expediente " + (data[0].doc_expediente || data[0][0]) + " · Código " + data[0][0] + " · " + data[0][2] + "</b>";
-                    
-                    cadena += '<div class="timeline">';
-                    cadena += '<div class="timeline-item">' +
-                              '<div class="timeline-icon" style="background: #B45309;">' +
-                              '<i class="fas fa-calendar-alt"></i>' +
-                              '</div>' +
-                              '<div class="timeline-content">' +
-                              '<div class="timeline-date"><i class="fas fa-calendar"></i> Fecha de Registro: ' + data[0][4] + '</div>' +
-                              '<div class="timeline-title">Documento Registrado</div>' +
-                              '<div class="timeline-description">El trámite ha sido registrado exitosamente en el sistema</div>' +
-                              '</div>' +
-                              '</div>';
-                    
-                    // AJAX PARA EL DETALLE DEL SEGUIMIENTO
-                    $.ajax({
-                        "url": "controller/usuario/controlador_traer_seguimiento_detalle.php",
-                        type: 'POST',
-                        data: {
-                            codigo: data[0][0],
-                            dni: dni
-                        }
-                    }).done(function(resp) {
-                        let datadetalle = JSON.parse(resp);
-                        
-                        if(datadetalle.length > 0) {
-                            for (let i = 0; i < datadetalle.length; i++) {
-                                let iconClass = "fas fa-envelope";
-                                let gradientColor = "";
-                                let statusColor = "";
-                                let statusText = "";
-                                let actionText = "";
-                                
-                                // Detectar si es una copia
-                                let isCopy = datadetalle[i][7] && datadetalle[i][7].toUpperCase().includes('COPIA');
-                                let copyBadge = isCopy ? '<span class="badge badge-danger ml-2" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;"><i class="fas fa-copy"></i> COPIA</span>' : '';
-                                
-                                                                if(datadetalle[i][8] == "DERIVADO") {
-                                    iconClass = "fas fa-share";
-                                    gradientColor = "background: #1E3A5F;";
-                                    statusColor = "#1E3A5F";
-                                    actionText = "DERIVADO";
-                                    statusText = "El documento fue derivado";
-                                } else if(datadetalle[i][8] == "RECHAZADO") {
-                                    iconClass = "fas fa-times-circle";
-                                    gradientColor = "background: #B45309;";
-                                    statusColor = "#B45309";
-                                    actionText = "RECHAZADO";
-                                    statusText = "El documento fue rechazado";
-                                } else if(datadetalle[i][8] == "FINALIZADO") {
-                                    iconClass = "fas fa-check-circle";
-                                    gradientColor = "background: #15803D;";
-                                    statusColor = "#15803D";
-                                    actionText = "FINALIZADO";
-                                    statusText = "El documento fue finalizado";
-                                } else if(datadetalle[i][8] == "ACEPTADO") {
-                                    iconClass = "fas fa-check";
-                                    gradientColor = "background: #15803D;";
-                                    statusColor = "#15803D";
-                                    actionText = "ACEPTADO";
-                                    statusText = "El documento fue aceptado";
-                                } else {
-                                    iconClass = "fas fa-clock";
-                                    gradientColor = "background: #B45309;";
-                                    statusColor = "#B45309";
-                                    actionText = datadetalle[i][8];
-                                    statusText = "El documento está pendiente";
-                                }
-                                
-                                // Obtener origen y destino
-                                let areaOrigen = datadetalle[i][3] || 'EXTERNO';
-                                let areaDestino = datadetalle[i][4] || 'N/A';
-                                
-                                cadena += '<div class="timeline-item">' +
-                                          '<div class="timeline-icon" style="' + gradientColor + '">' +
-                                          '<i class="' + iconClass + '"></i>' +
-                                          '</div>' +
-                                          '<div class="timeline-content" style="border-left-color: ' + statusColor + ';">' +
-                                          '<div class="timeline-date"><i class="fas fa-clock"></i> ' + datadetalle[i][5] + '</div>' +
-                                          '<div class="timeline-title" style="color: ' + statusColor + ';">' +
-                                          '<i class="fas fa-info-circle"></i> Estado: ' + actionText + copyBadge +
-                                          '</div>' +
-                                          '<div class="timeline-description">' +
-                                          '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">' +
-                                          '<div style="background: white; padding: 0.75rem; border-radius: 8px; border-left: 3px solid #2C5282;">' +
-                                          '<div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;"><i class="fas fa-map-marker-alt"></i> ORIGEN</div>' +
-                                          '<div style="font-weight: 600; color: #1f2937;">' + areaOrigen + '</div>' +
-                                          '</div>' +
-                                          '<div style="background: white; padding: 0.75rem; border-radius: 8px; border-left: 3px solid #15803D;">' +
-                                          '<div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.25rem;"><i class="fas fa-flag-checkered"></i> DESTINO</div>' +
-                                          '<div style="font-weight: 600; color: #1f2937;">' + areaDestino + '</div>' +
-                                          '</div>' +
-                                          '</div>' +
-                                          '<p style="margin-bottom: 0.5rem; font-weight: 500;">' + statusText + '</p>' +
-                                          // Acuse de recepción (solo la fecha: no se muestran nombres de funcionarios)
-                                          (datadetalle[i].recibido_fecha
-                                            ? '<p style="margin-bottom: 0.5rem; color: #15803D; font-weight: 600;"><i class="fas fa-inbox"></i> Recibido por el área el ' + datadetalle[i].recibido_fecha + '</p>'
-                                            : (datadetalle[i][8] == "PENDIENTE" ? '<p style="margin-bottom: 0.5rem; color: #718096;"><i class="far fa-clock"></i> Aún sin acuse de recepción</p>' : '')) +
-                                          '<p style="margin: 0; padding: 1rem; background: white; border-radius: 8px; border-left: 3px solid ' + statusColor + ';">' +
-                                          '<i class="fas fa-comment-alt"></i> <strong>Descripción:</strong><br>' +
-                                          datadetalle[i][7] +
-                                          '</p>' +
-                                          '</div>' +
-                                          '</div>' +
-                                          '</div>';
-                            }
-                            
-                            cadena += '</div>';
-                            document.getElementById("div_seguimiento").innerHTML = cadena;
-                        }
-                    });
-                } else {
-                    document.getElementById("div_buscador").style.display = "none";
-                    return Swal.fire("Mensaje de Advertencia", "No se encontraron datos del Documento Buscado", "warning");
-                }
-            }).fail(function() {
-                $("#loading").removeClass('show');
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'No se pudo realizar la búsqueda. Intente nuevamente.',
-                    confirmButtonColor: '#1E3A5F'
-                });
+                Pintar_Consulta(r);
+            }).fail(function (xhr) {
+                $('#loading').removeClass('show');
+                var mensaje = (xhr.responseJSON && xhr.responseJSON.mensaje) || 'No se pudo realizar la búsqueda. Intente nuevamente.';
+                Swal.fire({ icon: xhr.status === 422 || xhr.status === 429 ? 'warning' : 'error', title: 'No se pudo consultar', text: mensaje, confirmButtonColor: '#1E3A5F' });
             });
         }
 
-        // Imprimir ticket
-        $('#ticket').click(function() {
-            var codigo = $("#txt_numero").val();
-            if (!codigo) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Sin Código',
-                    text: 'Primero debe realizar una búsqueda',
-                    confirmButtonColor: '#1E3A5F'
-                });
-                return;
-            }
-            window.open("view/MPDF/REPORTE/ticket_tramite.php?codigo=" + encodeURIComponent(codigo) + "&dni=" + encodeURIComponent($("#txt_dni").val()) + "#zoom=100%",
-                       "Ticket", "scrollbars=NO,width=800,height=600");
-        });
-
-        // Imprimir seguimiento
-        $('#seguimiento').click(function() {
-            var codigo = $("#txt_numero").val();
-            if (!codigo) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Sin Código',
-                    text: 'Primero debe realizar una búsqueda',
-                    confirmButtonColor: '#1E3A5F'
-                });
-                return;
-            }
-            window.open("view/MPDF/REPORTE/ficha_seguimiento_automatico.php?codigo=" + encodeURIComponent(codigo) + "&dni=" + encodeURIComponent($("#txt_dni").val()) + "#zoom=100%",
-                       "Seguimiento", "scrollbars=NO,width=800,height=600");
-        });
-
-        // Si se llega desde el QR del ticket (?codigo=D0000041), el código ya viene
-        // escrito y el cursor pasa al DNI, que es lo único que falta.
+        // Si se llega desde el QR o el cargo (?codigo=...), el número ya viene escrito
+        // y el cursor pasa al DNI, que es lo único que falta.
         document.addEventListener('DOMContentLoaded', function() {
             var codigo = (new URLSearchParams(window.location.search).get('codigo') || '').toUpperCase().trim();
             if (/^[A-Z0-9-]{1,20}$/.test(codigo)) {
