@@ -842,6 +842,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   </script>
   <script src="../js/formato.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/anexos.js?rev=<?php echo time(); ?>"></script>
+  <script src="../js/firma.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_comunicados.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_empleado.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_tramite.js?rev=<?php echo time(); ?>"></script>

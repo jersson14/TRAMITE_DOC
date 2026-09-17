@@ -22,13 +22,29 @@ function tamanoLegible(bytes) {
   return (n / 1048576).toFixed(1).replace(".", ",") + " MB";
 }
 
-/** Una fila de archivo. `datos` = { titulo, etiqueta, principal, ruta, descarga, meta, existe } */
+/**
+ * Una fila de archivo. `datos` = { titulo, etiqueta, principal, ruta, descarga, meta, existe,
+ * origen (qué se firma: "principal" o el anexo_id; vacío si no es PDF), firmas, firmantes }
+ */
 function filaArchivo(datos) {
   var clases = "archivo-item" + (datos.principal ? " es-principal" : "") + (datos.existe ? "" : " no-disponible");
   var url = "../" + escaparTexto(datos.ruta);
+  var firmas = datos.firmas || 0;
+
+  var botonFirmar = datos.origen
+    ? '<button type="button" class="btn btn-archivo btn-firmar" data-origen="' + escaparTexto(datos.origen) + '" ' +
+        'data-nombre="' + escaparTexto(datos.titulo) + '" data-firmas="' + firmas + '" ' +
+        'title="' + (firmas ? "Agregar mi firma a este archivo" : "Firmar digitalmente") + '">' +
+        '<i class="fas fa-file-signature"></i> ' + (firmas ? "Cofirmar" : "Firmar") + "</button>"
+    : "";
+
+  var sello = firmas
+    ? '<span class="archivo-etiqueta etiqueta-firmado" title="' + escaparTexto("Firmado por: " + (datos.firmantes || []).join(", ")) + '">' +
+      '<i class="fas fa-check"></i> Firmado' + (firmas > 1 ? " · " + firmas : "") + "</span>"
+    : "";
 
   var acciones = datos.existe
-    ? '<div class="archivo-acciones">' +
+    ? '<div class="archivo-acciones">' + botonFirmar +
         '<a class="btn btn-archivo" href="' + url + '" target="_blank" rel="noopener" title="Abrir en otra pestaña">' +
           '<i class="fas fa-eye"></i> Ver</a>' +
         '<a class="btn btn-archivo" href="' + url + '" download="' + escaparTexto(datos.descarga) + '" ' +
@@ -48,7 +64,7 @@ function filaArchivo(datos) {
       '<div class="archivo-cuerpo">' +
         '<div class="archivo-nombre" title="' + escaparTexto(datos.titulo) + '">' +
           escaparTexto(datos.titulo) +
-          '<span class="archivo-etiqueta">' + escaparTexto(datos.etiqueta) + "</span>" +
+          '<span class="archivo-etiqueta">' + escaparTexto(datos.etiqueta) + "</span>" + sello +
         "</div>" +
         '<div class="archivo-meta">' + meta + "</div>" +
       "</div>" +
@@ -57,9 +73,9 @@ function filaArchivo(datos) {
   );
 }
 
-function marcoArchivos(contador, cuerpo) {
+function marcoArchivos(contador, cuerpo, documentoId) {
   return (
-    '<div class="archivos-tramite">' +
+    '<div class="archivos-tramite" data-documento="' + escaparTexto(documentoId || "") + '">' +
       '<div class="archivos-cabecera">' +
         '<h6 class="archivos-titulo"><i class="fas fa-folder-open"></i> Archivos del trámite</h6>' +
         (contador ? '<span class="archivos-contador">' + contador + "</span>" : "") +
@@ -93,6 +109,8 @@ function Cargar_Anexos(documentoId) {
       var principal = respuesta && respuesta.principal;
       var anexos = (respuesta && respuesta.data) || [];
       var filas = "";
+      if (typeof FIRMA_PERU_CONFIGURADO !== "undefined") FIRMA_PERU_CONFIGURADO = !!(respuesta && respuesta.firma_peru);
+      var puedeFirmar = typeof Formulario_Firma === "function";
 
       if (principal) {
         var metaPrincipal = ["Registrado el " + principal.fecha];
@@ -105,6 +123,7 @@ function Cargar_Anexos(documentoId) {
           descarga: (principal.expediente || documentoId) + ".pdf",
           meta: metaPrincipal.join(" · "),
           existe: principal.existe,
+          origen: puedeFirmar && /\.pdf$/i.test(principal.ruta) ? "principal" : "",
         });
       }
 
@@ -123,6 +142,9 @@ function Cargar_Anexos(documentoId) {
           descarga: a.anexo_nombre,
           meta: metaAnexo.join(" · "),
           existe: a.existe,
+          origen: puedeFirmar && a.es_pdf ? String(a.anexo_id) : "",
+          firmas: a.firmas,
+          firmantes: a.firmantes,
         });
       }
 
@@ -135,7 +157,7 @@ function Cargar_Anexos(documentoId) {
         filas += '<div class="archivos-aviso archivos-aviso-fila">Sin anexos adicionales.</div>';
       }
 
-      caja.innerHTML = marcoArchivos(total + (total === 1 ? " archivo" : " archivos"), filas);
+      caja.innerHTML = marcoArchivos(total + (total === 1 ? " archivo" : " archivos"), filas, documentoId);
     })
     .fail(function (xhr) {
       var mensaje = xhr && xhr.status === 403

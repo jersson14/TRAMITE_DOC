@@ -14,6 +14,7 @@ function insigniaAccion(accion) {
     RECEPCION: ["badge-success", "Acuse de recepción"],
     ATENCION_SOLICITADA: ["badge-primary", "Atención solicitada"],
     ATENCION_RESPONDIDA: ["badge-success", "Atención respondida"],
+    FIRMA_DIGITAL: ["badge-primary", "Firma digital"],
     REGISTRO: ["badge-primary", "Registro"],
     MODIFICO: ["badge-warning", "Modificación"],
     ELIMINO: ["badge-danger", "Eliminación"],

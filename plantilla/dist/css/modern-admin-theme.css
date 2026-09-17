@@ -1168,3 +1168,124 @@ input[type="file"]:disabled::file-selector-button {
         box-shadow: 0 0 30px rgba(0, 0, 0, 0.5) !important;
     }
 }
+/* ============================================================
+   Firma digital (js/firma.js)
+   ============================================================ */
+.archivo-etiqueta.etiqueta-firmado {
+    background: #F0FDF4;
+    color: #15803D;
+    border: 1px solid #15803D;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.firma-form {
+    margin: 0;
+    padding: 1rem 1rem 0.85rem;
+    background: #F7FAFC;
+    border-bottom: 1px solid #E2E8F0;
+    border-left: 3px solid #1E3A5F;
+}
+
+.firma-titulo {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #1E3A5F;
+    margin-bottom: 0.75rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.firma-form label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #4A5568;
+    margin-bottom: 0.25rem;
+}
+
+.firma-metodos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
+}
+
+.firma-form .firma-metodo {
+    flex: 1 1 220px;
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #CBD5E0;
+    border-radius: 6px;
+    background: #fff;
+    color: #4A5568;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.firma-metodo input {
+    margin-right: 0.35rem;
+}
+
+.firma-form .firma-metodo.activo {
+    border-color: #1E3A5F;
+    color: #1E3A5F;
+    box-shadow: inset 0 0 0 1px #1E3A5F;
+}
+
+.firma-nota {
+    font-size: 0.78rem;
+    color: #4A5568;
+    margin-bottom: 0.75rem;
+}
+
+.firma-aviso {
+    display: flex;
+    gap: 0.6rem;
+    align-items: flex-start;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid #B45309;
+    border-radius: 6px;
+    background: #FFFBEB;
+    color: #78350F;
+    font-size: 0.8rem;
+    line-height: 1.45;
+}
+
+.firma-aviso > i {
+    margin-top: 0.15rem;
+    color: #B45309;
+}
+
+.firma-aviso.firma-aviso-info {
+    border-color: #2C5282;
+    background: #EFF4F9;
+    color: #1E3A5F;
+}
+
+.firma-aviso.firma-aviso-info > i {
+    color: #2C5282;
+}
+
+.firma-botones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}
+
+.firma-seguridad {
+    margin-top: 0.6rem;
+    font-size: 0.72rem;
+    color: #718096;
+}
+
+.firma-form .btn-primary {
+    background: #1E3A5F;
+    border-color: #1E3A5F;
+}
+
+.firma-form .btn-primary:hover,
+.firma-form .btn-primary:focus {
+    background: #16304E;
+    border-color: #16304E;
+}

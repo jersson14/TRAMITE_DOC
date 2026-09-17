@@ -23,6 +23,7 @@ class Bitacora
     const RECEPCION        = 'RECEPCION';
     const ATENCION_SOLICITADA = 'ATENCION_SOLICITADA';
     const ATENCION_RESPONDIDA = 'ATENCION_RESPONDIDA';
+    const FIRMA_DIGITAL    = 'FIRMA_DIGITAL';
 
     // Acciones sobre el mantenimiento
     const REGISTRO         = 'REGISTRO';

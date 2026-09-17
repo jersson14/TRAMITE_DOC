@@ -4,8 +4,61 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "826f515f5ef16946d3e3ee3e3205b25e",
+    "content-hash": "ee1050067f8bf6220d8af1724041d171",
     "packages": [
+        {
+            "name": "ddn/sapp",
+            "version": "1.5.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dealfonso/sapp.git",
+                "reference": "244ed4910b1ccbd35f6e2a4f2c143ba26ede0546"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dealfonso/sapp/zipball/244ed4910b1ccbd35f6e2a4f2c143ba26ede0546",
+                "reference": "244ed4910b1ccbd35f6e2a4f2c143ba26ede0546",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "ddn\\sapp\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-3.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Carlos A.",
+                    "email": "caralla@upv.es"
+                }
+            ],
+            "description": "Simple and Agnostic PDF Parser (SAPP): Edit, manipulate and sign PDF documents usign PHP",
+            "keywords": [
+                "electronic signature",
+                "pdf",
+                "php",
+                "sign",
+                "signature"
+            ],
+            "support": {
+                "issues": "https://github.com/dealfonso/sapp/issues",
+                "source": "https://github.com/dealfonso/sapp/tree/1.5.8"
+            },
+            "funding": [
+                {
+                    "url": "https://paypal.me/caralla",
+                    "type": "custom"
+                }
+            ],
+            "time": "2026-04-27T10:33:24+00:00"
+        },
         {
             "name": "phpmailer/phpmailer",
             "version": "v7.0.2",

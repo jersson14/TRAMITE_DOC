@@ -1,6 +1,8 @@
 <?php
     require_once __DIR__ . '/../_guard.php';
     require '../../model/model_tramite.php';
+    require '../../model/model_firma.php';
+    require_once __DIR__ . '/../../lib/FirmaDigital.php';
 
     header('Content-Type: application/json; charset=utf-8');
 
@@ -48,10 +50,16 @@
 
     $anexos = $MTR->Listar_Anexos($id);
     $filas = $anexos['data'] ?? [];
+    $firmas = (new Modelo_Firma())->Firmas_Por_Anexo($id);
     foreach ($filas as &$fila) {
         $estado = estadoArchivo($raiz, $fila['anexo_ruta']);
         $fila['existe'] = $estado['existe'];
+        $firma = $firmas[(int) $fila['anexo_id']] ?? null;
+        $fila['firmas'] = $firma ? (int) $firma['total'] : 0;
+        $fila['firmantes'] = $firma ? explode("\n", $firma['firmantes']) : [];
+        $fila['es_pdf'] = (bool) preg_match('/\.pdf$/i', $fila['anexo_ruta']);
     }
     unset($fila);
 
-    echo json_encode(['principal' => $principal, 'data' => $filas]);
+    // Firma Perú (DNIe/token) se ofrece solo cuando la entidad configuró sus credenciales
+    echo json_encode(['principal' => $principal, 'data' => $filas, 'firma_peru' => FirmaDigital::firmaPeruConfigurado()]);
