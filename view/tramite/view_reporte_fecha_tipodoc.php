@@ -83,6 +83,7 @@
                 </div>
                 </div>
                 
+                <div class="exportaciones" id="exportar_reporte"></div>
                 <div class="table-responsive" style="text-align:center">
                   <div class="card-body">
                     <table id="tabla_tramite" class="table table-striped table-bordered table-modern" style="width:100%">

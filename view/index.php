@@ -295,6 +295,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     </a>
                   </li>
 
+                  <li class="nav-item">
+                    <a onclick="cargar_contenido('contenido_principal','reporte/view_reporte_plazos.php')" class="nav-link">
+                      <i class="nav-icon fas fa-stopwatch"></i>
+                      <p>Plazos y productividad por área</p>
+                    </a>
+                  </li>
                 </ul>
               </li>
               <li class="header text-center" style="color:#FFFFFF;background-color:Gray;"><b>CONFIGURACIÓN Y MANUAL</b></li>
@@ -376,6 +382,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <a onclick="cargar_contenido('contenido_principal','tramite_area/view_reporte_fecha_tipodoc.php')" class="nav-link">
                       <i class="nav-icon fas fa-file"></i>
                       <p>Reporte por Fechas y Tipo de Documento</p>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a onclick="cargar_contenido('contenido_principal','reporte/view_reporte_plazos.php')" class="nav-link">
+                      <i class="nav-icon fas fa-stopwatch"></i>
+                      <p>Plazos y productividad por área</p>
                     </a>
                   </li>
                 </ul>
@@ -807,6 +819,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         'reportes/por-area'   => ['tramite/view_reporte_fecha_area.php', 'Reporte por área'],
         'reportes/por-estado' => ['tramite/view_reporte_fecha_estado.php', 'Reporte por estado'],
         'reportes/por-tipo'   => ['tramite/view_reporte_fecha_tipodoc.php', 'Reporte por tipo de documento'],
+        'reportes/plazos'     => ['reporte/view_reporte_plazos.php', 'Plazos y productividad'],
         'usuarios'            => ['usuario/view_usuario.php', 'Usuarios'],
       ];
     } else {
@@ -818,6 +831,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         'reportes/por-area'   => ['tramite_area/view_reporte_fecha_area.php', 'Reporte por área'],
         'reportes/por-estado' => ['tramite_area/view_reporte_fecha_estado.php', 'Reporte por estado'],
         'reportes/por-tipo'   => ['tramite_area/view_reporte_fecha_tipodoc.php', 'Reporte por tipo de documento'],
+        'reportes/plazos'     => ['reporte/view_reporte_plazos.php', 'Plazos y productividad'],
       ];
     }
     ?>
@@ -999,6 +1013,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <script src="../js/filtros_bandeja.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_indicadores.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_notificaciones.js?rev=<?php echo time(); ?>"></script>
+  <script src="../js/exportaciones.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_comunicados.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_empleado.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_tramite.js?rev=<?php echo time(); ?>"></script>

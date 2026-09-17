@@ -1,6 +1,7 @@
 {
     "require": {
         "phpmailer/phpmailer": "^7.0",
-        "ddn/sapp": "^1.5"
+        "ddn/sapp": "^1.5",
+        "openspout/openspout": "^4.28"
     }
 }

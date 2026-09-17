@@ -1665,3 +1665,55 @@ a.notificacion:hover {
     color: #15803D;
     margin-right: 0.3rem;
 }
+
+/* ============================================================
+   Botones de exportación de reportes (js/exportaciones.js)
+   ============================================================ */
+.exportaciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1rem 0;
+}
+
+.exportaciones-rotulo {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #4A5568;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.btn-exportar {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.4rem 0.9rem;
+    border-radius: 8px;
+    border: 1px solid #CBD5E0;
+    background: #fff;
+    color: #2D3748;
+}
+
+.btn-exportar:hover {
+    color: #fff;
+    border-color: transparent;
+}
+
+.btn-exportar.pdf:hover { background: #B91C1C; }
+.btn-exportar.excel:hover { background: #15803D; }
+.btn-exportar.csv:hover { background: #1E3A5F; }
+.btn-exportar.pdf i { color: #B91C1C; }
+.btn-exportar.excel i { color: #15803D; }
+.btn-exportar.csv i { color: #1E3A5F; }
+.btn-exportar:hover i { color: #fff; }
+
+@media (max-width: 576px) {
+    .btn-exportar {
+        flex: 1 1 100%;
+        justify-content: center;
+    }
+}

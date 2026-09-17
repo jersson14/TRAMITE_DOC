@@ -8,4 +8,5 @@ $baseDir = dirname($vendorDir);
 return array(
     'ddn\\sapp\\' => array($vendorDir . '/ddn/sapp/src'),
     'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
+    'OpenSpout\\' => array($vendorDir . '/openspout/openspout/src'),
 );

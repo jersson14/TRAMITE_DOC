@@ -16,44 +16,7 @@ function listar_tramite(){
           "url":"../controller/tramite/controlador_listar_tramite.php",
           type:'POST'
       },
-      dom: 'Bfrtip',       
-      buttons:[ 
-    {
-      extend:    'excelHtml5',
-      text:      '<i class="fas fa-file-excel"></i> ',
-      titleAttr: 'Exportar a Excel',
-      
-      filename: function() {
-        return  "LISTA DE DOCUMENTOS POR FECHA Y ÁREA"
-      },
-        title: function() {
-          return  "LISTA DE DOCUMENTOS POR FECHA Y ÁREA" }
-  
-    },
-    {
-      extend:    'pdfHtml5',
-      text:      '<i class="fas fa-file-pdf"></i> ',
-      orientation: 'landscape',
-      pageSize: 'LEGAL',
-      titleAttr: 'Exportar a PDF',
-      filename: function() {
-        return  "LISTA DE DOCUMENTOS POR FECHA Y ÁREA"
-      },
-    title: function() {
-      return  "LISTA DE DOCUMENTOS POR FECHA Y ÁREA"
-    }
-  },
-    {
-      extend:    'print',
-      text:      '<i class="fa fa-print"></i> ',
-      titleAttr: 'Imprimir',
-      
-    title: function() {
-      return  "LISTA DE DOCUMENTOS POR FECHA Y ÁREA"
-  
-    }
-    }],
-    "columns":[
+      "columns":[
       {"data":"documento_id"},
       {"data":"doc_nrodocumento"},
       {"data":"tipodo_descripcion"},
@@ -118,43 +81,6 @@ function listar_fechas_busqueda(){
             area:area
           }
       },
-      dom: 'Bfrtip',       
-      buttons:[ 
-    {
-      extend:    'excelHtml5',
-      text:      '<i class="fas fa-file-excel"></i> ',
-      titleAttr: 'Exportar a Excel',
-      
-      filename: function() {
-        return  "LISTA DE DOCUMENTOS POR FECHA Y ÁREA"
-      },
-        title: function() {
-          return  "LISTA DE DOCUMENTOS POR FECHA Y ÁREA" }
-  
-    },
-    {
-      extend:    'pdfHtml5',
-      text:      '<i class="fas fa-file-pdf"></i> ',
-      orientation: 'landscape',
-      pageSize: 'LEGAL',
-      titleAttr: 'Exportar a PDF',
-      filename: function() {
-        return  "LISTA DE DOCUMENTOS POR FECHA Y ÁREA"
-      },
-    title: function() {
-      return  "LISTA DE DOCUMENTOS POR FECHA Y ÁREA"
-    }
-  },
-    {
-      extend:    'print',
-      text:      '<i class="fa fa-print"></i> ',
-      titleAttr: 'Imprimir',
-      
-    title: function() {
-      return  "LISTA DE DOCUMENTOS POR FECHA Y ÁREA"
-  
-    }
-    }],
       "columns":[
         {"data":"documento_id"},
         {"data":"doc_nrodocumento"},
@@ -549,3 +475,17 @@ function listar_seguimiento_tramite(id){
     select: true
 });
 }
+
+/** Exportaciones del reporte: el archivo se arma en el servidor con los filtros aplicados. */
+// La vista se carga dentro de la página con $.load, cuando DOMContentLoaded ya ocurrió
+$(function () {
+  if (typeof Exportaciones_Montar !== "function") return;
+  Exportaciones_Montar("#exportar_reporte", "fecha_area", function () {
+    var f = { desde: document.getElementById('txtfechainicio').value, hasta: document.getElementById('txtfechafin').value, area: document.getElementById('select_area').value };
+    if (!f.desde || !f.hasta) {
+      Swal.fire("Mensaje de Advertencia", "Elija el rango de fechas antes de exportar", "warning");
+      return null;
+    }
+    return f;
+  });
+});
