@@ -942,6 +942,9 @@ $e = [Seguridad::class, 'e'];
                     '<div><dt>N° de expediente</dt><dd>' + textoSeguro(t.expediente || '—') + '</dd></div>' +
                     '<div><dt>Código de seguimiento</dt><dd>' + textoSeguro(t.codigo) + '</dd></div>' +
                     '<div><dt>Registrado el</dt><dd>' + textoSeguro(t.fecha_registro) + '</dd></div>' +
+                    (t.fecha_presentado
+                        ? '<div><dt>Se considera presentado el</dt><dd>' + textoSeguro(t.fecha_presentado) + ' <small style="color:#B45309;">(llegó fuera del horario de atención)</small></dd></div>'
+                        : '') +
                     '<div><dt>Documento</dt><dd>' + textoSeguro(t.tipo) + (t.numero ? ' N° ' + textoSeguro(t.numero) : '') + '</dd></div>' +
                     '<div class="ancho"><dt>Asunto</dt><dd>' + textoSeguro(t.asunto) + '</dd></div>' +
                     '<div><dt>Remitente</dt><dd>' + textoSeguro(t.remitente) + '</dd></div>' +

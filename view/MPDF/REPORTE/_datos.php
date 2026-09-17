@@ -64,7 +64,7 @@ $logoPdf = $raizSistema . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPAR
 // --- Trámite ---
 $consulta = $mysqli->prepare(
     "SELECT d.documento_id, d.doc_expediente, d.doc_nrodocumento, d.doc_folio, d.doc_asunto,
-            d.doc_observaciones, d.acciones, d.doc_estatus, d.doc_fecharegistro, d.dias_respuesta,
+            d.doc_observaciones, d.acciones, d.doc_estatus, d.doc_fecharegistro, d.dias_respuesta, d.doc_fecharecepcion,
             d.doc_dniremitente, d.doc_celularremitente, d.doc_emailremitente, d.doc_direccionremitente,
             d.doc_representacion, d.doc_ruc, d.doc_empresa,
             CONCAT_WS(' ', d.doc_nombreremitente, d.doc_apepatremitente, d.doc_apematremitente) AS remitente,

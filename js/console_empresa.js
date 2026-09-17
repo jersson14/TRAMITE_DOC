@@ -24,6 +24,9 @@ function listar_empresa(){
         {"data":"emp_cod"},
         {"data":"emp_telefono"},
         {"data":"emp_direccion"},
+        {"data":"emp_hora_inicio", render: function(data, type, row){
+            return data ? String(data).slice(0,5) + " a " + String(row.emp_hora_fin || "").slice(0,5) + "<br><small class='text-muted'>lunes a viernes</small>" : "—";
+        }},
         {"defaultContent":"<button class='editar btn btn-primary  btn-sm' title='Editar datos de empresa'><i class='fa fa-edit'></i> Editar</button>&nbsp;<button class='foto btn btn-warning btn-sm' title='Cambiar logo'><i class='fa fa-image'></i> Cambiar foto</button>"},
 
     ],
@@ -51,6 +54,8 @@ $('#tabla_empresa').on('click','.editar',function(){
     document.getElementById('txt_codigo').value=data.emp_cod;
     document.getElementById('txt_telefono').value=data.emp_telefono;
     document.getElementById('txt_direccion').value=data.emp_direccion;
+    document.getElementById('txt_hora_apertura').value=String(data.emp_hora_inicio || "08:00").slice(0,5);
+    document.getElementById('txt_hora_cierre').value=String(data.emp_hora_fin || "16:30").slice(0,5);
   })
   function Modificar_Empleado(){
     let id = document.getElementById('txt_id_empresa').value;
@@ -59,9 +64,14 @@ $('#tabla_empresa').on('click','.editar',function(){
     let cod = document.getElementById('txt_codigo').value;
     let tel = document.getElementById('txt_telefono').value;
     let dir = document.getElementById('txt_direccion').value;
+    let hini = document.getElementById('txt_hora_apertura').value;
+    let hfin = document.getElementById('txt_hora_cierre').value;
 
-    if(id.length==0 || nom.length==0 || email.length==0 || cod.length==0 || tel.length==0 || dir.length==0){
+    if(id.length==0 || nom.length==0 || email.length==0 || cod.length==0 || tel.length==0 || dir.length==0 || hini.length==0 || hfin.length==0){
         return Swal.fire("Mensaje de Advertencia","Tiene campos vacios","warning");
+    }
+    if(hini >= hfin){
+        return Swal.fire("Mensaje de Advertencia","La hora de inicio de la recepción debe ser anterior a la hora de cierre","warning");
     }
     if(validar_email(email)){
   
@@ -79,6 +89,8 @@ $('#tabla_empresa').on('click','.editar',function(){
           cod:cod,
           tel:tel,
           dir:dir,
+          hini:hini,
+          hfin:hfin,
 
       }
     }).done(function(resp){

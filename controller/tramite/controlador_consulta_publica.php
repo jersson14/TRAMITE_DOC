@@ -47,6 +47,7 @@ $consulta = $pdo->prepare(
     "SELECT d.documento_id, d.doc_expediente, d.doc_nrodocumento, d.doc_folio, d.doc_asunto, d.doc_estatus,
             d.doc_fecharegistro, d.dias_respuesta, d.doc_dniremitente,
             DATE_FORMAT(d.doc_fecharegistro, '%d/%m/%Y %H:%i') AS fecha_registro,
+            DATE_FORMAT(d.doc_fecharecepcion, '%d/%m/%Y %H:%i') AS fecha_presentado,
             CONCAT_WS(' ', d.doc_nombreremitente, d.doc_apepatremitente, d.doc_apematremitente) AS remitente,
             td.tipodo_descripcion AS tipo, destino.area_nombre AS area_actual
        FROM documento d
@@ -104,6 +105,8 @@ echo json_encode([
         'asunto'         => $tramite['doc_asunto'],
         'remitente'      => $tramite['remitente'],
         'fecha_registro' => $tramite['fecha_registro'],
+        // Solo si llegó fuera del horario de atención y cuenta como presentado otro día u hora
+        'fecha_presentado' => $tramite['fecha_presentado'] && $tramite['fecha_presentado'] !== $tramite['fecha_registro'] ? $tramite['fecha_presentado'] : null,
         'estado'         => $tramite['doc_estatus'],
         'estado_texto'   => $textosEstado[$tramite['doc_estatus']] ?? $tramite['doc_estatus'],
         'area_actual'    => $tramite['area_actual'],

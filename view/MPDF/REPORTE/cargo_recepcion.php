@@ -76,6 +76,15 @@ $fila = function (string $rotulo, $valor): string {
     return '<tr><td class="rotulo">' . pdf_e($rotulo) . '</td><td class="valor">' . pdf_e($valor !== '' && $valor !== null ? $valor : '—') . '</td></tr>';
 };
 
+// Fuera del horario de atención: desde cuándo se considera presentado (migración 015)
+$avisoHorario = '';
+$presentado = (string) ($t['doc_fecharecepcion'] ?? '');
+if ($presentado !== '' && pdf_fecha_corta($presentado) !== pdf_fecha_corta($t['doc_fecharegistro'])) {
+    $avisoHorario = '<div style="margin-top: 3mm; padding: 2.5mm 3mm; background: #FFFBEB; border-left: 0.8mm solid #B45309; font-size: 8.5pt; color: #78350F;">'
+        . 'Recibido fuera del horario de atención (lunes a viernes de ' . pdf_e($i['hora_inicio']) . ' a ' . pdf_e($i['hora_fin']) . '). '
+        . '<b>Se considera presentado el ' . pdf_e(pdf_fecha_larga($presentado)) . '</b>; los plazos se cuentan desde esa fecha.</div>';
+}
+
 $contacto = array_filter([
     $i['telefono'] !== '' ? 'Tel. ' . $i['telefono'] : '',
     $i['email'] !== '' ? strtolower($i['email']) : '',
@@ -136,7 +145,7 @@ $html = '
     <td width="2%"></td>
     <td class="clave" width="30%"><span style="font-size: 6.5pt; color: #718096;">RECIBIDO EL</span><br><span style="font-size: 11pt; font-weight: bold; color: #1E3A5F;">' . pdf_e(pdf_fecha_corta($t['doc_fecharegistro'])) . '</span></td>
 </tr></table>
-
+' . $avisoHorario . '
 <h2>Remitente</h2>
 <table class="datos">'
     . $fila('Nombre', $t['remitente'])

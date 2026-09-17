@@ -35,6 +35,24 @@
             }
             conexionBD::cerrar_conexion();
         }
+        /** Horario de atención para la recepción de documentos (lunes a viernes). */
+        public function Modificar_Horario_Recepcion($id, $inicio, $fin){
+            $c = conexionBD::conexionPDO();
+            $query = $c->prepare("UPDATE empresa SET emp_hora_inicio = ?, emp_hora_fin = ? WHERE empresa_id = ?");
+            return $query->execute([$inicio . ':00', $fin . ':00', $id]) ? 1 : 0;
+        }
+
+        /** Horario de cada institución, para completar el listado (el procedimiento no lo trae). */
+        public function Horarios_Recepcion(){
+            $c = conexionBD::conexionPDO();
+            $query = $c->query("SELECT empresa_id, emp_hora_inicio, emp_hora_fin FROM empresa");
+            $mapa = array();
+            foreach($query->fetchAll(PDO::FETCH_ASSOC) as $fila){
+                $mapa[$fila['empresa_id']] = $fila;
+            }
+            return $mapa;
+        }
+
         public function Modificar_foto_empresa($id,$ruta){
             $c = conexionBD::conexionPDO();
             $sql = "CALL SP_MODIFICAR_EMPRESA_FOTO(?,?)";

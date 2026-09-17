@@ -543,6 +543,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                               <th style="text-align:center">Código</th>
                               <th style="text-align:center">Teléfono</th>
                               <th style="text-align:center">Dirección</th>
+                              <th style="text-align:center">Horario de recepción</th>
                               <th style="text-align:center">Acciones</th>
 
                             </tr>
@@ -595,6 +596,17 @@ scratch. This page gets rid of all links and provides the needed markup only.
                   <div class="col-12 form-group">
                     <label for="">Dirección(*):</label>
                     <input type="text" class="form-control" id="txt_direccion">
+                  </div>
+                  <div class="col-6 form-group">
+                    <label for="txt_hora_apertura">Recepción desde(*):</label>
+                    <input type="time" class="form-control" id="txt_hora_apertura">
+                  </div>
+                  <div class="col-6 form-group">
+                    <label for="txt_hora_cierre">Hasta(*):</label>
+                    <input type="time" class="form-control" id="txt_hora_cierre">
+                  </div>
+                  <div class="col-12">
+                    <small class="text-muted">Lunes a viernes, sin contar feriados. Los documentos de la Mesa de Partes Virtual que lleguen fuera de este horario se consideran presentados el siguiente día hábil a la hora de inicio.</small>
                   </div>
                 </div>
               </div>

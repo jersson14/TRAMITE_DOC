@@ -61,6 +61,7 @@ $e = [Seguridad::class, 'e'];
         .cargo-clave.principal span { color: #cbd5e0; }
         .cargo-clave.principal strong { color: #fff; font-size: 1.5rem; }
         .cargo-detalle { color: #4a5568; margin-bottom: 1.25rem; }
+        .cargo-horario { background: #FFFBEB; border-left: 4px solid #B45309; color: #78350F; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 0.75rem; }
         .cargo-acciones { display: flex; flex-wrap: wrap; gap: 0.6rem; }
         .btn-cargo { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.7rem 1.1rem; border-radius: 10px;
                      border: 2px solid #1E3A5F; color: #1E3A5F; font-weight: 600; text-decoration: none; }
@@ -603,6 +604,13 @@ $e = [Seguridad::class, 'e'];
                         <strong>Importante:</strong> Adjunte su documento principal en PDF (máximo 20 MB) y, si corresponde,
                         hasta 5 anexos en PDF. Entre todos los archivos no deben superar los 35 MB.
                     </div>
+
+                    <div class="alert-box" style="background: #EFF4F9; border-left-color: #2C5282;">
+                        <i class="fas fa-clock" style="color: #2C5282;"></i>
+                        <strong>Horario de recepción:</strong> lunes a viernes de <?= $e($inst['hora_inicio']) ?> a <?= $e($inst['hora_fin']) ?>.
+                        Puede enviar su documento a cualquier hora, pero lo que llegue fuera de ese horario, en fin de semana o feriado
+                        se considera presentado el siguiente día hábil a las <?= $e($inst['hora_inicio']) ?>.
+                    </div>
                 </div>
 
                 <!-- Confirmación y cargo de recepción (se muestra al registrar) -->
@@ -619,6 +627,7 @@ $e = [Seguridad::class, 'e'];
                         <div class="cargo-clave"><span>Código de seguimiento</span><strong id="cr_codigo"></strong></div>
                         <div class="cargo-clave"><span>Recibido el</span><strong id="cr_fecha"></strong></div>
                     </div>
+                    <p class="cargo-horario" id="cr_horario" hidden></p>
                     <p class="cargo-detalle" id="cr_detalle"></p>
                     <div class="cargo-acciones">
                         <a class="btn-cargo principal" id="cr_cargo" href="#" download><i class="fas fa-file-download"></i> Descargar cargo de recepción (PDF)</a>

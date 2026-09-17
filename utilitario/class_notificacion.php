@@ -145,23 +145,30 @@ class Notificacion extends conexionBD {
      * @param string $asunto           Asunto del documento
      * @param int    $id_area_destino  ID del área destino (para obtener su nombre)
      * @param string $url_base         URL base del sistema (ej: http://midominio.com/SISTRAMITEDOC)
+     * @param array  $extra            expediente, recibido (fecha y hora) y presentado (si llegó fuera del horario)
      */
-    public function notificarCiudadano($email_ciudadano, $nombre_ciudadano, $documento_id, $tipodocumento_id, $nro_documento, $asunto, $id_area_destino, $url_base = '') {
+    public function notificarCiudadano($email_ciudadano, $nombre_ciudadano, $documento_id, $tipodocumento_id, $nro_documento, $asunto, $id_area_destino, $url_base = '', array $extra = []) {
         if (!EMAIL_ENABLED) return false;
         if (empty($email_ciudadano)) return false;
 
         $tipo_doc_texto      = $this->obtenerDescripcionTipoDoc($tipodocumento_id);
         $nombre_area_destino = $this->obtenerNombreArea($id_area_destino);
-        $link_seguimiento    = rtrim($url_base, '/') . '/seguimiento.php';
+        $expediente          = !empty($extra['expediente']) ? $extra['expediente'] : $documento_id;
+        $link_seguimiento    = rtrim($url_base, '/') . '/seguimiento.php?codigo=' . rawurlencode($expediente);
+        $aviso_horario       = !empty($extra['presentado'])
+            ? 'Su documento llegó fuera del horario de atención. Se considera presentado el ' . $extra['presentado'] . ' y los plazos se cuentan desde esa fecha.'
+            : 'Su documento fue presentado dentro del horario de atención.';
 
         $datos = [
             'NUMERO'        => $documento_id,
+            'EXPEDIENTE'    => $expediente,
+            'AVISO_HORARIO' => $aviso_horario,
             'REMITENTE'     => strtoupper($nombre_ciudadano),
             'TIPO_DOC'      => $tipo_doc_texto,
             'NRO_DOCUMENTO' => $nro_documento,
             'ASUNTO'        => strtoupper($asunto),
             'AREA_DESTINO'  => $nombre_area_destino,
-            'FECHA'         => date('d/m/Y H:i'),
+            'FECHA'         => $extra['recibido'] ?? date('d/m/Y H:i'),
             'LINK_SEGUIMIENTO' => $link_seguimiento,
         ];
         $html = $this->cargarPlantilla('notificacion_ciudadano.html', $datos);
@@ -169,9 +176,9 @@ class Notificacion extends conexionBD {
         try {
             $mail = $this->crearMailer();
             $mail->isHTML(true);
-            $mail->Subject = '✅ Su trámite fue registrado: ' . $documento_id;
+            $mail->Subject = '✅ Trámite recibido: expediente ' . $expediente;
             $mail->Body    = $html;
-            $mail->AltBody = "Su trámite fue registrado.\nCódigo: $documento_id\nAsunto: $asunto\nÁrea receptora: $nombre_area_destino\nSeguimiento: $link_seguimiento";
+            $mail->AltBody = "Su trámite fue registrado.\nExpediente: $expediente\nCódigo de seguimiento: $documento_id\n$aviso_horario\nAsunto: $asunto\nÁrea receptora: $nombre_area_destino\nSeguimiento: $link_seguimiento";
             $mail->addAddress($email_ciudadano, $nombre_ciudadano);
             $mail->send();
             return true;

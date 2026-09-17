@@ -1,6 +1,8 @@
 <?php
     require_once __DIR__ . '/../../lib/Seguridad.php';
     require_once __DIR__ . '/../../lib/Bitacora.php';
+    require_once __DIR__ . '/../../lib/Institucion.php';
+    require_once __DIR__ . '/../../lib/Plazos.php';
     require '../../model/model_tramite.php';
     require '../../utilitario/class_notificacion.php';
     Seguridad::iniciarSesion();
@@ -64,13 +66,30 @@
         $MTR->Vincular_Anexos($consulta, $idsAnexos, 0);
         Seguridad::registrarIntento($clave, 3600);
 
-        // URL base del sistema — ajusta si el dominio cambia
-        $protocolo = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-        $url_base  = $protocolo . '://' . $_SERVER['HTTP_HOST'] . '/SISTRAMITEDOC';
+        // Fecha de presentación según el horario de atención: fuera de horario, fin de
+        // semana o feriado cuenta como presentado el siguiente día hábil (los plazos corren desde ahí)
+        $pdo = (new conexionBD())->conexionPDO();
+        $datos = $pdo->prepare("SELECT doc_expediente, doc_fecharegistro FROM documento WHERE documento_id = ?");
+        $datos->execute([$consulta]);
+        $registro = $datos->fetch(PDO::FETCH_ASSOC) ?: ['doc_expediente' => null, 'doc_fecharegistro' => date('Y-m-d H:i:s')];
+        $institucion = Institucion::datos();
+        $momentoRegistro = new DateTimeImmutable($registro['doc_fecharegistro']);
+        $presentado = Plazos::recepcionEfectiva($momentoRegistro, $institucion['hora_inicio'], $institucion['hora_fin']);
+        $pdo->prepare("UPDATE documento SET doc_fecharecepcion = ? WHERE documento_id = ?")
+            ->execute([$presentado->format('Y-m-d H:i:s'), $consulta]);
+        $fueraDeHorario = $presentado->format('Y-m-d H:i') !== $momentoRegistro->format('Y-m-d H:i');
 
-        // ✉️ 1. Correo al CIUDADANO: código de seguimiento + link de rastreo
+        // URL base del sistema, calculada desde donde está instalado
+        $protocolo = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
+        $url_base  = $protocolo . '://' . $_SERVER['HTTP_HOST'] . rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'], 3)), '/');
+
+        // ✉️ 1. Correo al CIUDADANO: expediente, código y enlace de consulta
         $nombre_ciudadano = trim("$nom $apt $apm");
-        $NTF->notificarCiudadano($ema, $nombre_ciudadano, $consulta, $tip, $ndo, $asu, 1, $url_base);
+        $NTF->notificarCiudadano($ema, $nombre_ciudadano, $consulta, $tip, $ndo, $asu, 1, $url_base, [
+            'expediente' => $registro['doc_expediente'],
+            'recibido'   => $momentoRegistro->format('d/m/Y H:i'),
+            'presentado' => $fueraDeHorario ? $presentado->format('d/m/Y H:i') : null,
+        ]);
 
         // ✉️ 2. Correo a MESA DE PARTES: aviso de nuevo documento externo recibido
         // Ajusta $area_mesa_partes_id si el ID de Mesa de Partes es diferente en tu BD
@@ -82,18 +101,15 @@
             'mesa de partes virtual · asunto: ' . $asu, 'ciudadano DNI ' . $dni);
 
         // Datos para la pantalla de confirmación y el cargo de recepción
-        $pdo = (new conexionBD())->conexionPDO();
-        $datos = $pdo->prepare("SELECT doc_expediente, DATE_FORMAT(doc_fecharegistro, '%d/%m/%Y %H:%i') AS fecha FROM documento WHERE documento_id = ?");
-        $datos->execute([$consulta]);
-        $registro = $datos->fetch(PDO::FETCH_ASSOC) ?: ['doc_expediente' => null, 'fecha' => date('d/m/Y H:i')];
-
         $consultaCargo = 'codigo=' . rawurlencode($consulta) . '&dni=' . rawurlencode($dni);
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode([
             'status'     => 'ok',
             'codigo'     => $consulta,
             'expediente' => $registro['doc_expediente'],
-            'fecha'      => $registro['fecha'],
+            'fecha'      => $momentoRegistro->format('d/m/Y H:i'),
+            'presentado' => $fueraDeHorario ? $presentado->format('d/m/Y H:i') : null,
+            'horario'    => $institucion['hora_inicio'] . ' a ' . $institucion['hora_fin'],
             'correo'     => $ema,
             'archivos'   => 1 + count($anexos),
             'cargo'      => 'view/MPDF/REPORTE/cargo_recepcion.php?' . $consultaCargo,

@@ -53,6 +53,9 @@ class Institucion
             'telefono'  => (string) ($fila['emp_telefono'] ?? ''),
             'direccion' => (string) ($fila['emp_direccion'] ?? ''),
             'codigo'    => (string) ($fila['emp_cod'] ?? ''),
+            // Horario de atención (migración 015); lunes a viernes sin feriados
+            'hora_inicio' => substr((string) ($fila['emp_hora_inicio'] ?? '08:00:00'), 0, 5),
+            'hora_fin'    => substr((string) ($fila['emp_hora_fin'] ?? '16:30:00'), 0, 5),
         ];
     }
 

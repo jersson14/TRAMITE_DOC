@@ -373,6 +373,15 @@ function Mostrar_Cargo_Recepcion(r){
   $("#cr_expediente").text(expediente);
   $("#cr_codigo").text(r.codigo);
   $("#cr_fecha").text(r.fecha);
+  // Fuera del horario de atención: se avisa desde cuándo cuenta como presentado
+  var horario = document.getElementById("cr_horario");
+  if (r.presentado) {
+    horario.innerHTML = '<i class="fas fa-clock"></i> Su documento llegó fuera del horario de atención (' + $("<i>").text(r.horario).html() +
+      '). Se considera presentado el <strong>' + $("<i>").text(r.presentado).html() + '</strong> y los plazos se cuentan desde esa fecha.';
+    horario.hidden = false;
+  } else {
+    horario.hidden = true;
+  }
   $("#cr_detalle").text(
     "Recibimos " + r.archivos + (r.archivos === 1 ? " archivo" : " archivos") + ". " +
     (r.correo ? "Enviaremos las notificaciones a " + r.correo + "." : "")
