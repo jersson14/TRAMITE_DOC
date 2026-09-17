@@ -390,7 +390,7 @@ function Traer_Datos_Seguimiento(){
 
   }
   $.ajax({
-    "url":"controller/usuario/controlador_traer_seguimiento.php",
+    "url":"../controller/usuario/controlador_traer_seguimiento.php",
     type:'POST',
     data:{
       numero:numero,
@@ -408,7 +408,7 @@ function Traer_Datos_Seguimiento(){
       '</div>';
       //AJAX PARA EL DETALLE DEL SEGUIMIENTO//
       $.ajax({
-        "url":"controller/usuario/controlador_traer_seguimiento_detalle.php",
+        "url":"../controller/usuario/controlador_traer_seguimiento_detalle.php",
         type:'POST',
         data:{
           codigo:data[0][0],
@@ -473,6 +473,8 @@ function Traer_Datos_Seguimiento(){
           }
           cadena+='</div>';
           document.getElementById("div_seguimiento").innerHTML=cadena;
+          // El recorrido también se dibuja como diagrama (js/flujograma.js)
+          if (typeof Flujograma_Cargar === "function") { Flujograma_Cargar(data[0][0], "#div_flujo"); Flujo_Vista("diagrama"); }
 
         }
       })
@@ -603,6 +605,8 @@ function Traer_Datos_Seguimiento2(){
                     '</div>';
           }
           document.getElementById("div_seguimiento").innerHTML=cadena;
+          // El recorrido también se dibuja como diagrama (js/flujograma.js)
+          if (typeof Flujograma_Cargar === "function") { Flujograma_Cargar(data[0][0], "#div_flujo"); Flujo_Vista("diagrama"); }
 
         }
       })

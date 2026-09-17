@@ -1,5 +1,6 @@
 <?php require_once __DIR__ . '/../../lib/Seguridad.php'; Seguridad::requiereVista(); ?>
 <script src="../js/console_usuario.js?rev=<?php echo time();?>"></script>
+<script src="../js/flujograma.js?rev=<?php echo time(); ?>"></script>
 <link rel="stylesheet" href="../plantilla/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
 
 <style>
@@ -344,7 +345,16 @@
                         <h5 id="lbl_titulo"><i class="fas fa-route"></i> Seguimiento</h5>
                     </div>
                     <div class="results-card-body">
-                        <div id="div_seguimiento"></div>
+                        <div class="flujo-vistas" id="flujo_vistas">
+                            <button type="button" class="btn activo" data-vista="diagrama" onclick="Flujo_Vista('diagrama')">
+                                <i class="fas fa-project-diagram"></i> Diagrama de flujo
+                            </button>
+                            <button type="button" class="btn" data-vista="detalle" onclick="Flujo_Vista('detalle')">
+                                <i class="fas fa-list"></i> Detalle de movimientos
+                            </button>
+                        </div>
+                        <div id="div_flujo"></div>
+                        <div id="div_seguimiento" hidden></div>
                     </div>
                 </div>
             </div>

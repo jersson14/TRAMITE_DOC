@@ -2178,3 +2178,301 @@ a.notificacion:hover {
     font-size: 0.72rem;
   }
 }
+
+/* ===== Diagrama de flujo del rastreo ===== */
+.flujograma {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 0 16px;
+}
+
+/* Inicio y fin: esquinas redondeadas, como en un diagrama de flujo */
+.flujo-hito {
+  width: 100%;
+  max-width: 460px;
+  padding: 14px 20px;
+  border-radius: 28px;
+  border: 2px solid #15803D;
+  background: #F0FDF4;
+  text-align: center;
+}
+
+.flujo-hito strong {
+  display: block;
+  font-size: 1rem;
+  color: #16181A;
+  margin-top: 2px;
+}
+
+.flujo-hito-rotulo {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: #15803D;
+}
+
+.flujo-fin {
+  border-color: #1E3A5F;
+  background: #EEF3F9;
+}
+
+.flujo-fin .flujo-hito-rotulo {
+  color: #1E3A5F;
+}
+
+/* La flecha que une un paso con el siguiente, con su etiqueta */
+.flujo-flecha {
+  position: relative;
+  width: 2px;
+  height: 44px;
+  background: #A9BACF;
+  margin: 0;
+}
+
+.flujo-flecha::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 8px solid #A9BACF;
+}
+
+.flujo-flecha span {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  font-size: 0.67rem;
+  color: #6B7A90;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Cada paso: la caja principal y, al costado, sus copias y atenciones */
+.flujo-fila {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 0;
+}
+
+.flujo-caja {
+  width: 100%;
+  max-width: 460px;
+  flex: 0 0 auto;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 2px solid #1E3A5F;
+  border-left-width: 6px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(30, 58, 95, 0.08);
+}
+
+.flujo-caja-alto {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.flujo-paso {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: #8FA3BC;
+}
+
+.flujo-estado {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 10px;
+  border-radius: 12px;
+}
+
+.flujo-area {
+  display: block;
+  font-size: 1rem;
+  color: #16181A;
+  line-height: 1.25;
+}
+
+.flujo-datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-top: 6px;
+  font-size: 0.73rem;
+  color: #6B7A90;
+}
+
+.flujo-datos i {
+  margin-right: 3px;
+}
+
+.flujo-acuse {
+  display: inline-block;
+  margin-top: 8px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.flujo-acuse-si {
+  color: #15803D;
+}
+
+.flujo-acuse-no {
+  color: #B45309;
+}
+
+.flujo-indicacion {
+  margin-top: 8px;
+  padding: 7px 10px;
+  border-radius: 6px;
+  background: #F7F9FC;
+  border-left: 3px solid #DDE3EC;
+  font-size: 0.75rem;
+  color: #2D3748;
+  line-height: 1.4;
+}
+
+/* Colores por estado del envío */
+.flujo-pendiente { border-color: #B45309; }
+.flujo-pendiente .flujo-estado { background: #FEF3E2; color: #B45309; }
+.flujo-aceptado { border-color: #2C5282; }
+.flujo-aceptado .flujo-estado { background: #EAF1F9; color: #2C5282; }
+.flujo-finalizado { border-color: #15803D; }
+.flujo-finalizado .flujo-estado { background: #F0FDF4; color: #15803D; }
+.flujo-rechazado { border-color: #B91C1C; }
+.flujo-rechazado .flujo-estado { background: #FEF2F2; color: #B91C1C; }
+
+/* La rama hacia las copias y atenciones */
+.flujo-conector {
+  width: 34px;
+  height: 2px;
+  background: #A9BACF;
+  flex: 0 0 auto;
+  position: relative;
+}
+
+.flujo-conector::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 8px solid #A9BACF;
+}
+
+.flujo-ramas {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 280px;
+}
+
+.flujo-rama {
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px dashed #A9BACF;
+  background: #FBFCFE;
+  font-size: 0.78rem;
+}
+
+.flujo-rama strong {
+  display: block;
+  color: #16181A;
+  line-height: 1.2;
+}
+
+.flujo-rama-titulo {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: #2C5282;
+}
+
+.flujo-rama-atencion {
+  border-style: solid;
+  border-color: #B45309;
+  background: #FFFBF5;
+}
+
+.flujo-rama-atencion .flujo-rama-titulo {
+  color: #B45309;
+}
+
+.flujo-vencido {
+  color: #B91C1C;
+  font-weight: 700;
+}
+
+.flujo-a-tiempo {
+  color: #15803D;
+  font-weight: 700;
+}
+
+/* Selector de vista: diagrama o detalle */
+.flujo-vistas {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.flujo-vistas .btn {
+  border: 1px solid #DDE3EC;
+  background: #fff;
+  color: #1E3A5F;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 6px;
+}
+
+.flujo-vistas .btn.activo {
+  background: #1E3A5F;
+  border-color: #1E3A5F;
+  color: #fff;
+}
+
+/* En pantallas angostas las ramas van debajo, no al costado */
+@media (max-width: 991px) {
+  .flujo-fila {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .flujo-conector {
+    width: 2px;
+    height: 22px;
+  }
+
+  .flujo-conector::after {
+    right: auto;
+    left: 50%;
+    top: auto;
+    bottom: -1px;
+    transform: translateX(-50%);
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid #A9BACF;
+    border-bottom: 0;
+  }
+
+  .flujo-ramas {
+    max-width: 460px;
+    width: 100%;
+    margin-top: 8px;
+  }
+}
