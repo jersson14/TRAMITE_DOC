@@ -155,10 +155,17 @@ function Pintar_Indicadores(r) {
 
   var filasActividad = (r.actividad || []).map(function (x) {
     var t = TIPOS_MOVIMIENTO[x.tipo] || ["badge-secondary", x.tipo];
+    // Un envío de un área a sí misma es el ingreso de un documento traído por
+    // una persona: mostrarlo como "MESA DE PARTES → MESA DE PARTES" no decía nada
+    var mismaArea = x.origen && x.origen === x.destino;
+    var origen = mismaArea ? "Externo · ciudadano" : (x.origen || "—");
+    if (mismaArea) {
+      t = ["badge-secondary", "Recepción"];
+    }
     return "<tr>" +
       "<td><b>" + textoIndicador(x.expediente || x.documento_id) + "</b><br>" +
         '<span class="badge ' + t[0] + '">' + t[1] + "</span></td>" +
-      "<td>" + textoIndicador(x.origen || "—") + ' <i class="fas fa-long-arrow-alt-right"></i> ' +
+      "<td>" + textoIndicador(origen) + ' <i class="fas fa-long-arrow-alt-right"></i> ' +
         textoIndicador(x.destino || "—") +
         (x.persona ? '<br><small class="text-muted">' + textoIndicador(x.persona) + "</small>" : "") + "</td>" +
       '<td class="centro"><small>' + cuandoIndicador(x.fecha) + "</small></td>" +

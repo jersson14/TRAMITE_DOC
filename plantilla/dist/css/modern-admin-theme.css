@@ -2476,3 +2476,13 @@ a.notificacion:hover {
     margin-top: 8px;
   }
 }
+
+/* El punto de partida del recorrido: quien presentó el documento */
+.flujo-externo {
+  border-color: #6B7A90;
+  background: #F4F6F9;
+}
+
+.flujo-externo .flujo-hito-rotulo {
+  color: #4A5568;
+}

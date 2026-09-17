@@ -105,23 +105,63 @@ function Flujograma_Pintar(r, selector) {
   var pasos = pasosFlujo(r.movimientos);
   var cerrado = ["FINALIZADO", "RECHAZADO"].indexOf(String(t.estado).toUpperCase()) >= 0;
 
-  // De dónde salió: el origen del primer envío manda sobre el área que lo
-  // registró, porque si no el diagrama se contradice con su propio paso 1.
-  var areaInicio = (pasos[0] && pasos[0].principal && pasos[0].principal.origen) || t.area_registro;
+  /*
+   * El recorrido empieza fuera de la institución: el documento lo presenta una
+   * persona, por el portal o en el mostrador, y recién ahí un área lo recibe.
+   * Cuando el primer envío va de un área a sí misma, ese movimiento ES la
+   * recepción —no una derivación—, así que se dibuja como tal y no aparece
+   * repetido ("MESA DE PARTES → MESA DE PARTES").
+   */
+  var recepcion = null;
+  if (pasos.length && pasos[0].principal && Number(pasos[0].principal.es_recepcion) === 1) {
+    recepcion = pasos.shift();
+  }
+  var areaRecepcion = (recepcion && recepcion.principal.destino) || t.area_recepcion;
+  var esPortal = t.procedencia === "PORTAL";
 
-  // Inicio: la recepción del documento
+  // 1. Quién presentó el documento
   var html = '<div class="flujograma">' +
-    '<div class="flujo-hito flujo-inicio">' +
-      '<span class="flujo-hito-rotulo"><i class="fas fa-file-import"></i> Recepción</span>' +
-      "<strong>" + textoFlujo(areaInicio) + "</strong>" +
+    '<div class="flujo-hito flujo-externo">' +
+      '<span class="flujo-hito-rotulo"><i class="fas fa-user-tie"></i> Externo · ciudadano</span>' +
+      "<strong>" + textoFlujo(t.remitente || "Remitente no registrado") + "</strong>" +
       '<div class="flujo-datos">' +
-        '<span><i class="far fa-calendar-alt"></i> ' + textoFlujo(t.fecha_presentado || t.fecha_registro) + "</span>" +
+        (t.dni ? '<span><i class="far fa-id-card"></i> DNI ' + textoFlujo(t.dni) + "</span>" : "") +
         (t.tipo ? '<span><i class="far fa-file-alt"></i> ' + textoFlujo(t.tipo) + "</span>" : "") +
         (t.folios ? '<span><i class="fas fa-layer-group"></i> ' + textoFlujo(t.folios) + " folio(s)</span>" : "") +
       "</div>" +
-      (t.remitente ? '<div class="flujo-indicacion"><i class="far fa-user"></i> ' + textoFlujo(t.remitente) + "</div>" : "") +
     "</div>";
 
+  // 2. El área que lo recibió y lo ingresó al sistema
+  html += '<div class="flujo-flecha"><span>' +
+      (esPortal ? "presenta por el portal" : "presenta en mesa de partes") + "</span></div>" +
+    '<div class="flujo-fila">' +
+      '<div class="flujo-hito flujo-inicio">' +
+        '<span class="flujo-hito-rotulo"><i class="fas fa-file-import"></i> Recepción' +
+          (esPortal ? " · Mesa de Partes Virtual" : "") + "</span>" +
+        "<strong>" + textoFlujo(areaRecepcion) + "</strong>" +
+        '<div class="flujo-datos">' +
+          '<span><i class="far fa-calendar-alt"></i> ' +
+            textoFlujo((recepcion && recepcion.principal.fecha) || t.fecha_presentado || t.fecha_registro) + "</span>" +
+          '<span><i class="fas fa-hashtag"></i> ' + textoFlujo(t.expediente) + "</span>" +
+        "</div>" +
+        // Aunque el área lo haya registrado, el sistema pide que lo acepte en su bandeja
+        (recepcion
+          ? (recepcion.principal.recibido
+              ? '<span class="flujo-acuse flujo-acuse-si"><i class="fas fa-inbox"></i> Recibido ' +
+                  textoFlujo(recepcion.principal.recibido) + "</span>"
+              : (String(recepcion.principal.estado).toUpperCase() === "PENDIENTE"
+                  ? '<span class="flujo-acuse flujo-acuse-no"><i class="far fa-clock"></i> Pendiente de aceptar en la bandeja</span>'
+                  : ""))
+          : "") +
+      "</div>";
+  // Las copias y atenciones que salieron con la recepción van a su costado
+  if (recepcion && recepcion.ramas.length) {
+    html += '<div class="flujo-conector"></div><div class="flujo-ramas">' +
+      recepcion.ramas.map(ramaFlujo).join("") + "</div>";
+  }
+  html += "</div>";
+
+  // 3. Las derivaciones entre áreas
   pasos.forEach(function (paso, i) {
     html += '<div class="flujo-flecha"><span>' +
       (paso.principal ? "derivado a" : "en paralelo") + "</span></div>";

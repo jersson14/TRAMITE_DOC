@@ -30,6 +30,7 @@ $pdo = (new conexionBD())->conexionPDO();
 $consulta = $pdo->prepare(
     "SELECT d.documento_id, d.doc_expediente, d.doc_nrodocumento, d.doc_asunto, d.doc_estatus,
             d.doc_folio, d.dias_respuesta, d.doc_fecharegistro, d.doc_fecharecepcion,
+            d.doc_dniremitente,
             DATE_FORMAT(d.doc_fecharegistro, '%d/%m/%Y %H:%i') AS fecha_registro,
             DATE_FORMAT(d.doc_fecharecepcion, '%d/%m/%Y %H:%i') AS fecha_presentado,
             CONCAT_WS(' ', d.doc_nombreremitente, d.doc_apepatremitente, d.doc_apematremitente) AS remitente,
@@ -59,6 +60,9 @@ $consulta = $pdo->prepare(
     "SELECT m.movimiento_id, m.mov_tipo AS tipo, m.mov_estatus AS estado,
             m.mov_descripcion AS descripcion, m.mov_plazo_dias AS plazo,
             m.mov_respuesta AS respuesta,
+            -- Un envío de un área a sí misma es el registro de un documento que
+            -- llegó de fuera: el ciudadano lo presentó ahí, no lo derivó nadie.
+            (m.area_origen_id = m.areadestino_id) AS es_recepcion,
             DATE_FORMAT(m.mov_fecharegistro, '%d/%m/%Y %H:%i') AS fecha,
             DATE_FORMAT(m.mov_recibido_fecha, '%d/%m/%Y %H:%i') AS recibido,
             DATE_FORMAT(m.mov_respuesta_fecha, '%d/%m/%Y %H:%i') AS respondido,
@@ -76,6 +80,20 @@ $consulta = $pdo->prepare(
 $consulta->execute([$documento]);
 $movimientos = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
+// De dónde viene el documento y dónde se recibió. Los del portal traen
+// doc_fecharecepcion; los presenciales los registra el área que atiende al
+// ciudadano en su mostrador. En ambos casos el recorrido empieza afuera, no en
+// un área: mostrarlo como "MESA DE PARTES -> MESA DE PARTES" confundía.
+$primerPrincipal = null;
+foreach ($movimientos as $m) {
+    if ($m['tipo'] === 'PRINCIPAL') {
+        $primerPrincipal = $m;
+        break;
+    }
+}
+$esPortal = !empty($tramite['doc_fecharecepcion']);
+$areaRecepcion = $primerPrincipal ? $primerPrincipal['origen'] : ($tramite['area_registro'] ?: 'MESA DE PARTES');
+
 echo json_encode([
     'encontrado' => true,
     'tramite' => [
@@ -87,9 +105,13 @@ echo json_encode([
         'folios'        => $tramite['doc_folio'],
         'tipo'          => $tramite['tipo'],
         'remitente'     => trim((string) $tramite['remitente']),
+        'dni'           => $tramite['doc_dniremitente'],
         'fecha_registro' => $tramite['fecha_registro'],
         'fecha_presentado' => $tramite['fecha_presentado'],
-        'area_registro' => $tramite['area_registro'] ?: 'MESA DE PARTES VIRTUAL',
+        // El documento llega de una persona: por el portal o en el mostrador
+        'procedencia'   => $esPortal ? 'PORTAL' : 'PRESENCIAL',
+        'area_recepcion' => $areaRecepcion,
+        'area_registro' => $tramite['area_registro'] ?: 'MESA DE PARTES',
         'area_actual'   => $tramite['area_actual'],
         'dias_respuesta' => $tramite['dias_respuesta'],
         'plazo_limite'   => $tramite['plazo_limite'] ?? null,
