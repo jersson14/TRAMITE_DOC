@@ -746,9 +746,122 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
   <!-- REQUIRED SCRIPTS -->
   <script>
-    function cargar_contenido(id, vista) {
-      $("#" + id).load(vista);
+    /*
+     * Rutas de los módulos: cada módulo tiene su dirección (index.php#/recibidos),
+     * así F5 vuelve al mismo módulo y funcionan Atrás/Adelante del navegador.
+     * Solo se aceptan las rutas del rol de la sesión; cada vista además valida
+     * el acceso en el servidor.
+     */
+    <?php
+    if ($_SESSION['S_ROL'] == 'Administrador') {
+      $rutas = [
+        'tramites'            => ['tramite/view_tramite.php', 'Trámites'],
+        'tramite-nuevo'       => ['tramite/view_tramite_registro.php', 'Nuevo trámite'],
+        'movimientos'         => ['tramite/view_movimiento.php', 'Movimientos'],
+        'empleados'           => ['empleado/view_empleado.php', 'Empleados'],
+        'areas'               => ['area/view_area.php', 'Áreas'],
+        'tipos-documento'     => ['tipo_documento/view_tipodocumento.php', 'Tipos de documento'],
+        'bitacora'            => ['bitacora/view_bitacora.php', 'Bitácora'],
+        'rastreo'             => ['rastreo/view_rastreo_admin.php', 'Rastrear trámite'],
+        'comunicados'         => ['comunicado/view_comunicado.php', 'Comunicados'],
+        'reportes/por-area'   => ['tramite/view_reporte_fecha_area.php', 'Reporte por área'],
+        'reportes/por-estado' => ['tramite/view_reporte_fecha_estado.php', 'Reporte por estado'],
+        'reportes/por-tipo'   => ['tramite/view_reporte_fecha_tipodoc.php', 'Reporte por tipo de documento'],
+        'usuarios'            => ['usuario/view_usuario.php', 'Usuarios'],
+      ];
+    } else {
+      $rutas = [
+        'tramite-nuevo'       => [$_SESSION['S_AREA'] == 'MESA DE PARTES' ? 'tramite_area/view_tramite_registro_mespa.php' : 'tramite_area/view_tramite_registro.php', 'Nuevo trámite'],
+        'recibidos'           => ['tramite_area/view_tramite.php', 'Trámites recibidos'],
+        'enviados'            => ['tramite_area/view_tramite_enviados.php', 'Documentos enviados'],
+        'rastreo'             => ['rastreo/view_rastreo.php', 'Rastrear trámites'],
+        'reportes/por-area'   => ['tramite_area/view_reporte_fecha_area.php', 'Reporte por área'],
+        'reportes/por-estado' => ['tramite_area/view_reporte_fecha_estado.php', 'Reporte por estado'],
+        'reportes/por-tipo'   => ['tramite_area/view_reporte_fecha_tipodoc.php', 'Reporte por tipo de documento'],
+      ];
     }
+    ?>
+    var RUTAS = <?php echo json_encode($rutas, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES); ?>;
+    var TITULO_BASE = document.title;
+    var rutaActual = "";
+    var moduloCargado = false;
+
+    function rutaDeVista(vista) {
+      for (var ruta in RUTAS) {
+        if (RUTAS[ruta][0] === vista) return ruta;
+      }
+      return null;
+    }
+
+    function mostrarModulo(vista, ruta) {
+      moduloCargado = true;
+      rutaActual = ruta || "";
+      $("#contenido_principal").load(vista);
+      document.title = ruta ? RUTAS[ruta][1] + " | " + TITULO_BASE : TITULO_BASE;
+      window.scrollTo(0, 0);
+
+      // Menú: resalta el módulo abierto y despliega su grupo (Reportes)
+      $(".nav-sidebar .nav-link").removeClass("active");
+      var enlace = $(".nav-sidebar a").filter(function () {
+        return (this.getAttribute("onclick") || "").indexOf(vista) !== -1;
+      }).first();
+      enlace.addClass("active");
+      enlace.parents(".nav-treeview").closest(".nav-item").addClass("menu-open").children(".nav-link").addClass("active");
+
+      // En el celular, el menú lateral se cierra al elegir un módulo
+      if (window.innerWidth < 992) $("body").removeClass("sidebar-open").addClass("sidebar-collapse");
+    }
+
+    function cargar_contenido(id, vista) {
+      if (id !== "contenido_principal") {
+        $("#" + id).load(vista);
+        return;
+      }
+      var ruta = rutaDeVista(vista);
+      if (!ruta) {
+        // Pantalla sin ruta propia (por ejemplo, un formulario interno): se abre sin cambiar la dirección
+        history.replaceState(null, "", location.pathname + location.search);
+        mostrarModulo(vista, null);
+        return;
+      }
+      if (location.hash === "#/" + ruta) {
+        mostrarModulo(vista, ruta); // mismo módulo: se vuelve a cargar
+      } else {
+        location.hash = "#/" + ruta; // el cambio de dirección lo abre (enrutar)
+      }
+    }
+
+    function enrutar() {
+      var hash = location.hash;
+      // Para una dirección que termina en "#", location.hash devuelve "" (igual que sin ruta)
+      if (!hash && location.href.slice(-1) === "#") {
+        // Un enlace href="#" no es una ruta: se conserva la dirección del módulo abierto
+        history.replaceState(null, "", location.pathname + location.search + (rutaActual ? "#/" + rutaActual : ""));
+        return;
+      }
+      if (!hash) {
+        // Sin ruta = inicio. El tablero se arma al cargar la página, por eso se recarga.
+        if (moduloCargado) location.reload();
+        return;
+      }
+      var ruta = decodeURIComponent(hash.replace(/^#\/?/, ""));
+      if (!RUTAS[ruta]) {
+        history.replaceState(null, "", location.pathname + location.search);
+        if (moduloCargado) location.reload();
+        return;
+      }
+      if (ruta !== rutaActual || !moduloCargado) mostrarModulo(RUTAS[ruta][0], ruta);
+    }
+
+    // Los enlaces href="#" (menú, panel del usuario) no deben cambiar la dirección a "#".
+    // Se evita solo la navegación: los clics de AdminLTE y Bootstrap siguen funcionando.
+    document.addEventListener("click", function (e) {
+      var enlace = e.target.closest && e.target.closest('a[href="#"]');
+      if (enlace) e.preventDefault();
+    }, true);
+    window.addEventListener("hashchange", enrutar);
+    // jQuery y las vistas se cargan al final de la página: se enruta cuando el documento está listo
+    document.addEventListener("DOMContentLoaded", function () { if (location.hash) enrutar(); });
     var idioma_espanol = {
       select: {
         rows: "%d fila seleccionada"

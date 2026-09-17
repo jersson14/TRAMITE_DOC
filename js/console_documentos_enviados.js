@@ -478,7 +478,7 @@ function Registrar_Tramite(){
         if(resp.length>0){
           Swal.fire("Mensaje de Confirmación","Nueva Tramite Registrado código: "+resp,"success").then((value)=>{
             window.open("MPDF/REPORTE/ticket_tramite.php?codigo="+resp+"#zomm=100");
-            $("#contenido_principal").load("tramite/view_tramite.php");
+            cargar_contenido("contenido_principal", "tramite/view_tramite.php");
             document.getElementById('txt_dni').value="";
             document.getElementById('txt_nom').value="";
             document.getElementById('txt_apepat').value="";
