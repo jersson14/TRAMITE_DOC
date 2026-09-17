@@ -217,6 +217,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 </a>
               </li>
               <li class="nav-item">
+                <a href="#" onclick="cargar_contenido('contenido_principal','feriado/view_feriado.php')" class="nav-link">
+                  <i class="nav-icon far fa-calendar-times"></i>
+                  <p>
+                    Feriados
+                  </p>
+                </a>
+              </li>
+              <li class="nav-item">
                 <a href="#" onclick="cargar_contenido('contenido_principal','bitacora/view_bitacora.php')" class="nav-link">
                   <i class="nav-icon fas fa-clipboard-list"></i>
                   <p>
@@ -409,6 +417,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
       </div>
       <!-- /.content-header -->
       <?php if ($_SESSION['S_ROL'] == "Administrador") { ?>
+
+        <!-- Indicadores de gestión (js/console_indicadores.js) -->
+        <div class="content">
+          <div class="container-fluid">
+            <div id="panel_indicadores"></div>
+          </div>
+        </div>
 
         <!-- Main content -->
         <div class="content">
@@ -773,6 +788,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         'empleados'           => ['empleado/view_empleado.php', 'Empleados'],
         'areas'               => ['area/view_area.php', 'Áreas'],
         'tipos-documento'     => ['tipo_documento/view_tipodocumento.php', 'Tipos de documento'],
+        'feriados'            => ['feriado/view_feriado.php', 'Feriados'],
         'bitacora'            => ['bitacora/view_bitacora.php', 'Bitácora'],
         'rastreo'             => ['rastreo/view_rastreo_admin.php', 'Rastrear trámite'],
         'comunicados'         => ['comunicado/view_comunicado.php', 'Comunicados'],
@@ -969,6 +985,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <script src="../js/anexos.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/firma.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/filtros_bandeja.js?rev=<?php echo time(); ?>"></script>
+  <script src="../js/console_indicadores.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_comunicados.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_empleado.js?rev=<?php echo time(); ?>"></script>
   <script src="../js/console_tramite.js?rev=<?php echo time(); ?>"></script>

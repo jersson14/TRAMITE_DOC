@@ -1415,3 +1415,147 @@ input[type="file"]:disabled::file-selector-button {
         flex-basis: 100%;
     }
 }
+
+/* ============================================================
+   Indicadores de gestión del tablero (js/console_indicadores.js)
+   ============================================================ */
+.indicadores {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 0.75rem;
+}
+
+.indicador-enlace,
+.indicador-enlace:hover {
+    text-decoration: none;
+}
+
+.indicador {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-left: 4px solid #1E3A5F;
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    height: 100%;
+}
+
+.indicador-enlace:hover .indicador {
+    box-shadow: 0 4px 14px rgba(30, 58, 95, 0.15);
+}
+
+.indicador-icono {
+    flex: 0 0 40px;
+    height: 40px;
+    border-radius: 10px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+}
+
+.indicador-cuerpo {
+    min-width: 0;
+}
+
+.indicador-rotulo {
+    display: block;
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #718096;
+}
+
+.indicador-valor {
+    display: block;
+    font-size: 1.6rem;
+    line-height: 1.1;
+    color: #1E3A5F;
+}
+
+.indicador-detalle {
+    display: block;
+    font-size: 0.75rem;
+    color: #718096;
+}
+
+.indicadores-titulo {
+    margin: 1rem 0 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1E3A5F;
+}
+
+.tabla-indicadores th {
+    font-size: 0.74rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #4A5568;
+}
+
+.tabla-indicadores td,
+.tabla-indicadores th {
+    vertical-align: middle;
+}
+
+.tabla-indicadores .centro {
+    text-align: center;
+}
+
+/* Trámites recibidos por mes */
+.barras {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.6rem;
+    height: 150px;
+    padding-top: 0.5rem;
+}
+
+.barra-mes {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    text-align: center;
+}
+
+.barra-mes .barra {
+    width: 100%;
+    max-width: 48px;
+    background: #2C5282;
+    border-radius: 6px 6px 0 0;
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 2px;
+}
+
+.barra-mes small {
+    margin-top: 0.3rem;
+    font-size: 0.7rem;
+    color: #718096;
+}
+
+.lista-tipos {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.lista-tipos li {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #EDF2F7;
+    font-size: 0.85rem;
+    color: #4A5568;
+}
