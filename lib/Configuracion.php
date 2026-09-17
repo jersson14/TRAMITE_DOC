@@ -14,7 +14,7 @@ class Configuracion
     const CLAVES = [
         'ia_activo'        => '1',
         'ia_proveedor'     => 'openai',
-        'ia_modelo'        => 'gpt-4o',
+        'ia_modelo'        => 'gpt-4.1-mini',
         'ia_clave'         => '',
         'ia_limite_minuto' => '10',
         'ia_limite_dia'    => '100',
@@ -22,7 +22,7 @@ class Configuracion
 
     /** Proveedores admitidos: clave => [nombre visible, modelo sugerido]. */
     const PROVEEDORES = [
-        'openai' => ['ChatGPT (OpenAI)', 'gpt-4o'],
+        'openai' => ['ChatGPT (OpenAI)', 'gpt-4.1-mini'],
         'gemini' => ['Gemini (Google)', 'gemini-2.5-flash'],
     ];
 

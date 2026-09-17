@@ -101,8 +101,20 @@ class AsistenteBD
             . "CONTEXTO:\n"
             . "- Hoy es " . date('d/m/Y') . " (" . date('Y-m-d') . ").\n"
             . "- Institución: " . Institucion::datos()['sigla'] . ".\n"
-            . "- Quien pregunta es " . $this->rol . ($this->esAdmin ? ' (ve todos los trámites)' : ' del área ' . $this->areaNombre . ' (solo ve los trámites de su área)') . ".\n"
-            . "- Los plazos se cuentan en días hábiles; los feriados están en la tabla feriado.\n"
+            . "- Quien pregunta es " . $this->rol
+            . ($this->esAdmin
+                ? " y ve los trámites de toda la institución.\n"
+                : " del área \"" . $this->areaNombre . "\", cuyo area_cod es " . (int) $this->areaId . ".\n"
+                  . "  Sus tablas documento, movimiento y documento_anexo ya vienen limitadas a los trámites\n"
+                  . "  en que participó su área, pero eso incluye los que ya pasaron a otra: para \"lo mío\",\n"
+                  . "  \"mis pendientes\" o \"mi área\" filtra por area_cod = " . (int) $this->areaId
+                  . " (area_destino en documento, areadestino_id en movimiento).\n")
+            . "- El plazo de un trámite corre desde el último movimiento PRINCIPAL que lo trasladó\n"
+            . "  (movimiento.mov_fecharegistro), no desde doc_fecharegistro, y dura dias_respuesta días\n"
+            . "  hábiles. doc_fecharecepcion solo lo traen los trámites del portal del ciudadano: no lo\n"
+            . "  uses para calcular atrasos. Si piden atrasos, compara con ese movimiento usando DATEDIFF\n"
+            . "  y aclara en la respuesta que son días corridos, no hábiles.\n"
+            . "- Los feriados que no cuentan para los plazos están en la tabla feriado.\n"
             . "- Un trámite está en curso si doc_estatus NO es FINALIZADO ni RECHAZADO.\n"
             . "- El movimiento PRINCIPAL es el que traslada la responsabilidad; COPIA es solo conocimiento.\n"
             . "- Sin acuse de recepción = movimiento con mov_recibido_fecha IS NULL.\n\n";
@@ -135,6 +147,9 @@ class AsistenteBD
             . "- Para pocas filas, redacta; para varias, usa una lista corta con lo esencial.\n"
             . "- No repitas la tabla completa: debajo de tu respuesta ya se muestra al usuario.\n"
             . "- No menciones SQL ni nombres de tablas o columnas internas.\n"
+            . ($this->esAdmin ? '' :
+                "- Solo se consultan los trámites en que participó el área \"" . $this->areaNombre . "\":\n"
+                . "  si preguntaron por otra área y no hay filas, dilo así, no como si esa área no tuviera nada.\n")
             . "- Máximo 120 palabras.\n\n"
             . "PREGUNTA: " . $pregunta . "\n"
             . "FILAS OBTENIDAS ($total" . ($total > count($muestra) ? ", se muestran " . count($muestra) : '') . "):\n"

@@ -18,4 +18,10 @@ interface ClienteIA
 
     /** Devuelve el texto generado, o cadena vacía si el modelo no respondió. */
     public function generarTexto(string $prompt, ?float $temperatura = null, ?int $maxTokens = null): string;
+
+    /**
+     * Modelos de conversación que admite la clave, para que el panel los liste
+     * en vez de hacer que el administrador los escriba de memoria.
+     */
+    public function modelos(): array;
 }

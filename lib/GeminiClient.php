@@ -55,6 +55,37 @@ class GeminiClient implements ClienteIA {
     public function isConfigured() {
         return $this->disponible();
     }
+
+    /** Modelos de Gemini que admiten generar contenido con esta clave. */
+    public function modelos(): array {
+        if (!$this->disponible()) {
+            throw new RuntimeException('Falta la clave de Gemini para consultar los modelos.');
+        }
+        $ch = curl_init('https://generativelanguage.googleapis.com/v1beta/models?key=' . $this->api_key);
+        curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 30, CURLOPT_SSL_VERIFYPEER => true]);
+        $respuesta = curl_exec($ch);
+        $codigo = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $errorRed = curl_error($ch);
+        if ($errorRed !== '') {
+            throw new RuntimeException('No se pudo conectar con Gemini: ' . $errorRed);
+        }
+        $datos = json_decode((string) $respuesta, true);
+        if ($codigo !== 200) {
+            throw new RuntimeException('Gemini devolvió un error (' . $codigo . '): ' . ($datos['error']['message'] ?? ''));
+        }
+        $utiles = [];
+        foreach ($datos['models'] ?? [] as $modelo) {
+            if (!in_array('generateContent', $modelo['supportedGenerationMethods'] ?? [], true)) {
+                continue;
+            }
+            $id = str_replace('models/', '', (string) ($modelo['name'] ?? ''));
+            if ($id !== '' && !preg_match('/embedding|aqa|image|tts|vision/i', $id)) {
+                $utiles[] = $id;
+            }
+        }
+        rsort($utiles, SORT_NATURAL);
+        return $utiles;
+    }
     
     /**
      * Envía una consulta al chat de Gemini

@@ -74,11 +74,50 @@ function Cambio_Proveedor_IA() {
   Ayuda_Modelo();
 }
 
-function Ayuda_Modelo() {
+function Ayuda_Modelo(extra) {
   var proveedor = document.getElementById("cfg_ia_proveedor").value;
-  document.getElementById("cfg_ia_ayuda_modelo").textContent = proveedor === "gemini"
-    ? "Por ejemplo gemini-2.5-flash. La clave se obtiene en Google AI Studio."
-    : "Por ejemplo gpt-4o. La clave se obtiene en platform.openai.com (empieza con sk-).";
+  var base = proveedor === "gemini"
+    ? "La clave se obtiene en Google AI Studio."
+    : "La clave se obtiene en platform.openai.com (empieza con sk-).";
+  document.getElementById("cfg_ia_ayuda_modelo").textContent =
+    (extra ? extra + " " : "Use el botón de la derecha para ver los modelos que admite la clave. ") + base;
+}
+
+/**
+ * Pregunta al proveedor qué modelos admite la clave y los ofrece en la lista.
+ * Los proveedores retiran modelos (a gemini-1.5-flash le pasó) y cada cuenta
+ * tiene acceso a unos distintos, así que conviene verlos y no escribirlos.
+ */
+function Cargar_Modelos() {
+  var caja = document.getElementById("cfg_ia_resultado");
+  caja.innerHTML = '<div class="alert alert-secondary mb-0"><i class="fas fa-spinner fa-spin"></i> Consultando los modelos disponibles...</div>';
+  $.ajax({
+    url: "../controller/configuracion/controlador_modelos.php",
+    type: "POST",
+    dataType: "json",
+    data: {
+      proveedor: document.getElementById("cfg_ia_proveedor").value,
+      clave: document.getElementById("cfg_ia_clave").value.trim(),
+    },
+  }).done(function (r) {
+    if (r.status !== "ok") {
+      caja.innerHTML = '<div class="alert alert-danger mb-0"><i class="fas fa-times-circle"></i> ' +
+        escaparConfig(r.mensaje) + "</div>";
+      return;
+    }
+    var lista = "";
+    (r.modelos || []).forEach(function (m) {
+      lista += '<option value="' + escaparConfig(m) + '"></option>';
+    });
+    document.getElementById("cfg_lista_modelos").innerHTML = lista;
+    Ayuda_Modelo((r.modelos || []).length + " modelos disponibles en la lista.");
+    caja.innerHTML = '<div class="alert alert-success mb-0"><i class="fas fa-check-circle"></i> ' +
+      "Modelos disponibles: " + escaparConfig((r.modelos || []).slice(0, 8).join(", ")) +
+      ((r.modelos || []).length > 8 ? " y otros." : "") + "</div>";
+  }).fail(function (x) {
+    caja.innerHTML = '<div class="alert alert-danger mb-0"><i class="fas fa-times-circle"></i> ' +
+      escaparConfig((x.responseJSON && x.responseJSON.mensaje) || "No se pudieron consultar los modelos") + "</div>";
+  });
 }
 
 /* ---- Institución ---- */

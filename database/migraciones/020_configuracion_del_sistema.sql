@@ -21,12 +21,13 @@ CREATE TABLE IF NOT EXISTS configuracion (
   PRIMARY KEY (conf_clave)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Valores iniciales: ChatGPT-4o como proveedor, sin clave (la pone el
--- administrador desde el panel) y con los topes que ya usaba el chat.
+-- Valores iniciales: ChatGPT como proveedor con gpt-4.1-mini (rápido y barato,
+-- suficiente para traducir preguntas a consultas), sin clave —la pone el
+-- administrador desde el panel— y con los topes que ya usaba el chat.
 INSERT INTO configuracion (conf_clave, conf_valor) VALUES
   ('ia_activo',        '1'),
   ('ia_proveedor',     'openai'),
-  ('ia_modelo',        'gpt-4o'),
+  ('ia_modelo',        'gpt-4.1-mini'),
   ('ia_clave',         ''),
   ('ia_limite_minuto', '10'),
   ('ia_limite_dia',    '100')

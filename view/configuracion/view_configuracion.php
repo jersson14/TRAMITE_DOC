@@ -139,7 +139,17 @@
             </div>
             <div class="form-group">
               <label for="cfg_ia_modelo">Modelo(*):</label>
-              <input type="text" class="form-control" id="cfg_ia_modelo" maxlength="60" placeholder="gpt-4o">
+              <div class="input-group">
+                <input type="text" class="form-control" id="cfg_ia_modelo" maxlength="60"
+                       list="cfg_lista_modelos" placeholder="gpt-4.1-mini">
+                <datalist id="cfg_lista_modelos"></datalist>
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary" type="button" onclick="Cargar_Modelos()"
+                          title="Consultar al proveedor qué modelos admite la clave">
+                    <i class="fas fa-sync-alt"></i>
+                  </button>
+                </div>
+              </div>
               <small class="text-muted" id="cfg_ia_ayuda_modelo"></small>
             </div>
             <div class="form-group">
