@@ -286,6 +286,100 @@ class FirmaDigital
         return $resultado;
     }
 
+    /**
+     * Resumen legible de las firmas que ya trae un PDF, para mostrarlo al
+     * registrar un documento que llega de afuera (no se firma: se comprueba).
+     *
+     * Devuelve ['total', 'validas', 'firmantes' => [...], 'todas_validas'].
+     * Un PDF sin firmas devuelve total 0, que no es un error: muchos documentos
+     * llegan en papel escaneado.
+     */
+    public static function resumenFirmas(string $pdf): array
+    {
+        $firmas = self::verificar($pdf);
+        $validas = 0;
+        $firmantes = [];
+        foreach ($firmas as $f) {
+            if ($f['valida']) {
+                $validas++;
+            }
+            $firmantes[] = [
+                'nombre' => $f['firmante'] ?: 'Firmante no identificado',
+                'dni'    => $f['dni'],
+                'emisor' => $f['emisor'],
+                'valida' => (bool) $f['valida'],
+            ];
+        }
+        return [
+            'total'         => count($firmas),
+            'validas'       => $validas,
+            'firmantes'     => $firmantes,
+            'todas_validas' => count($firmas) > 0 && $validas === count($firmas),
+        ];
+    }
+
+    /** Una línea para la bitácora: "2 firmas válidas (JUAN PEREZ, ANA DIAZ)". */
+    public static function resumenTexto(array $r): string
+    {
+        if ($r['total'] === 0) {
+            return 'sin firma digital';
+        }
+        $nombres = array_slice(array_column($r['firmantes'], 'nombre'), 0, 3);
+        $texto = $r['total'] . ($r['total'] === 1 ? ' firma' : ' firmas');
+        $texto .= $r['todas_validas'] ? ' válida' . ($r['total'] === 1 ? '' : 's') : ' (alguna no verifica)';
+        return $texto . ' (' . implode(', ', $nombres) . ')';
+    }
+
+    /**
+     * Firma un PDF con el certificado que el usuario acaba de subir.
+     *
+     * Reúne los pasos que comparten "firmar un archivo del trámite" y "firmar la
+     * respuesta antes de enviarla": leer el .pfx en memoria, comprobar que el
+     * certificado esté vigente y que sea del propio usuario, dibujar el sello y
+     * firmar. El certificado y la contraseña se descartan antes de devolver.
+     *
+     * $subida es el elemento de $_FILES con el .pfx. $dniUsuario es el DNI de la
+     * ficha de empleado: si el certificado trae uno distinto, se rechaza.
+     *
+     * Devuelve ['pdf', 'orden', 'normalizado', 'cert'].
+     * @throws RuntimeException con un mensaje pensado para el usuario.
+     */
+    public static function firmarConCertificadoSubido(string $pdf, $subida, string $clave, ?string $dniUsuario,
+                                                      string $motivo, string $codigo, string $urlValidar, string $lugar = ''): array
+    {
+        if (!$subida || ($subida['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_uploaded_file($subida['tmp_name'])) {
+            throw new RuntimeException('Adjunte su certificado digital (.pfx o .p12).');
+        }
+        if ($subida['size'] > 1048576) {
+            @unlink($subida['tmp_name']);
+            throw new RuntimeException('El certificado no debe pesar más de 1 MB.');
+        }
+        $contenidoPfx = (string) file_get_contents($subida['tmp_name']);
+        @unlink($subida['tmp_name']);
+
+        $certs = self::leerPfx($contenidoPfx, $clave);
+        $contenidoPfx = null;
+        $cert = self::datosCertificado($certs['cert']);
+        self::validarCertificado($cert);
+
+        // El certificado debe ser del propio usuario: se compara con su ficha de empleado
+        $dniUsuario = $dniUsuario === null ? '' : preg_replace('/\D/', '', $dniUsuario);
+        if ($cert['dni'] && $dniUsuario !== '' && $cert['dni'] !== $dniUsuario) {
+            throw new RuntimeException('El certificado pertenece a otra persona (DNI ' . $cert['dni'] . '). Solo puede firmar con su propio certificado.');
+        }
+
+        $sello = self::sello($cert['nombre'], $cert['dni'], $motivo, date('d/m/Y H:i'), $codigo, $urlValidar);
+        $firmado = self::firmar($pdf, $certs, [
+            'nombre' => $cert['nombre'],
+            'motivo' => $motivo,
+            'lugar'  => $lugar,
+            'sello'  => $sello,
+        ]);
+        $certs = null;
+
+        return $firmado + ['cert' => $cert];
+    }
+
     /** Estado de Firma Perú según config/firmaperu.php. */
     public static function firmaPeruConfigurado(): bool
     {

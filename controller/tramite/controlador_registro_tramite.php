@@ -2,6 +2,8 @@
     require_once __DIR__ . '/../_guard.php';
     require_once __DIR__ . '/../../lib/Bitacora.php';
     require '../../model/model_tramite.php';
+    require '../../model/model_firma.php';
+    require_once __DIR__ . '/../../lib/FirmaDigital.php';
     require '../../utilitario/class_notificacion.php';
     $MTR = new Modelo_Tramite();
     $NTF = new Notificacion();
@@ -65,7 +67,29 @@
         // ✉️ NOTIFICACIÓN: registra quién envió, de qué área viene ($arp), y a qué área llegó ($ard)
         $remitente_nombre = trim("$nom $apt $apm");
         $NTF->notificarRegistro($ard, $arp, $consulta, $tip, $asu, $remitente_nombre);
-        Bitacora::registrar(Bitacora::REGISTRO_TRAMITE, 'documento', $consulta, 'asunto: ' . $asu);
+        // Procedencia según el remitente: con cuenta de usuario es personal de la
+        // entidad (INTERNO, se firma aquí); sin cuenta es de fuera (EXTERNO, solo se
+        // verifica). Esta pantalla no tiene casilla de trámite externo. Migración 021.
+        $MFI = new Modelo_Firma();
+        $procedencia = $MFI->Procedencia_De_Registro(
+            $dni, false, $MFI->Remitente_Es_Juridica($ruc, $raz, $vpresentacion)
+        );
+        $MFI->Marcar_Procedencia($consulta, $procedencia);
+
+        // Queda constancia de con qué firma llegó el documento
+        $detalleFirma = '';
+        $completa = __DIR__ . '/documentos/' . $nombrearchivo;
+        if (is_file($completa)) {
+            try {
+                $detalleFirma = ' · ' . FirmaDigital::resumenTexto(
+                    FirmaDigital::resumenFirmas((string) file_get_contents($completa)));
+            } catch (Throwable $e) {
+                error_log('[FIRMA] resumen al registrar: ' . $e->getMessage());
+            }
+        }
+
+        Bitacora::registrar(Bitacora::REGISTRO_TRAMITE, 'documento', $consulta,
+            'asunto: ' . $asu . ' · ' . strtolower($procedencia) . $detalleFirma);
         echo $consulta;
     }
 ?>

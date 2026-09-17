@@ -207,6 +207,16 @@ $actividad = $consultar(
     "SELECT m.mov_fecharegistro AS fecha, m.mov_tipo AS tipo, m.mov_estatus AS estado,
             d.doc_expediente AS expediente, d.documento_id,
             ao.area_nombre AS origen, ad.area_nombre AS destino,
+            -- Un envío de un área a sí misma es el ingreso del documento. De quién
+            -- viene lo dice doc_procedencia (migración 021/022): puede ser un área
+            -- de la entidad, no siempre un ciudadano.
+            d.doc_procedencia AS procedencia,
+            -- Del PRIMER movimiento: documento.area_origen se sobrescribe en cada
+            -- derivación y ya no dice de dónde nació el trámite.
+            (SELECT ao2.area_nombre FROM movimiento m2
+               LEFT JOIN area ao2 ON ao2.area_cod = m2.area_origen_id
+              WHERE m2.documento_id = d.documento_id
+              ORDER BY m2.movimiento_id LIMIT 1) AS area_procedencia,
             COALESCE(NULLIF(TRIM(CONCAT_WS(' ', e.emple_nombre, e.emple_apepat)), ''), u.usu_usuario) AS persona
        FROM movimiento m
        INNER JOIN documento d ON d.documento_id = m.documento_id

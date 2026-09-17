@@ -3,6 +3,7 @@
     require_once __DIR__ . '/../../lib/Bitacora.php';
     require_once __DIR__ . '/../../lib/Institucion.php';
     require_once __DIR__ . '/../../lib/Plazos.php';
+    require_once __DIR__ . '/../../lib/FirmaDigital.php';
     require '../../model/model_tramite.php';
     require '../../utilitario/class_notificacion.php';
     Seguridad::iniciarSesion();
@@ -97,8 +98,22 @@
         $NTF->notificarRegistro($area_mesa_partes_id, 0, $consulta, $tip, $asu, $nombre_ciudadano);
 
         // Registro ciudadano: no hay sesión, así que se deja constancia del DNI declarado.
+        // Queda constancia de con qué firma llegó el documento del ciudadano. El
+        // trámite es EXTERNO (lo fija SP_REGISTRAR_TRAMITE_EXTERNO): no se firma
+        // aquí, solo se comprueba lo que trae.
+        $detalleFirma = '';
+        $completa = __DIR__ . '/documentos/' . $nombrearchivo;
+        if (is_file($completa)) {
+            try {
+                $detalleFirma = ' · ' . FirmaDigital::resumenTexto(
+                    FirmaDigital::resumenFirmas((string) file_get_contents($completa)));
+            } catch (Throwable $e) {
+                error_log('[FIRMA] resumen al registrar (externo): ' . $e->getMessage());
+            }
+        }
+
         Bitacora::registrar(Bitacora::REGISTRO_TRAMITE, 'documento', $consulta,
-            'mesa de partes virtual · asunto: ' . $asu, 'ciudadano DNI ' . $dni);
+            'mesa de partes virtual · asunto: ' . $asu . $detalleFirma, 'ciudadano DNI ' . $dni);
 
         // Datos para la pantalla de confirmación y el cargo de recepción
         $consultaCargo = 'codigo=' . rawurlencode($consulta) . '&dni=' . rawurlencode($dni);

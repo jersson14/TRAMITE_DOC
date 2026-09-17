@@ -3,6 +3,8 @@
     // Faltaba: sin esto la llamada a Bitacora tumbaba la derivación con un error 500
     // después de guardarla, y no llegaban los avisos a las áreas copiadas.
     require_once __DIR__ . '/../../lib/Bitacora.php';
+    require_once __DIR__ . '/../../lib/FirmaAlRegistrar.php';
+    require '../../model/model_firma.php';
     require '../../model/model_tramite_area.php';
     require '../../model/model_tramite.php';
     require '../../utilitario/class_notificacion.php';
@@ -81,6 +83,47 @@
         Seguridad::responderError(422, $e->getMessage());
     }
 
+    /*
+     * Firma del documento que se adjunta al derivar.
+     *
+     * Derivar en sí no se firma: mover el expediente de un área a otra es
+     * enrutamiento, y ya queda registrado con usuario, fecha y acuse de recepción.
+     * Lo que sí es autoría del área que deriva es el DOCUMENTO que adjunta (un
+     * informe, un proveído), y ese debe salir firmado, no enviarse y firmarse
+     * después desde el expediente.
+     *
+     * El certificado se comprueba ANTES de mover el expediente: si está mal, no se
+     * deriva nada. Es opcional; sin certificado la derivación sale igual y queda
+     * constancia en la bitácora.
+     */
+    $MFI = new Modelo_Firma();
+    $quiereFirmar = FirmaAlRegistrar::solicitada();
+    $preparado = null;
+
+    if ($quiereFirmar && !$nombrearchivo) {
+        Seguridad::responderError(422, 'Adjunte el documento que va a firmar, o derive sin firma.');
+    }
+    if ($quiereFirmar && $MFI->Procedencia($iddo) === 'EXTERNO') {
+        Seguridad::responderError(422, 'Este trámite es externo: sus documentos llegan firmados de fuera y no se firman aquí.');
+    }
+    if ($quiereFirmar) {
+        $usuarioFicha = $MFI->Datos_Usuario($idusu);
+        try {
+            $preparado = FirmaAlRegistrar::prepararCertificado(
+                (string) ($_POST['clave'] ?? ''),
+                $usuarioFicha ? (string) $usuarioFicha['emple_nrodocumento'] : null
+            );
+        } catch (RuntimeException $e) {
+            Seguridad::borrarArchivoEn(__DIR__ . '/documentos', (string) $nombrearchivo);
+            foreach ($anexos as $a) {
+                Seguridad::borrarArchivoEn(__DIR__ . '/documentos', $a['nombre']);
+            }
+            Seguridad::responderError(422, $e->getMessage());
+        }
+    }
+    unset($_POST['clave']);
+    $preparadoHubo = (bool) $preparado;
+
     // Los movimientos posteriores a este son los que crea esta derivación
     // (la principal y sus copias); a ellos se vinculan los anexos.
     $ultimoMovimiento = $MTR->Ultimo_Movimiento($iddo);
@@ -97,12 +140,46 @@
         $MTR->Registrar_Atenciones($iddo, $orig, $atenciones, $desc, $idusu, $ruta, $acc);
         $MTR->Vincular_Anexos($iddo, $idsAnexos, $ultimoMovimiento);
 
+        /*
+         * Se firma con la derivación ya registrada, porque la tabla firma necesita
+         * el documento_id y el anexo_id. El certificado ya se validó arriba, así
+         * que aquí solo puede fallar un PDF puntual y eso no bota a los demás.
+         * Se firma EN SITIO: el archivo que viaja al área destino ya es el firmado.
+         */
+        $resultadoFirma = ['firmados' => [], 'errores' => []];
+        if ($preparado) {
+            $porFirmar = [[
+                'ruta'     => $ruta,
+                'absoluta' => __DIR__ . '/documentos/' . $nombrearchivo,
+                'anexo_id' => null,
+                'etiqueta' => 'Documento de la derivación',
+            ]];
+            if (($_POST['firmar_anexos'] ?? '0') === '1') {
+                foreach ($anexos as $i => $a) {
+                    $porFirmar[] = [
+                        'ruta'     => 'controller/tramite_area/documentos/' . $a['nombre'],
+                        'absoluta' => __DIR__ . '/documentos/' . $a['nombre'],
+                        'anexo_id' => $idsAnexos[$i] ?? null,
+                        'etiqueta' => $a['original'],
+                    ];
+                }
+            }
+            $resultadoFirma = FirmaAlRegistrar::firmarArchivos(
+                $porFirmar, $preparado, $MFI, $iddo,
+                trim((string) ($_POST['motivo'] ?? '')),
+                $idusu ?: null, Seguridad::areaId() ?: null
+            );
+        }
+        $preparado = null;
+
         // ✉️ NOTIFICACIÓN: la clase obtiene automáticamente nombres de área y de usuario
         $NTF->notificarDerivacion($dest, $orig, $idusu, $iddo, '', $desc, $tipo);
         Bitacora::registrar(Bitacora::DERIVO_TRAMITE, 'documento', $iddo,
             $tipo === 'FINALIZAR'
                 ? 'finalizado en el área ' . $orig
-                : 'del área ' . $orig . ' al área ' . $dest . (count($copias) ? ' (con ' . count($copias) . ' copia(s))' : ''));
+                : 'del área ' . $orig . ' al área ' . $dest . (count($copias) ? ' (con ' . count($copias) . ' copia(s))' : '')
+                  . FirmaAlRegistrar::resumenBitacora($resultadoFirma)
+                  . ($nombrearchivo && !$preparadoHubo ? ' · documento adjunto SIN firma digital' : ''));
 
         // ✉️ NOTIFICACIÓN a áreas que reciben copias
         foreach($copias as $area_copia){

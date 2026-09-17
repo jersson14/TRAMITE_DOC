@@ -525,6 +525,36 @@ function Traer_Datos_Seguimiento2(){
       }).done(function(resp){
         let datadetalle=JSON.parse(resp);
         if(datadetalle.length>0){
+          /*
+           * El recorrido abre por de dónde viene el trámite y recién después van las
+           * derivaciones. Puede venir de un área de la entidad, de otra entidad o de
+           * un ciudadano; el servidor ya lo resolvió (mismo criterio que el diagrama).
+           */
+          let org = datadetalle[0] || {};
+          if(org.origen_rotulo){
+            let icoOrg = org.origen_tipo === 'INTERNO' ? 'fas fa-building'
+                       : (org.origen_tipo === 'ENTIDAD' ? 'fas fa-city' : 'fas fa-user-tie');
+            let colorOrg = org.origen_tipo === 'INTERNO' ? '#1E3A5F' : '#6B7A90';
+            cadena += '<div class="card mb-3" style="border:none;box-shadow:0 4px 15px rgba(0,0,0,0.08);border-radius:15px;overflow:hidden;">'+
+                        '<div class="card-header" style="background:'+colorOrg+';color:white;padding:0.9rem 1.25rem;">'+
+                          '<h6 class="mb-0" style="font-weight:700;letter-spacing:.03em;">'+
+                            '<i class="'+icoOrg+'"></i> '+String(org.origen_rotulo).toUpperCase()+
+                          '</h6>'+
+                        '</div>'+
+                        '<div class="card-body" style="padding:1.25rem 1.5rem;background:#f8f9fa;">'+
+                          '<div style="font-weight:700;color:#1f2937;font-size:1.15rem;">'+org.origen_titulo+'</div>'+
+                          (org.origen_persona
+                            ? '<div style="font-size:0.9rem;color:#6b7280;margin-top:0.25rem;"><i class="far fa-user"></i> '+org.origen_persona+'</div>'
+                            : '')+
+                          (org.origen_ruc
+                            ? '<div style="font-size:0.9rem;color:#6b7280;"><i class="far fa-building"></i> RUC '+org.origen_ruc+'</div>'
+                            : '')+
+                          (org.origen_enlace
+                            ? '<div style="font-size:0.85rem;color:#9aa3ad;margin-top:0.5rem;"><i class="fas fa-long-arrow-alt-down"></i> '+org.origen_enlace+'</div>'
+                            : '')+
+                        '</div>'+
+                      '</div>';
+          }
           for (let i = 0; i < datadetalle.length; i++) {
             let iconClass = "fas fa-clock";
             let cardBg = "#B45309";
@@ -538,6 +568,12 @@ function Traer_Datos_Seguimiento2(){
             // Obtener origen y destino - ÍNDICES CORREGIDOS
             let areaOrigen = datadetalle[i][3] || 'EXTERNO';  // area_origen_nombre
             let areaDestino = datadetalle[i][4] || 'N/A';     // area_destino_nombre
+
+            // Un primer envío de un área a sí misma es el INGRESO del documento, no
+            // una derivación: se señala con una etiqueta y no se toca su estado.
+            let esRecepcion = !!datadetalle[i].es_recepcion;
+            let rotuloOrigen = esRecepcion ? 'INGRESA POR' : 'ORIGEN';
+            let iconoOrigen = esRecepcion ? 'fas fa-file-import' : 'fas fa-map-marker-alt';
             
             if(datadetalle[i][8]=="DERIVADO"){
               cardBg = "#1E3A5F";
@@ -568,6 +604,7 @@ function Traer_Datos_Seguimiento2(){
                           '<h5 class="mb-0" style="font-weight: 700;">'+
                             '<i class="'+statusIcon+'"></i> '+statusText+
                             (isCopy ? ' <span class="badge badge-light text-danger ml-2"><i class="fas fa-copy"></i> COPIA</span>' : '')+
+                            (esRecepcion ? ' <span class="badge badge-light ml-2" style="color:#2C5282;"><i class="fas fa-file-import"></i> RECEPCIÓN</span>' : '')+
                           '</h5>'+
                           '<span style="font-size: 0.9rem;"><i class="far fa-clock"></i> '+datadetalle[i][5]+'</span>'+
                         '</div>'+
@@ -577,9 +614,10 @@ function Traer_Datos_Seguimiento2(){
                           '<div class="col-md-6 mb-2">'+
                             '<div style="background: white; padding: 1rem; border-radius: 10px; border-left: 4px solid #2C5282;">'+
                               '<div style="font-size: 0.85rem; color: #6b7280; margin-bottom: 0.25rem;">'+
-                                '<i class="fas fa-map-marker-alt"></i> ORIGEN'+
+                                '<i class="'+iconoOrigen+'"></i> '+rotuloOrigen+
                               '</div>'+
                               '<div style="font-weight: 700; color: #1f2937; font-size: 1.1rem;">'+areaOrigen+'</div>'+
+
                             '</div>'+
                           '</div>'+
                           '<div class="col-md-6 mb-2">'+

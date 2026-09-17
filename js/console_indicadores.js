@@ -155,11 +155,15 @@ function Pintar_Indicadores(r) {
 
   var filasActividad = (r.actividad || []).map(function (x) {
     var t = TIPOS_MOVIMIENTO[x.tipo] || ["badge-secondary", x.tipo];
-    // Un envío de un área a sí misma es el ingreso de un documento traído por
-    // una persona: mostrarlo como "MESA DE PARTES → MESA DE PARTES" no decía nada
+    // Un envío de un área a sí misma es el ingreso del documento: mostrarlo como
+    // "MESA DE PARTES → MESA DE PARTES" no decía nada. De quién viene lo dice la
+    // procedencia: no siempre es un ciudadano, puede remitirlo un área.
     var mismaArea = x.origen && x.origen === x.destino;
-    var origen = mismaArea ? "Externo · ciudadano" : (x.origen || "—");
+    var origen = x.origen || "—";
     if (mismaArea) {
+      origen = x.procedencia === "INTERNO"
+        ? "Interno" + (x.area_procedencia ? " · " + x.area_procedencia : "")
+        : "Externo · ciudadano";
       t = ["badge-secondary", "Recepción"];
     }
     return "<tr>" +

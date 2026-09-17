@@ -2,6 +2,9 @@
     require_once __DIR__ . '/../_guard.php';
     require_once __DIR__ . '/../../lib/Bitacora.php';
     require '../../model/model_tramite.php';
+    require '../../model/model_firma.php';
+    require_once __DIR__ . '/../../lib/FirmaDigital.php';
+    require_once __DIR__ . '/../../lib/FirmaAlRegistrar.php';
     $MTR = new Modelo_Tramite();//Instaciamos
     //DATOS DE REMITENTE//
     $documentoFinal = strtoupper(htmlspecialchars($_POST['documentoFinal'],ENT_QUOTES,'UTF-8'));
@@ -52,6 +55,34 @@
         Seguridad::responderError(422, $e->getMessage());
     }
 
+    /*
+     * Firma al registrar: el documento que redacta la entidad debe salir firmado,
+     * en vez de enviarse y firmarse después desde el panel de archivos.
+     *
+     * El certificado se comprueba ANTES de crear el trámite: si está mal, no se
+     * registra nada y el usuario corrige. Es opcional: sin certificado el trámite
+     * se registra igual y queda constancia en la bitácora.
+     */
+    $MFI = new Modelo_Firma();
+    $quiereFirmar = FirmaAlRegistrar::solicitada();
+    $preparado = null;
+    if ($quiereFirmar) {
+        $usuarioFicha = $MFI->Datos_Usuario(Seguridad::usuarioId());
+        try {
+            $preparado = FirmaAlRegistrar::prepararCertificado(
+                (string) ($_POST['clave'] ?? ''),
+                $usuarioFicha ? (string) $usuarioFicha['emple_nrodocumento'] : null
+            );
+        } catch (RuntimeException $e) {
+            Seguridad::borrarArchivoEn(__DIR__ . '/documentos', (string) $nombrearchivo);
+            foreach ($anexos as $a) {
+                Seguridad::borrarArchivoEn(__DIR__ . '/documentos', $a['nombre']);
+            }
+            Seguridad::responderError(422, $e->getMessage());
+        }
+    }
+    unset($_POST['clave']);
+
     $ruta='controller/tramite/documentos/'.$nombrearchivo;
     $consulta = $MTR->Registrar_Tramite_ul($documentoFinal,$nom,$apt,$apm,$cel,$ema,$dir,$vpresentacion,$ruc,$raz,$arp,
     $ard,$tip,$ndo,$asu,$ruta,$fol,$idusu,$acc,$obs,$tre,$copias);
@@ -59,8 +90,74 @@
         // Trámite nuevo: todos sus movimientos (principal y copias) son de este envío.
         $idsAnexos = $MTR->Registrar_Anexos($consulta, $anexos, 'controller/tramite/documentos', $idusu);
         $MTR->Vincular_Anexos($consulta, $idsAnexos, 0);
+        // Procedencia: decide si este documento se firma en el sistema (INTERNO) o
+        // solo se verifica la firma que ya trae de fuera (EXTERNO). Migración 021.
+        //
+        // No se toma de la pantalla sin más: la decide el REMITENTE. Si tiene cuenta
+        // de usuario es personal de la entidad y el documento es interno; si no, es
+        // externo. La casilla "Es trámite externo" solo puede forzar externo.
+        $procedencia = $MFI->Procedencia_De_Registro(
+            $documentoFinal,
+            ($_POST['procedencia'] ?? '') === 'EXTERNO',
+            $MFI->Remitente_Es_Juridica($ruc, $raz, $vpresentacion)
+        );
+        $MFI->Marcar_Procedencia($consulta, $procedencia);
+
+        /*
+         * Se firma recién ahora, con el trámite ya creado: la tabla firma necesita
+         * su documento_id. El certificado ya se validó arriba, así que aquí solo
+         * puede fallar un PDF puntual, y eso no bota a los demás.
+         *
+         * Un trámite externo no se firma: el documento es de un ciudadano u otra
+         * entidad, y firmarlo sería atribuirse autoría ajena.
+         */
+        $resultadoFirma = ['firmados' => [], 'errores' => []];
+        if ($preparado && $procedencia === 'INTERNO') {
+            $porFirmar = [];
+            if (($_POST['firmar_principal'] ?? '1') !== '0') {
+                $porFirmar[] = [
+                    'ruta'     => $ruta,
+                    'absoluta' => __DIR__ . '/documentos/' . $nombrearchivo,
+                    'anexo_id' => null,
+                    'etiqueta' => 'Documento principal',
+                ];
+            }
+            if (($_POST['firmar_anexos'] ?? '0') === '1') {
+                foreach ($anexos as $i => $a) {
+                    $porFirmar[] = [
+                        'ruta'     => 'controller/tramite/documentos/' . $a['nombre'],
+                        'absoluta' => __DIR__ . '/documentos/' . $a['nombre'],
+                        'anexo_id' => $idsAnexos[$i] ?? null,
+                        'etiqueta' => $a['original'],
+                    ];
+                }
+            }
+            $resultadoFirma = FirmaAlRegistrar::firmarArchivos(
+                $porFirmar, $preparado, $MFI, $consulta,
+                trim((string) ($_POST['motivo'] ?? '')),
+                Seguridad::usuarioId() ?: null, Seguridad::areaId() ?: null
+            );
+        }
+        $preparado = null;
+
+        // Se deja constancia de con qué firma llegó el documento. No bloquea el
+        // registro: muchos documentos llegan en papel escaneado, sin firma digital.
+        $detalleFirma = '';
+        $completa = __DIR__ . '/documentos/' . $nombrearchivo;
+        if (is_file($completa)) {
+            try {
+                $detalleFirma = ' · ' . FirmaDigital::resumenTexto(
+                    FirmaDigital::resumenFirmas((string) file_get_contents($completa)));
+            } catch (Throwable $e) {
+                error_log('[FIRMA] resumen al registrar: ' . $e->getMessage());
+            }
+        }
+
         Bitacora::registrar(Bitacora::REGISTRO_TRAMITE, 'documento', $consulta,
-            'asunto: ' . $asu . (count($anexos) ? ' · ' . count($anexos) . ' anexo(s)' : ''));
+            'asunto: ' . $asu . (count($anexos) ? ' · ' . count($anexos) . ' anexo(s)' : '') .
+            ' · ' . strtolower($procedencia) . $detalleFirma .
+            FirmaAlRegistrar::resumenBitacora($resultadoFirma) .
+            ($quiereFirmar || $procedencia === 'EXTERNO' ? '' : ' · SIN firma digital'));
         echo $consulta;
     }
 ?>

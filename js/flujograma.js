@@ -119,12 +119,28 @@ function Flujograma_Pintar(r, selector) {
   var areaRecepcion = (recepcion && recepcion.principal.destino) || t.area_recepcion;
   var esPortal = t.procedencia === "PORTAL";
 
-  // 1. Quién presentó el documento
+  /*
+   * De dónde arranca el recorrido. No todo trámite viene de un ciudadano: puede
+   * remitirlo un área de la propia entidad o llegar de otra institución. El
+   * servidor ya resolvió cuál es el caso (t.origen); aquí solo se pinta.
+   */
+  var o = t.origen || { tipo: "CIUDADANO", rotulo: "Externo · ciudadano",
+                        titulo: t.remitente, persona: "", area: "", ruc: "",
+                        enlace: esPortal ? "presenta por el portal" : "presenta en mesa de partes" };
+  var iconoOrigen = o.tipo === "INTERNO" ? "fa-building"
+                  : (o.tipo === "ENTIDAD" ? "fa-city" : "fa-user-tie");
+  var claseOrigen = o.tipo === "INTERNO" ? "flujo-hito flujo-externo flujo-origen-interno"
+                                         : "flujo-hito flujo-externo";
+
+  // 1. Quién remite el documento
   var html = '<div class="flujograma">' +
-    '<div class="flujo-hito flujo-externo">' +
-      '<span class="flujo-hito-rotulo"><i class="fas fa-user-tie"></i> Externo · ciudadano</span>' +
-      "<strong>" + textoFlujo(t.remitente || "Remitente no registrado") + "</strong>" +
+    '<div class="' + claseOrigen + '">' +
+      '<span class="flujo-hito-rotulo"><i class="fas ' + iconoOrigen + '"></i> ' + textoFlujo(o.rotulo) + "</span>" +
+      "<strong>" + textoFlujo(o.titulo || "Remitente no registrado") + "</strong>" +
       '<div class="flujo-datos">' +
+        // En un documento interno o de otra entidad, la persona va debajo del área
+        (o.persona ? '<span><i class="far fa-user"></i> ' + textoFlujo(o.persona) + "</span>" : "") +
+        (o.ruc ? '<span><i class="far fa-building"></i> RUC ' + textoFlujo(o.ruc) + "</span>" : "") +
         (t.dni ? '<span><i class="far fa-id-card"></i> DNI ' + textoFlujo(t.dni) + "</span>" : "") +
         (t.tipo ? '<span><i class="far fa-file-alt"></i> ' + textoFlujo(t.tipo) + "</span>" : "") +
         (t.folios ? '<span><i class="fas fa-layer-group"></i> ' + textoFlujo(t.folios) + " folio(s)</span>" : "") +
@@ -132,8 +148,7 @@ function Flujograma_Pintar(r, selector) {
     "</div>";
 
   // 2. El área que lo recibió y lo ingresó al sistema
-  html += '<div class="flujo-flecha"><span>' +
-      (esPortal ? "presenta por el portal" : "presenta en mesa de partes") + "</span></div>" +
+  html += '<div class="flujo-flecha"><span>' + textoFlujo(o.enlace) + "</span></div>" +
     '<div class="flujo-fila">' +
       '<div class="flujo-hito flujo-inicio">' +
         '<span class="flujo-hito-rotulo"><i class="fas fa-file-import"></i> Recepción' +

@@ -220,8 +220,10 @@
    ============================================ */
 .checkbox-card-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
+    /* 220px: caben las etiquetas largas ("PROYECTAR DISPOSITIVOS") sin partirse
+       en tres líneas, y siguen entrando 4 columnas en una pantalla de oficina. */
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.75rem;
     margin: 1rem 0;
 }
 
@@ -229,12 +231,14 @@
     background: white;
     border: 2px solid var(--gray-200);
     border-radius: var(--radius-lg);
-    padding: 1rem;
+    padding: 0.85rem 1rem;
     display: flex;
     align-items: center;
     gap: 0.75rem;
     cursor: pointer;
     transition: all var(--transition-base);
+    /* Todas las tarjetas igual de altas aunque la etiqueta ocupe dos líneas */
+    min-height: 68px;
 }
 
 .checkbox-card:hover {
@@ -253,29 +257,38 @@
     color: white;
 }
 
+/* Antes era transform: scale(2): agrandaba la casilla SIN ocupar espacio real,
+   así que se montaba sobre el ícono y empujaba la etiqueta fuera de la tarjeta.
+   Con width/height el tamaño sí cuenta para el cálculo del ancho. */
 .checkbox-card input[type="checkbox"] {
     cursor: pointer;
     accent-color: var(--primary-color);
     flex-shrink: 0;
-    transform: scale(2);
-    margin: 0 8px;
-    transition: transform 0.2s ease;
-}
-
-.checkbox-card input[type="checkbox"]:hover {
-    transform: scale(2.2);
+    width: 20px;
+    height: 20px;
+    margin: 0;
 }
 
 .checkbox-card label {
     margin: 0;
     cursor: pointer;
     font-weight: 500;
+    font-size: 0.9rem;
+    line-height: 1.25;
+    /* min-width: 0 permite que el elemento flexible se encoja; sin esto una
+       palabra larga ("CONOCIMIENTO", "SEGUIMIENTO") desbordaba la tarjeta. */
     flex: 1;
+    min-width: 0;
+    overflow-wrap: break-word;
+    hyphens: auto;
 }
 
 .checkbox-card i {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     color: var(--primary-color);
+    flex-shrink: 0;
+    width: 1.25rem;
+    text-align: center;
 }
 
 .checkbox-card.active i {
@@ -1315,6 +1328,69 @@ input[type="file"]:disabled::file-selector-button {
     border: 1px solid #15803D;
     text-transform: none;
     letter-spacing: 0;
+}
+
+/* El original de un archivo que ya se firmó: se conserva como evidencia de lo
+   que se registró, pero ya no se ofrece firmarlo otra vez. */
+.archivo-etiqueta.etiqueta-reemplazado {
+    background: #F8FAFC;
+    color: #4A5568;
+    border: 1px solid #CBD5E0;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+/* Contador y botón "Firmar documentos" al lado derecho de la cabecera */
+.archivos-cabecera-acciones {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* Lista de archivos a firmar, dentro del formulario de firma */
+.firma-archivos {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    max-height: 190px;
+    overflow-y: auto;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid #E2E8F0;
+    border-radius: 0.4rem;
+    background: #F8FAFC;
+}
+
+.firma-archivo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-weight: 400;
+    font-size: 0.85rem;
+    cursor: pointer;
+}
+
+.firma-archivo input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    flex-shrink: 0;
+    accent-color: #1E3A5F;
+}
+
+.firma-archivo i {
+    color: #B91C1C;
+    flex-shrink: 0;
+}
+
+/* min-width: 0 para que un nombre de archivo largo se recorte en vez de
+   desbordar la caja (mismo motivo que en las tarjetas de acciones). */
+.firma-archivo span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .firma-form {
@@ -2477,7 +2553,7 @@ a.notificacion:hover {
   }
 }
 
-/* El punto de partida del recorrido: quien presentó el documento */
+/* El punto de partida del recorrido: quien remite el documento */
 .flujo-externo {
   border-color: #6B7A90;
   background: #F4F6F9;
@@ -2485,4 +2561,15 @@ a.notificacion:hover {
 
 .flujo-externo .flujo-hito-rotulo {
   color: #4A5568;
+}
+
+/* Cuando el documento nace dentro de la entidad, el punto de partida se lee como
+   institucional (azul) y no como algo que llegó de la calle. */
+.flujo-origen-interno {
+  border-color: #1E3A5F;
+  background: #EEF2F7;
+}
+
+.flujo-origen-interno .flujo-hito-rotulo {
+  color: #1E3A5F;
 }

@@ -285,6 +285,30 @@ function Registrar_Derivacion(){
   formData.append("copias",JSON.stringify(copias)); // Enviar copias como JSON
   formData.append("atenciones",JSON.stringify(Leer_Atenciones_Derivar()));
 
+  /*
+   * Firma del documento que se adjunta al derivar: lo produce esta área, así que
+   * sale firmado. Derivar en sí no se firma (es enrutamiento, ya queda registrado
+   * con usuario, fecha y acuse). Es opcional.
+   */
+  var certDer = document.getElementById("txt_cert_derivar");
+  var certArchivoDer = certDer && certDer.files[0];
+  if (certArchivoDer) {
+    if (!achivoobj) {
+      return Swal.fire("Mensaje de Advertencia", "Adjunte el documento que va a firmar, o quite el certificado", "warning");
+    }
+    var claveDer = document.getElementById("txt_clave_derivar").value;
+    if (!/\.(pfx|p12)$/i.test(certArchivoDer.name)) {
+      return Swal.fire("Mensaje de Advertencia", "El certificado debe ser un archivo .pfx o .p12", "warning");
+    }
+    if (!claveDer) {
+      return Swal.fire("Mensaje de Advertencia", "Escriba la contraseña de su certificado", "warning");
+    }
+    formData.append("certificado", certArchivoDer);
+    formData.append("clave", claveDer);
+    formData.append("motivo", document.getElementById("txt_motivo_derivar").value);
+    formData.append("firmar_anexos", document.getElementById("chk_firmar_anexos_derivar").checked ? "1" : "0");
+  }
+
   $.ajax({
     url:"../controller/tramite_area/controlador_registro_tramite.php",
     type:'POST',
@@ -295,6 +319,12 @@ function Registrar_Derivacion(){
       if(resp.length>0){
         Swal.fire("Mensaje de Confirmación","Tramite Derivado o Finalizado","success").then((value)=>{
           $("#modal_derivar").modal('hide');
+          // La contraseña no debe quedar escrita tras derivar
+          if(document.getElementById('txt_cert_derivar')){
+            document.getElementById('txt_cert_derivar').value="";
+            document.getElementById('txt_clave_derivar').value="";
+            document.getElementById('txt_motivo_derivar').value="";
+          }
                       tbl_tramite.ajax.reload();
 
           
@@ -565,6 +595,36 @@ function Registrar_Tramite(){
     formData.append("acc",acc);
     formData.append("obs",obs);
     formData.append("tre",tre);
+    // Procedencia: un trámite externo trae el documento ya firmado de fuera y no se
+    // firma en el sistema; uno interno lo produce la entidad y sí se firma (migración 021).
+    formData.append("procedencia", esExterno ? "EXTERNO" : "INTERNO");
+
+    /*
+     * Firma al registrar: el documento propio sale firmado en vez de enviarse y
+     * firmarse después desde el expediente. Es opcional; sin certificado el
+     * trámite se registra igual y queda en la bitácora que salió sin firma.
+     */
+    var certReg = document.getElementById("txt_cert_registro");
+    var certArchivo = certReg && certReg.files[0];
+    if (certArchivo) {
+      var claveReg = document.getElementById("txt_clave_registro").value;
+      if (!/\.(pfx|p12)$/i.test(certArchivo.name)) {
+        return Swal.fire("Mensaje de Advertencia", "El certificado debe ser un archivo .pfx o .p12", "warning");
+      }
+      if (!claveReg) {
+        return Swal.fire("Mensaje de Advertencia", "Escriba la contraseña de su certificado", "warning");
+      }
+      var firmaPrincipal = document.getElementById("chk_firmar_principal").checked;
+      var firmaAnexos = document.getElementById("chk_firmar_anexos").checked;
+      if (!firmaPrincipal && !firmaAnexos) {
+        return Swal.fire("Mensaje de Advertencia", "Marque qué documentos va a firmar, o quite el certificado", "warning");
+      }
+      formData.append("certificado", certArchivo);
+      formData.append("clave", claveReg);
+      formData.append("motivo", document.getElementById("txt_motivo_registro").value);
+      formData.append("firmar_principal", firmaPrincipal ? "1" : "0");
+      formData.append("firmar_anexos", firmaAnexos ? "1" : "0");
+    }
     formData.append("copias",JSON.stringify(copias)); // Enviar copias como JSON
 
 
@@ -596,6 +656,12 @@ function Registrar_Tramite(){
             document.getElementById('txt_asunto').value="";
             document.getElementById('txt_folio').value="";
             document.getElementById('txt_acciones').value="";
+            // La contraseña no debe quedar escrita en pantalla tras registrar
+            if(document.getElementById('txt_cert_registro')){
+              document.getElementById('txt_cert_registro').value="";
+              document.getElementById('txt_clave_registro').value="";
+              document.getElementById('txt_motivo_registro').value="";
+            }
             document.getElementById('txt_observacion').value="";
             document.getElementById('txt_tiempo_respuesta').value="";
 
@@ -794,8 +860,20 @@ $('#tabla_tramite').on('click','.responder-atencion',function(){
       "<p class='mb-2'>Expediente <b>"+escaparTexto(data.doc_expediente || data.documento_id)+"</b><br><small class='text-muted'>"+escaparTexto(data.doc_asunto)+"</small></p>" +
       "<label style='font-size:small'>Respuesta de su área (*)</label>" +
       "<textarea id='txt_respuesta_atencion' class='form-control' rows='5' maxlength='4000' placeholder='Informe, opinión técnica o conclusión'></textarea>" +
-      "<label class='mt-3' style='font-size:small'>Archivo (opcional, PDF)</label>" +
-      "<input type='file' id='txt_archivo_atencion' accept='.pdf' class='form-control'></div>",
+      "<label class='mt-3' style='font-size:small'>Informe adjunto (opcional, PDF)</label>" +
+      "<input type='file' id='txt_archivo_atencion' accept='.pdf' class='form-control'>" +
+      // El informe lo produce la entidad: debe salir firmado. La firma va aquí,
+      // antes de enviar, y no después desde el panel de archivos del expediente.
+      "<fieldset id='firma_atencion' class='mt-3' style='border:1px solid #dee2e6;border-radius:.4rem;padding:.65rem;'>" +
+        "<legend style='font-size:small;font-weight:600;width:auto;padding:0 .4rem;margin:0;'>" +
+          "<i class='fas fa-file-signature'></i> Firmar el informe antes de enviarlo</legend>" +
+        "<label style='font-size:small'>Certificado digital (.pfx / .p12)</label>" +
+        "<input type='file' id='txt_cert_atencion' accept='.pfx,.p12' class='form-control form-control-sm'>" +
+        "<label class='mt-2' style='font-size:small'>Contraseña del certificado</label>" +
+        "<input type='password' id='txt_clave_atencion' class='form-control form-control-sm' autocomplete='off'>" +
+        "<small class='text-muted d-block mt-2'>Si lo deja en blanco, el informe se envía sin firma digital " +
+        "y así queda registrado en la bitácora. Su certificado y su contraseña no se guardan.</small>" +
+      "</fieldset></div>",
     showCancelButton: true,
     confirmButtonText: "Enviar respuesta",
     confirmButtonColor: "#1E3A5F",
@@ -809,6 +887,22 @@ $('#tabla_tramite').on('click','.responder-atencion',function(){
       fd.append("respuesta", texto);
       var archivo = document.getElementById('txt_archivo_atencion').files[0];
       if(archivo){ fd.append("archivo", archivo); }
+
+      var cert = document.getElementById('txt_cert_atencion').files[0];
+      var clave = document.getElementById('txt_clave_atencion').value;
+      if(cert && !archivo){
+        Swal.showValidationMessage("Adjunte el informe en PDF que va a firmar, o quite el certificado");
+        return false;
+      }
+      if(cert && !clave){
+        Swal.showValidationMessage("Escriba la contraseña de su certificado");
+        return false;
+      }
+      if(cert){
+        fd.append("certificado", cert);
+        fd.append("clave", clave);
+      }
+
       return $.ajax({ url:"../controller/tramite_area/controlador_responder_atencion.php", type:"POST", data:fd, contentType:false, processData:false, dataType:"json" })
         .then(function(r){ return r; }, function(xhr){
           Swal.showValidationMessage((xhr.responseJSON && xhr.responseJSON.mensaje) || "No se pudo registrar la respuesta");
@@ -817,7 +911,30 @@ $('#tabla_tramite').on('click','.responder-atencion',function(){
     }
   }).then(function(res){
     if(res.isConfirmed && res.value){
-      Swal.fire("Respuesta registrada","El área responsable ya puede ver la respuesta de su área.","success");
+      var r = res.value;
+      if(r.firmado){
+        Swal.fire({
+          icon: "success",
+          title: "Respuesta enviada y firmada",
+          html: "El informe salió firmado por <b>"+escaparTexto(r.firmante)+"</b>.<br>" +
+                "Código de verificación: <b style='letter-spacing:.05em;'>"+escaparTexto(r.codigo)+"</b>" +
+                (r.autofirmado
+                  ? "<div class='firma-aviso mt-3 text-left'><i class='fas fa-exclamation-triangle'></i><div>" +
+                    "Su certificado es <b>autofirmado</b>: la firma es íntegra, pero no fue emitida por una " +
+                    "entidad de certificación acreditada ante INDECOPI.</div></div>"
+                  : "")
+        });
+      } else if(r.sin_firma){
+        Swal.fire({
+          icon: "warning",
+          title: "Respuesta enviada sin firma",
+          html: "El informe de su área salió <b>sin firma digital</b> y así quedó registrado en la bitácora.<br>" +
+                "<small class='text-muted'>Puede firmarlo desde los archivos del expediente, pero lo correcto " +
+                "es firmarlo antes de enviarlo.</small>"
+        });
+      } else {
+        Swal.fire("Respuesta registrada","El área responsable ya puede ver la respuesta de su área.","success");
+      }
       tbl_tramite.ajax.reload(null,false);
     }
   });

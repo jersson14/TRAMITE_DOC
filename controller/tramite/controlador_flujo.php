@@ -12,6 +12,7 @@
  */
 require_once __DIR__ . '/../_guard.php';
 require_once __DIR__ . '/../../lib/Plazos.php';
+require_once __DIR__ . '/../../lib/OrigenTramite.php';
 require_once __DIR__ . '/../../model/model_conexion.php';
 require_once __DIR__ . '/../../model/model_tramite.php';
 
@@ -38,7 +39,7 @@ $hayProcedencia = (bool) $pdo->query(
 $consulta = $pdo->prepare(
     "SELECT d.documento_id, d.doc_expediente, d.doc_nrodocumento, d.doc_asunto, d.doc_estatus,
             d.doc_folio, d.dias_respuesta, d.doc_fecharegistro, d.doc_fecharecepcion,
-            d.doc_dniremitente,
+            d.doc_dniremitente, d.doc_ruc, d.doc_empresa, d.doc_representacion,
             " . ($hayProcedencia ? 'd.doc_procedencia,' : "'' AS doc_procedencia,") . "
             DATE_FORMAT(d.doc_fecharegistro, '%d/%m/%Y %H:%i') AS fecha_registro,
             DATE_FORMAT(d.doc_fecharecepcion, '%d/%m/%Y %H:%i') AS fecha_presentado,
@@ -89,10 +90,9 @@ $consulta = $pdo->prepare(
 $consulta->execute([$documento]);
 $movimientos = $consulta->fetchAll(PDO::FETCH_ASSOC);
 
-// De dónde viene el documento y dónde se recibió. Los del portal traen
-// doc_fecharecepcion; los presenciales los registra el área que atiende al
-// ciudadano en su mostrador. En ambos casos el recorrido empieza afuera, no en
-// un área: mostrarlo como "MESA DE PARTES -> MESA DE PARTES" confundía.
+// Dónde se recibió el documento. Un primer envío de un área a sí misma ES la
+// recepción, no una derivación: mostrarlo como "MESA DE PARTES -> MESA DE PARTES"
+// no decía nada. De dónde VIENE lo resuelve OrigenTramite más abajo.
 $primerPrincipal = null;
 foreach ($movimientos as $m) {
     if ($m['tipo'] === 'PRINCIPAL') {
@@ -100,14 +100,13 @@ foreach ($movimientos as $m) {
         break;
     }
 }
-// Además del portal y del registro para sí mismo, se respeta la marca explícita
-// doc_procedencia = EXTERNO cuando la columna existe (migración 021). No se usa
-// el caso INTERNO: los 32 trámites ya registrados quedaron con ese valor por
-// defecto y sí vinieron de ciudadanos, así que decidirlo por ahí los mostraría
-// mal. Cuando esos datos estén corregidos, este endpoint puede fiarse de ella.
-$marcadoExterno = isset($tramite['doc_procedencia']) && $tramite['doc_procedencia'] === 'EXTERNO';
 $esPortal = !empty($tramite['doc_fecharecepcion']);
 $areaRecepcion = $primerPrincipal ? $primerPrincipal['origen'] : ($tramite['area_registro'] ?: 'MESA DE PARTES');
+
+// El rótulo del punto de partida (interno con su oficina, entidad externa o
+// ciudadano) lo resuelve OrigenTramite, compartido con el detalle de movimientos
+// y el tablero, para que las tres pantallas digan lo mismo.
+$origen = OrigenTramite::describir(OrigenTramite::consultar($pdo, $documento));
 
 echo json_encode([
     'encontrado' => true,
@@ -125,7 +124,9 @@ echo json_encode([
         'fecha_presentado' => $tramite['fecha_presentado'],
         // El documento llega de una persona: por el portal o en el mostrador
         'procedencia'   => $esPortal ? 'PORTAL' : 'PRESENCIAL',
-        'marcado_externo' => $marcadoExterno,
+        // Cómo se rotula el punto de partida del recorrido: interno (con su
+        // oficina), entidad externa (con su razón social) o ciudadano.
+        'origen'        => $origen,
         'area_recepcion' => $areaRecepcion,
         'area_registro' => $tramite['area_registro'] ?: 'MESA DE PARTES',
         'area_actual'   => $tramite['area_actual'],

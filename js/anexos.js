@@ -24,18 +24,43 @@ function tamanoLegible(bytes) {
 
 /**
  * Una fila de archivo. `datos` = { titulo, etiqueta, principal, ruta, descarga, meta, existe,
- * origen (qué se firma: "principal" o el anexo_id; vacío si no es PDF), firmas, firmantes }
+ * origen (qué se firma o verifica: "principal" o el anexo_id; vacío si no es PDF),
+ * externo (el documento llega de fuera: se verifica, no se firma), firmas, firmantes }
  */
 function filaArchivo(datos) {
   var clases = "archivo-item" + (datos.principal ? " es-principal" : "") + (datos.existe ? "" : " no-disponible");
   var url = "../" + escaparTexto(datos.ruta);
   var firmas = datos.firmas || 0;
 
-  var botonFirmar = datos.origen
-    ? '<button type="button" class="btn btn-archivo btn-firmar" data-origen="' + escaparTexto(datos.origen) + '" ' +
+  /*
+   * Qué se ofrece por archivo:
+   *   - Trámite externo: el PDF lo redactó un ciudadano u otra entidad. Firmarlo
+   *     sería atribuirse autoría ajena, así que solo se comprueba lo que trae.
+   *   - Archivo ya firmado: "Cofirmar", para sumar la firma de otro responsable
+   *     al mismo documento (visto bueno).
+   *   - Archivo con copia firmada aparte: nada. Se conserva como evidencia de lo
+   *     registrado, pero firmarlo otra vez solo generaría más duplicados.
+   *   - El resto se firma desde el botón único de arriba, que pide el certificado
+   *     una sola vez para todos los archivos elegidos.
+   */
+  var botonFirmar = "";
+  if (datos.origen && datos.externo) {
+    botonFirmar =
+      '<button type="button" class="btn btn-archivo btn-verificar-firma" data-origen="' + escaparTexto(datos.origen) + '" ' +
+        'data-nombre="' + escaparTexto(datos.titulo) + '" ' +
+        'title="Comprobar la firma digital que trae este documento">' +
+        '<i class="fas fa-user-shield"></i> Verificar firma</button>';
+  } else if (datos.origen && firmas) {
+    botonFirmar =
+      '<button type="button" class="btn btn-archivo btn-firmar" data-origen="' + escaparTexto(datos.origen) + '" ' +
         'data-nombre="' + escaparTexto(datos.titulo) + '" data-firmas="' + firmas + '" ' +
-        'title="' + (firmas ? "Agregar mi firma a este archivo" : "Firmar digitalmente") + '">' +
-        '<i class="fas fa-file-signature"></i> ' + (firmas ? "Cofirmar" : "Firmar") + "</button>"
+        'title="Agregar mi firma a este archivo">' +
+        '<i class="fas fa-file-signature"></i> Cofirmar</button>';
+  }
+
+  var reemplazado = datos.reemplazado
+    ? '<span class="archivo-etiqueta etiqueta-reemplazado" title="Se firmó y la versión firmada quedó como archivo aparte. Este se conserva como evidencia de lo que se registró.">' +
+      '<i class="fas fa-file-signature"></i> Tiene versión firmada</span>'
     : "";
 
   var sello = firmas
@@ -64,7 +89,7 @@ function filaArchivo(datos) {
       '<div class="archivo-cuerpo">' +
         '<div class="archivo-nombre" title="' + escaparTexto(datos.titulo) + '">' +
           escaparTexto(datos.titulo) +
-          '<span class="archivo-etiqueta">' + escaparTexto(datos.etiqueta) + "</span>" + sello +
+          '<span class="archivo-etiqueta">' + escaparTexto(datos.etiqueta) + "</span>" + sello + reemplazado +
         "</div>" +
         '<div class="archivo-meta">' + meta + "</div>" +
       "</div>" +
@@ -73,12 +98,27 @@ function filaArchivo(datos) {
   );
 }
 
-function marcoArchivos(contador, cuerpo, documentoId) {
+/*
+ * `firmables` = archivos que todavía se pueden firmar, como [{origen, nombre}].
+ * Cuando hay alguno se ofrece un solo botón para todos: el certificado y la
+ * contraseña se piden una vez, no una por archivo.
+ */
+function marcoArchivos(contador, cuerpo, documentoId, firmables) {
+  var boton = (firmables && firmables.length)
+    ? '<button type="button" class="btn btn-archivo btn-firmar-varios" ' +
+        "data-archivos='" + escaparTexto(JSON.stringify(firmables)) + "' " +
+        'title="Firmar con su certificado digital">' +
+        '<i class="fas fa-file-signature"></i> Firmar documentos</button>'
+    : "";
+
   return (
     '<div class="archivos-tramite" data-documento="' + escaparTexto(documentoId || "") + '">' +
       '<div class="archivos-cabecera">' +
         '<h6 class="archivos-titulo"><i class="fas fa-folder-open"></i> Archivos del trámite</h6>' +
-        (contador ? '<span class="archivos-contador">' + contador + "</span>" : "") +
+        '<div class="archivos-cabecera-acciones">' +
+          (contador ? '<span class="archivos-contador">' + contador + "</span>" : "") +
+          boton +
+        "</div>" +
       "</div>" +
       cuerpo +
     "</div>"
@@ -111,6 +151,10 @@ function Cargar_Anexos(documentoId) {
       var filas = "";
       if (typeof FIRMA_PERU_CONFIGURADO !== "undefined") FIRMA_PERU_CONFIGURADO = !!(respuesta && respuesta.firma_peru);
       var puedeFirmar = typeof Formulario_Firma === "function";
+      var esExterno = !!(respuesta && respuesta.procedencia === "EXTERNO");
+      // Archivos que aún se pueden firmar: PDF de un trámite interno, sin firmas
+      // propias todavía y sin una copia firmada ya creada.
+      var firmables = [];
 
       if (principal) {
         var metaPrincipal = ["Registrado el " + principal.fecha];
@@ -124,7 +168,12 @@ function Cargar_Anexos(documentoId) {
           meta: metaPrincipal.join(" · "),
           existe: principal.existe,
           origen: puedeFirmar && /\.pdf$/i.test(principal.ruta) ? "principal" : "",
+          externo: esExterno,
+          reemplazado: principal.reemplazado,
         });
+        if (puedeFirmar && !esExterno && !principal.reemplazado && principal.existe && /\.pdf$/i.test(principal.ruta)) {
+          firmables.push({ origen: "principal", nombre: "Documento principal" });
+        }
       }
 
       for (var i = 0; i < anexos.length; i++) {
@@ -143,21 +192,33 @@ function Cargar_Anexos(documentoId) {
           meta: metaAnexo.join(" · "),
           existe: a.existe,
           origen: puedeFirmar && a.es_pdf ? String(a.anexo_id) : "",
+          externo: esExterno,
+          reemplazado: a.reemplazado,
           firmas: a.firmas,
           firmantes: a.firmantes,
         });
+        if (puedeFirmar && !esExterno && !a.reemplazado && !a.firmas && a.existe && a.es_pdf) {
+          firmables.push({ origen: String(a.anexo_id), nombre: a.anexo_nombre });
+        }
       }
 
       var total = (principal ? 1 : 0) + anexos.length;
       if (total === 0) {
-        caja.innerHTML = marcoArchivos("", '<div class="archivos-aviso">Este trámite no tiene archivos adjuntos.</div>');
+        caja.innerHTML = marcoArchivos("", '<div class="archivos-aviso">Este trámite no tiene archivos adjuntos.</div>', documentoId, []);
         return;
       }
       if (principal && anexos.length === 0) {
         filas += '<div class="archivos-aviso archivos-aviso-fila">Sin anexos adicionales.</div>';
       }
 
-      caja.innerHTML = marcoArchivos(total + (total === 1 ? " archivo" : " archivos"), filas, documentoId);
+      if (esExterno) {
+        filas =
+          '<div class="archivos-aviso archivos-aviso-fila"><i class="fas fa-inbox"></i> ' +
+          "Trámite externo: el documento llega firmado desde fuera. Aquí no se firma, se verifica." +
+          "</div>" + filas;
+      }
+
+      caja.innerHTML = marcoArchivos(total + (total === 1 ? " archivo" : " archivos"), filas, documentoId, firmables);
     })
     .fail(function (xhr) {
       var mensaje = xhr && xhr.status === 403

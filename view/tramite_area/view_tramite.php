@@ -372,6 +372,37 @@
                 <small class="text-muted">Puede seleccionar varios PDF a la vez: hasta 10 archivos de 20 MB cada uno.
                 Use este campo para los recaudos (DNI, partida, planos); el documento principal va arriba.</small>
             </div>
+            <!-- Firma del documento que se adjunta al derivar: lo produce esta área,
+                 así que debe salir firmado en vez de firmarse después en el expediente.
+                 Derivar en sí no se firma (es enrutamiento, ya queda en la bitácora). -->
+            <fieldset id="firma_derivar" class="mt-3" style="border:1px solid #dee2e6;border-radius:.4rem;padding:.75rem 1rem;">
+                <legend style="font-size:.9rem;font-weight:700;width:auto;padding:0 .4rem;margin:0;color:#1E3A5F;">
+                    <i class="fas fa-file-signature"></i> Firmar el documento adjunto
+                </legend>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="txt_cert_derivar" style="font-size:small;">Certificado digital (.pfx / .p12)</label>
+                        <input type="file" class="form-control" id="txt_cert_derivar" accept=".pfx,.p12">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="txt_clave_derivar" style="font-size:small;">Contraseña del certificado</label>
+                        <input type="password" class="form-control" id="txt_clave_derivar" autocomplete="off">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="txt_motivo_derivar" style="font-size:small;">Motivo <small class="text-muted">(opcional)</small></label>
+                    <input type="text" class="form-control" id="txt_motivo_derivar" maxlength="150"
+                           placeholder="Ej.: Conformidad, Visto bueno, Proveído">
+                </div>
+                <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="chk_firmar_anexos_derivar">
+                    <label class="form-check-label" for="chk_firmar_anexos_derivar" style="font-size:small;">Firmar también los anexos</label>
+                </div>
+                <small class="text-muted d-block mt-2">Solo se firma si adjunta un documento. Si deja el certificado en
+                blanco, la derivación sale igual y queda en la bitácora que el adjunto no llevaba firma.
+                Su certificado y su contraseña no se guardan.</small>
+            </fieldset>
+
             <label for="" style="font-size:13px;color:red">El documento debe estar en formato PDF y con un tamaño máximo de 30 MB.</label>
 
           </div>
@@ -383,94 +414,64 @@
           <div class="col-12" style="border: 2px solid #e2e8f0; border-radius: 8px; padding: 1rem; background-color: #f8fafc;">
             <div class="checkbox-card-container">
               <div class="checkbox-card">
-                <input type="checkbox" id="accion" name="accion" value="-1. ACCIÓN-">
-                <i class="fas fa-bolt"></i>
-                <label for="accion">1. ACCIÓN</label>
+                  <input type="checkbox" id="accion" name="accion" value="-1. ACCIÓN-">
+                  <i class="fas fa-bolt"></i>
+                  <label for="accion">Atender</label>
               </div>
               <div class="checkbox-card">
-                <input type="checkbox" id="tramitar" name="tramitar" value="-2. TRAMITAR-">
-                <i class="fas fa-file-alt"></i>
-                <label for="tramitar">2. TRAMITAR</label>
+                  <input type="checkbox" id="tramitar" name="tramitar" value="-2. TRAMITAR-">
+                  <i class="fas fa-file-alt"></i>
+                  <label for="tramitar">Tramitar</label>
               </div>
               <div class="checkbox-card">
-                <input type="checkbox" id="revisar" name="revisar" value="-3. REVISAR-">
-                <i class="fas fa-search"></i>
-                <label for="revisar">3. REVISAR</label>
+                  <input type="checkbox" id="revisar" name="revisar" value="-3. REVISAR-">
+                  <i class="fas fa-search"></i>
+                  <label for="revisar">Revisar</label>
               </div>
               <div class="checkbox-card">
-                <input type="checkbox" id="vb" name="vb" value="4. -V° B°-">
-                <i class="fas fa-check-circle"></i>
-                <label for="vb">4. V° B°</label>
+                  <input type="checkbox" id="vb" name="vb" value="4. -V° B°-">
+                  <i class="fas fa-check-circle"></i>
+                  <label for="vb">Dar visto bueno</label>
               </div>
               <div class="checkbox-card">
-                <input type="checkbox" id="coordinar" name="coordinar" value="-5. COORDINAR-">
-                <i class="fas fa-handshake"></i>
-                <label for="coordinar">5. COORDINAR</label>
+                  <input type="checkbox" id="coordinar" name="coordinar" value="-5. COORDINAR-">
+                  <i class="fas fa-handshake"></i>
+                  <label for="coordinar">Coordinar</label>
               </div>
               <div class="checkbox-card">
-                <input type="checkbox" id="conocimiento" name="conocimiento" value="-6. CONOCIMIENTO-">
-                <i class="fas fa-lightbulb"></i>
-                <label for="conocimiento">6. CONOCIMIENTO</label>
+                  <input type="checkbox" id="conocimiento" name="conocimiento" value="-6. CONOCIMIENTO-">
+                  <i class="fas fa-lightbulb"></i>
+                  <label for="conocimiento">Tomar conocimiento</label>
               </div>
               <div class="checkbox-card">
-                <input type="checkbox" id="proyectar" name="proyectar" value="-7. PROYECTAR DISPOSITIVOS-">
-                <i class="fas fa-project-diagram"></i>
-                <label for="proyectar">7. PROYECTAR DISPOSITIVOS</label>
+                  <input type="checkbox" id="evaluar" name="evaluar" value="-13. EVALUAR-">
+                  <i class="fas fa-chart-line"></i>
+                  <label for="evaluar">Evaluar</label>
               </div>
               <div class="checkbox-card">
-                <input type="checkbox" id="consolidar" name="consolidar" value="-8. CONSOLIDAD-">
-                <i class="fas fa-layer-group"></i>
-                <label for="consolidar">8. CONSOLIDAR</label>
+                  <input type="checkbox" id="opinion" name="opinion" value="-15. OPINIÓN-">
+                  <i class="fas fa-comment"></i>
+                  <label for="opinion">Emitir opinión</label>
               </div>
               <div class="checkbox-card">
-                <input type="checkbox" id="seguimiento" name="seguimiento" value="-9. SEGUIMIENTO-">
-                <i class="fas fa-route"></i>
-                <label for="seguimiento">9. SEGUIMIENTO</label>
+                  <input type="checkbox" id="informe" name="informe" value="-17. INFORME-">
+                  <i class="fas fa-file-invoice"></i>
+                  <label for="informe">Emitir informe</label>
               </div>
               <div class="checkbox-card">
-                <input type="checkbox" id="dar_respuesta" name="dar_respuesta" value="-10. DAR RESPUESTA-">
-                <i class="fas fa-reply"></i>
-                <label for="dar_respuesta">10. DAR RESPUESTA</label>
+                  <input type="checkbox" id="dar_respuesta" name="dar_respuesta" value="-10. DAR RESPUESTA-">
+                  <i class="fas fa-reply"></i>
+                  <label for="dar_respuesta">Responder</label>
               </div>
               <div class="checkbox-card">
-                <input type="checkbox" id="difundir" name="difundir" value="-11. DIFUNDIR-">
-                <i class="fas fa-bullhorn"></i>
-                <label for="difundir">11. DIFUNDIR</label>
+                  <input type="checkbox" id="seguimiento" name="seguimiento" value="-9. SEGUIMIENTO-">
+                  <i class="fas fa-route"></i>
+                  <label for="seguimiento">Hacer seguimiento</label>
               </div>
               <div class="checkbox-card">
-                <input type="checkbox" id="archivo" name="archivo" value="-12. ARCHIVO-">
-                <i class="fas fa-archive"></i>
-                <label for="archivo">12. ARCHIVO</label>
-              </div>
-              <div class="checkbox-card">
-                <input type="checkbox" id="evaluar" name="evaluar" value="-13. EVALUAR-">
-                <i class="fas fa-chart-line"></i>
-                <label for="evaluar">13. EVALUAR</label>
-              </div>
-              <div class="checkbox-card">
-                <input type="checkbox" id="preparar" name="preparar" value="-14. PREPARAR RESPUESTA-">
-                <i class="fas fa-pen"></i>
-                <label for="preparar">14. PREPARAR RESPUESTA</label>
-              </div>
-              <div class="checkbox-card">
-                <input type="checkbox" id="opinion" name="opinion" value="-15. OPINIÓN-">
-                <i class="fas fa-comment"></i>
-                <label for="opinion">15. OPINIÓN</label>
-              </div>
-              <div class="checkbox-card">
-                <input type="checkbox" id="corregir" name="corregir" value="-16. CORREGIR-">
-                <i class="fas fa-edit"></i>
-                <label for="corregir">16. CORREGIR</label>
-              </div>
-              <div class="checkbox-card">
-                <input type="checkbox" id="informe" name="informe" value="-17. INFORME-">
-                <i class="fas fa-file-invoice"></i>
-                <label for="informe">17. INFORME</label>
-              </div>
-              <div class="checkbox-card">
-                <input type="checkbox" id="asistir" name="asistir" value="-18. ASISTIR-">
-                <i class="fas fa-hands-helping"></i>
-                <label for="asistir">18. ASISTIR</label>
+                  <input type="checkbox" id="archivo" name="archivo" value="-12. ARCHIVO-">
+                  <i class="fas fa-archive"></i>
+                  <label for="archivo">Archivar</label>
               </div>
             </div>
           </div>
@@ -579,7 +580,10 @@
         }
         }
     });
-var checkboxes = document.querySelectorAll('input[type=checkbox]');
+// Solo las casillas de acciones. Sin acotar el selector entraban también la
+// de términos y la de trámite externo, que no tienen value: aportaban "on"
+// cada una y se guardaba "...ONON" en documento.acciones.
+var checkboxes = document.querySelectorAll('.checkbox-card-container input[type=checkbox]');
 var text = document.getElementById('txt_acciones2');
 
 function checkboxClick(event) {

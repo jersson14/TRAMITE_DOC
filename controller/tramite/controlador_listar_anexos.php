@@ -35,6 +35,16 @@
         return ['existe' => (bool) $valida, 'bytes' => $valida ? filesize($completa) : 0];
     }
 
+    $MFI = new Modelo_Firma();
+
+    // Los trámites externos traen el documento de fuera: no se firman aquí, solo se
+    // verifica la firma que ya tengan (migración 021).
+    $procedencia = $MFI->Procedencia($id) ?: 'INTERNO';
+
+    // Archivos que ya tienen su copia "(firmado)": no se vuelven a ofrecer para
+    // firmar, o se generarían duplicados del mismo contenido sin fin.
+    $yaFirmados = $MFI->Origenes_Ya_Firmados($id);
+
     $principal = null;
     $documento = $MTR->Traer_Archivo_Principal($id);
     if ($documento && $documento['doc_archivo'] !== '') {
@@ -45,12 +55,13 @@
             'fecha'      => $documento['fecha_texto'],
             'existe'     => $estado['existe'],
             'bytes'      => $estado['bytes'],
+            'reemplazado' => in_array($documento['doc_archivo'], $yaFirmados, true),
         ];
     }
 
     $anexos = $MTR->Listar_Anexos($id);
     $filas = $anexos['data'] ?? [];
-    $firmas = (new Modelo_Firma())->Firmas_Por_Anexo($id);
+    $firmas = $MFI->Firmas_Por_Anexo($id);
     foreach ($filas as &$fila) {
         $estado = estadoArchivo($raiz, $fila['anexo_ruta']);
         $fila['existe'] = $estado['existe'];
@@ -58,8 +69,14 @@
         $fila['firmas'] = $firma ? (int) $firma['total'] : 0;
         $fila['firmantes'] = $firma ? explode("\n", $firma['firmantes']) : [];
         $fila['es_pdf'] = (bool) preg_match('/\.pdf$/i', $fila['anexo_ruta']);
+        $fila['reemplazado'] = in_array($fila['anexo_ruta'], $yaFirmados, true);
     }
     unset($fila);
 
     // Firma Perú (DNIe/token) se ofrece solo cuando la entidad configuró sus credenciales
-    echo json_encode(['principal' => $principal, 'data' => $filas, 'firma_peru' => FirmaDigital::firmaPeruConfigurado()]);
+    echo json_encode([
+        'principal'   => $principal,
+        'data'        => $filas,
+        'procedencia' => $procedencia,
+        'firma_peru'  => FirmaDigital::firmaPeruConfigurado(),
+    ]);
