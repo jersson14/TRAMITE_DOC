@@ -32,17 +32,23 @@
         <div class="welcome-message">
             <div class="welcome-icon">🤖</div>
             <h4>¡Hola! Soy tu asistente</h4>
-            <p>Consulta expedientes, pendientes y estadísticas de tu área al instante.</p>
-            
+            <p>Pregúntame en tus palabras: consulto los trámites, plazos, movimientos y acuses del sistema.</p>
+
             <div class="suggestion-buttons">
-                <button class="suggestion-btn" data-suggestion="¿Cuántos documentos tengo pendientes?">
-                    📋 Ver pendientes
+                <button class="suggestion-btn" data-suggestion="¿Cuántos trámites tengo pendientes y de qué áreas vinieron?">
+                    📋 Mis pendientes
                 </button>
-                <button class="suggestion-btn" data-suggestion="Muéstrame las estadísticas de mi área">
-                    📊 Estadísticas
+                <button class="suggestion-btn" data-suggestion="¿Qué trámites están vencidos y con cuántos días de atraso?">
+                    ⏰ Vencidos
                 </button>
-                <button class="suggestion-btn" data-suggestion="Busca el expediente ">
-                    🔍 Buscar expediente
+                <button class="suggestion-btn" data-suggestion="Lista los trámites enviados que todavía no tienen acuse de recepción">
+                    ✅ Sin acuse
+                </button>
+                <button class="suggestion-btn" data-suggestion="¿Cuántos trámites se registraron cada mes de este año?">
+                    📊 Por mes
+                </button>
+                <button class="suggestion-btn" data-suggestion="Dame el detalle y el recorrido del expediente ">
+                    🔍 Un expediente
                 </button>
             </div>
         </div>

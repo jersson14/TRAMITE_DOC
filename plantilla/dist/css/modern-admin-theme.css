@@ -691,35 +691,173 @@
     background: rgba(255, 255, 255, 0.05) !important;
 }
 
-/* User Panel Styling */
-.main-sidebar .user-panel {
+/* Marca de la institución: el logo respeta su proporción, no se estira */
+.main-sidebar .brand-link.marca-institucion {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    height: auto !important;
+    padding: 0.85rem 0.75rem !important;
+    text-align: center;
+}
+
+.main-sidebar .marca-logo {
+    width: auto;
+    max-width: 100%;
+    height: 42px;
+    object-fit: contain;
+    background: #fff;
+    border-radius: 6px;
+    padding: 4px 8px;
+}
+
+.main-sidebar .marca-texto {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.main-sidebar .marca-texto b {
+    color: #fff;
+    font-size: 0.88rem;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Chip del usuario en la barra superior */
+.chip-usuario-foto {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    object-fit: cover;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+.chip-usuario-iniciales {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #1E3A5F;
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.main-sidebar .marca-texto small {
+    color: #9FB3CC;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+/* Ficha del usuario en sesión */
+.main-sidebar .panel-usuario {
+    display: block;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-    padding: 1rem !important;
+    padding: 0.9rem 1rem !important;
+    margin-bottom: 0.5rem;
 }
 
-.main-sidebar .user-panel .image img {
-    border: 3px solid rgba(30, 58, 95, 0.5) !important;
-    box-shadow: 0 0 15px rgba(30, 58, 95, 0.3) !important;
+.panel-usuario-cabecera {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.main-sidebar .user-panel .info {
-    overflow: visible !important;
+.panel-usuario-foto {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.18);
+}
+
+/* Cuando el empleado no tiene foto, sus iniciales */
+.panel-usuario-iniciales {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #2C5282;
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+
+.panel-usuario-identidad {
+    /* min-width:0 para que el nombre pueda cortarse dentro del menú */
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.panel-usuario-saludo {
+    display: block;
+    color: #9FB3CC;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.panel-usuario-saludo .fa-circle {
+    color: #22C55E;
+    font-size: 0.5rem;
+    vertical-align: middle;
+}
+
+.panel-usuario-nombre {
+    display: block;
+    color: #fff;
+    font-size: 0.88rem;
+    line-height: 1.25;
+    /* AdminLTE deja el panel en nowrap: los nombres largos se salían del menú */
     white-space: normal !important;
-    text-align: center !important;
+    overflow-wrap: anywhere;
 }
 
-.main-sidebar .user-panel .info a {
-    color: #fff !important;
-    transition: all var(--transition-fast);
-    white-space: normal !important;
-    word-wrap: break-word !important;
-    display: block !important;
-    line-height: 1.4 !important;
-    text-align: center !important;
+.panel-usuario-datos {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2px 8px;
+    margin: 10px 0 0;
+    font-size: 0.75rem;
 }
 
-.main-sidebar .user-panel .info a:hover {
-    color: #1E3A5F !important;
+.panel-usuario-datos dt {
+    color: #8FA3BC;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.panel-usuario-datos dt i {
+    width: 13px;
+    text-align: center;
+    margin-right: 2px;
+}
+
+.panel-usuario-datos dd {
+    margin: 0;
+    color: #E6EDF5;
+    font-weight: 600;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Con el menú colapsado solo queda la foto centrada */
+.sidebar-collapse .main-sidebar:not(:hover) .panel-usuario-datos,
+.sidebar-collapse .main-sidebar:not(:hover) .panel-usuario-identidad,
+.sidebar-collapse .main-sidebar:not(:hover) .marca-texto {
+    display: none;
 }
 
 /* Section Headers */
@@ -1787,4 +1925,79 @@ a.notificacion:hover {
   object-fit: cover;
   border-radius: 4px;
   border: 1px solid #dde3ec;
+}
+
+/* ===== Resultados del asistente en el chat ===== */
+/* La respuesta se acompaña de las filas consultadas: tabla compacta con
+   desplazamiento propio, para no estirar la ventana del chat. */
+.chat-tabla {
+  margin-top: 10px;
+  border: 1px solid #DDE3EC;
+  border-radius: 6px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.chat-tabla-scroll {
+  max-height: 260px;
+  overflow: auto;
+}
+
+.chat-tabla table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.72rem;
+}
+
+.chat-tabla th {
+  position: sticky;
+  top: 0;
+  background: #1E3A5F;
+  color: #fff;
+  font-weight: 600;
+  text-align: left;
+  padding: 5px 8px;
+  white-space: nowrap;
+}
+
+.chat-tabla td {
+  padding: 4px 8px;
+  border-top: 1px solid #EEF1F6;
+  color: #16181A;
+  vertical-align: top;
+  max-width: 220px;
+}
+
+.chat-tabla tbody tr:nth-child(even) td {
+  background: #F7F9FC;
+}
+
+.chat-tabla-pie {
+  padding: 4px 8px;
+  font-size: 0.68rem;
+  color: #6B7A90;
+  background: #F4F6F9;
+  border-top: 1px solid #DDE3EC;
+}
+
+/* La consulta usada, plegada, solo para el administrador */
+.chat-sql {
+  margin-top: 8px;
+  font-size: 0.7rem;
+}
+
+.chat-sql summary {
+  cursor: pointer;
+  color: #2C5282;
+}
+
+.chat-sql pre {
+  margin: 6px 0 0;
+  padding: 8px;
+  background: #16283F;
+  color: #D7E3F4;
+  border-radius: 6px;
+  font-size: 0.68rem;
+  white-space: pre-wrap;
+  word-break: break-word;
 }

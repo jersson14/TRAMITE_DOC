@@ -1,10 +1,22 @@
 <?php
 require_once __DIR__ . '/../lib/Seguridad.php';
+require_once __DIR__ . '/../lib/Institucion.php';
 Seguridad::iniciarSesion();
 if (!Seguridad::autenticado()) {
   header('Location: ../index.php');
   exit;
 }
+
+// Marca de la institución y datos de quien está en sesión (los usan la barra
+// superior y la ficha del menú). La foto de perfil de muchos empleados apunta a
+// un archivo que no existe, así que se comprueba antes y si no está se muestran
+// las iniciales en vez de una imagen rota.
+$institucion = Institucion::datos();
+$nombreUsuario = trim((string) ($_SESSION['S_NOMBRE'] ?? $_SESSION['S_APELLIDOS'] ?? ''));
+$partesNombre = preg_split('/\s+/', $nombreUsuario, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+$iniciales = mb_strtoupper(mb_substr($partesNombre[0] ?? 'U', 0, 1) . mb_substr($partesNombre[1] ?? '', 0, 1));
+$fotoUsuario = (string) ($_SESSION['S_FOTO'] ?? '');
+$hayFoto = $fotoUsuario !== '' && is_file(__DIR__ . '/../' . $fotoUsuario);
 ?>
 <!DOCTYPE html>
 <!--
@@ -77,8 +89,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
           </li>
           <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
-              <img src="../<?php echo $_SESSION['S_FOTO']; ?>" class="img-circle elevation-1" width="15" height="18">
-              <b>Usuario: <?php echo $_SESSION['S_NOMBRE'] ?></b>
+              <?php if ($hayFoto) { ?><img src="../<?php echo htmlspecialchars($fotoUsuario, ENT_QUOTES); ?>" class="chip-usuario-foto" alt=""><?php } else { ?><span class="chip-usuario-foto chip-usuario-iniciales"><?php echo htmlspecialchars($iniciales); ?></span><?php } ?>
+              <b><?php echo htmlspecialchars($nombreUsuario); ?></b>
               <i class="fas fa-caret-down"></i>
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
@@ -137,8 +149,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
           <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#">
-              <img src="../<?php echo $_SESSION['S_FOTO']; ?>" class="img-circle elevation-1" width="15" height="18">
-              <b>Usuario: <?php echo $_SESSION['S_NOMBRE'] ?></b>
+              <?php if ($hayFoto) { ?><img src="../<?php echo htmlspecialchars($fotoUsuario, ENT_QUOTES); ?>" class="chip-usuario-foto" alt=""><?php } else { ?><span class="chip-usuario-foto chip-usuario-iniciales"><?php echo htmlspecialchars($iniciales); ?></span><?php } ?>
+              <b><?php echo htmlspecialchars($nombreUsuario); ?></b>
               <i class="fas fa-caret-down"></i>
             </a>
             <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
@@ -159,25 +171,36 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
     <!-- Main Sidebar Container -->
     <aside class="main-sidebar sidebar-dark-primary elevation-4">
-      <!-- Brand Logo -->
-      <a href="index.php" class="brand-link">
-        <img src="../img/empre.jpg" alt="<?php echo $_SESSION['S_RAZON']; ?>" width="100%" height="auto">
+      <!-- Marca de la institución: logo y sigla, no el banner del proveedor -->
+      <a href="index.php" class="brand-link marca-institucion" title="<?php echo htmlspecialchars($institucion['razon'], ENT_QUOTES); ?>">
+        <img src="../<?php echo htmlspecialchars($institucion['logo'], ENT_QUOTES); ?>" alt="<?php echo htmlspecialchars($institucion['razon'], ENT_QUOTES); ?>" class="marca-logo">
+        <span class="marca-texto">
+          <b><?php echo htmlspecialchars($institucion['sigla']); ?></b>
+          <small>Trámite documentario</small>
+        </span>
       </a>
 
       <!-- Sidebar -->
       <div class="sidebar">
-        <!-- Sidebar user panel (optional) -->
-        <div class="user-panel mt-1 pb-3 mb-3 d-flex">
-          <div class="image">
-            <img src="../<?php echo $_SESSION['S_FOTO']; ?>" class="img-circle elevation-2" style="max-width: 100%;height: auto;">
-
+        <!-- Ficha de quién está usando el sistema -->
+        <div class="user-panel panel-usuario">
+          <div class="panel-usuario-cabecera">
+            <?php if ($hayFoto) { ?>
+              <img src="../<?php echo htmlspecialchars($fotoUsuario, ENT_QUOTES); ?>" class="panel-usuario-foto" alt="Foto de perfil">
+            <?php } else { ?>
+              <span class="panel-usuario-foto panel-usuario-iniciales"><?php echo htmlspecialchars($iniciales); ?></span>
+            <?php } ?>
+            <div class="panel-usuario-identidad">
+              <span class="panel-usuario-saludo"><i class="fas fa-circle"></i> En sesión</span>
+              <strong class="panel-usuario-nombre" title="<?php echo htmlspecialchars($nombreUsuario, ENT_QUOTES); ?>"><?php echo htmlspecialchars($nombreUsuario); ?></strong>
+            </div>
           </div>
-          <div class="info">
-            <a href="#" class="d-block"><i class="fa fa-circle text-success fa-0x"></i> ¡Hola!<br> <b style="color:white"><?php echo $_SESSION['S_APELLIDOS']; ?></b></a>
-            <a href="#" class="d-block">&nbsp;&nbsp;<b><i class="fa fa-user text-success fa-0x"></i><em> ROL: <?php echo $_SESSION['S_ROL']; ?></em></b></a>
-            <a href="#" class="d-block">&nbsp;&nbsp;<b><i class="fa fa-home text-success fa-0x"></i><em> ÁREA: <?php echo $_SESSION['S_AREA']; ?></em></b></a>
-
-          </div>
+          <dl class="panel-usuario-datos">
+            <dt><i class="fas fa-user-shield"></i> Rol</dt>
+            <dd><?php echo htmlspecialchars($_SESSION['S_ROL']); ?></dd>
+            <dt><i class="fas fa-sitemap"></i> Área</dt>
+            <dd title="<?php echo htmlspecialchars($_SESSION['S_AREA'], ENT_QUOTES); ?>"><?php echo htmlspecialchars($_SESSION['S_AREA']); ?></dd>
+          </dl>
         </div>
         <!-- Sidebar Menu -->
         <nav class="mt-1">

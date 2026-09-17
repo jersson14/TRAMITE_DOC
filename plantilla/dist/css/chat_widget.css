@@ -67,8 +67,9 @@
     position: fixed;
     bottom: 100px;
     right: 24px;
-    width: 370px;
-    max-height: 580px;
+    /* Más ancho que antes: las respuestas ahora traen tablas de resultados */
+    width: 440px;
+    max-height: 620px;
     background: white;
     border-radius: 20px;
     box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(30, 58, 95, 0.2);

@@ -9,8 +9,9 @@
 // API Key de Gemini
 define('GEMINI_API_KEY', 'TU_API_KEY_AQUI');
 
-// Modelo a utilizar
-define('GEMINI_MODEL', 'gemini-1.5-flash');
+// Modelo a utilizar. gemini-1.5-flash fue retirado por Google (responde 404):
+// usar un modelo vigente, p. ej. gemini-2.5-flash o gemini-2.0-flash.
+define('GEMINI_MODEL', 'gemini-2.5-flash');
 
 // NO definir GEMINI_API_URL aquí, se construye en GeminiClient
 

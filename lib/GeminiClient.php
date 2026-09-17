@@ -79,6 +79,26 @@ class GeminiClient {
     }
     
     /**
+     * Envía un prompt ya armado y devuelve solo el texto de la respuesta.
+     * Lo usa AsistenteBD, que necesita control fino de la temperatura: 0 para
+     * traducir la pregunta a SQL (sin creatividad) y algo más alta para redactar.
+     * Devuelve cadena vacía si la API no respondió texto.
+     */
+    public function generarTexto(string $prompt, ?float $temperatura = null, ?int $maxTokens = null): string
+    {
+        $payload = [
+            'contents' => [['parts' => [['text' => $prompt]]]],
+            'generationConfig' => [
+                'temperature' => $temperatura !== null ? $temperatura : GEMINI_TEMPERATURE,
+                'maxOutputTokens' => $maxTokens !== null ? $maxTokens : GEMINI_MAX_TOKENS,
+                'topP' => 0.95,
+            ],
+        ];
+        $respuesta = $this->makeRequest($payload);
+        return (string) ($respuesta['response'] ?? '');
+    }
+
+    /**
      * Realiza la petición HTTP a la API de Gemini
      */
     private function makeRequest($payload) {

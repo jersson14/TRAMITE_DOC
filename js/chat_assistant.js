@@ -118,7 +118,8 @@ class ChatAssistant {
       this.hideTypingIndicator();
 
       if (response.success) {
-        this.addMessage(response.message, "bot");
+        if (response.aviso) this.addErrorMessage(response.aviso);
+        this.addMessage(response.message, "bot", response);
       } else {
         this.addErrorMessage(
           response.error || "Error al procesar la solicitud",
@@ -144,11 +145,19 @@ class ChatAssistant {
       headers: token ? { "X-CSRF-Token": token.content } : {},
     });
 
-    if (!response.ok) throw new Error("Network response was not ok");
-    return await response.json();
+    const cuerpo = await response.json().catch(() => null);
+    if (!response.ok) {
+      // El guard y las validaciones responden {status:'error', mensaje}
+      return {
+        success: false,
+        error: (cuerpo && (cuerpo.mensaje || cuerpo.error)) ||
+          "No se pudo consultar (error " + response.status + ").",
+      };
+    }
+    return cuerpo || { success: false, error: "Respuesta vacía del servidor." };
   }
 
-  addMessage(text, type) {
+  addMessage(text, type, datos) {
     const messageDiv = document.createElement("div");
     messageDiv.className = `chat-message ${type}`;
 
@@ -163,6 +172,14 @@ class ChatAssistant {
     content.className = "message-content";
     content.innerHTML = this.formatMessage(text);
 
+    // Las filas de la consulta se muestran como tabla debajo de la respuesta
+    if (datos && datos.tabla && datos.tabla.filas && datos.tabla.filas.length) {
+      content.appendChild(this.buildTable(datos));
+    }
+    if (datos && datos.sql) {
+      content.appendChild(this.buildSql(datos.sql));
+    }
+
     const time = document.createElement("div");
     time.className = "message-time";
     time.textContent = this.getCurrentTime();
@@ -175,13 +192,63 @@ class ChatAssistant {
     this.messageHistory.push({ text, type, time: new Date() });
   }
 
+  escape(valor) {
+    return String(valor === null || valor === undefined ? "" : valor)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
   formatMessage(text) {
-    text = text.replace(/\n/g, "<br>");
-    text = text.replace(/^- (.+)$/gm, "<li>$1</li>");
-    text = text.replace(/(<li>.*<\/li>)/s, "<ul>$1</ul>");
+    // El texto viene de la IA: se escapa antes de aplicarle el formato mínimo
+    text = this.escape(text);
+    text = text.replace(/^[-*] (.+)$/gm, "<li>$1</li>");
+    text = text.replace(/(<li>[\s\S]*<\/li>)/, "<ul>$1</ul>");
     text = text.replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>");
-    text = text.replace(/\*(.+?)\*/g, "<em>$1</em>");
+    text = text.replace(/\n/g, "<br>");
     return text;
+  }
+
+  /** Tabla con las filas que devolvió la consulta. */
+  buildTable(datos) {
+    const caja = document.createElement("div");
+    caja.className = "chat-tabla";
+
+    const columnas = datos.tabla.columnas && datos.tabla.columnas.length
+      ? datos.tabla.columnas
+      : Object.keys(datos.tabla.filas[0]);
+
+    let html = "<div class='chat-tabla-scroll'><table><thead><tr>";
+    columnas.forEach((c) => (html += "<th>" + this.escape(c) + "</th>"));
+    html += "</tr></thead><tbody>";
+    datos.tabla.filas.forEach((fila) => {
+      html += "<tr>";
+      columnas.forEach((c) => {
+        const valor = fila[c];
+        html += "<td>" + (valor === null || valor === "" ? "—" : this.escape(valor)) + "</td>";
+      });
+      html += "</tr>";
+    });
+    html += "</tbody></table></div>";
+
+    const pie = datos.recortada
+      ? "Se muestran las primeras " + datos.tabla.filas.length + " filas."
+      : datos.tabla.filas.length + " fila(s).";
+    html += "<div class='chat-tabla-pie'>" + pie + "</div>";
+
+    caja.innerHTML = html;
+    return caja;
+  }
+
+  /** La consulta usada, plegada; solo llega al administrador. */
+  buildSql(sql) {
+    const detalle = document.createElement("details");
+    detalle.className = "chat-sql";
+    detalle.innerHTML =
+      "<summary>Ver la consulta usada</summary><pre>" + this.escape(sql) + "</pre>";
+    return detalle;
   }
 
   addErrorMessage(errorText) {
@@ -228,11 +295,12 @@ class ChatAssistant {
         <div class="welcome-message">
           <div class="welcome-icon">🤖</div>
           <h4>¡Hola! Soy tu asistente</h4>
-          <p>Consulta expedientes, pendientes y estadísticas.</p>
+          <p>Pregúntame en tus palabras sobre los trámites del sistema.</p>
           <div class="suggestion-buttons">
-            <button class="suggestion-btn" data-suggestion="¿Cuántos documentos tengo pendientes?">📋 Ver pendientes</button>
-            <button class="suggestion-btn" data-suggestion="Muéstrame las estadísticas de mi área">📊 Estadísticas</button>
-            <button class="suggestion-btn" data-suggestion="Busca el expediente ">🔍 Buscar expediente</button>
+            <button class="suggestion-btn" data-suggestion="¿Cuántos trámites tengo pendientes y de qué áreas vinieron?">📋 Mis pendientes</button>
+            <button class="suggestion-btn" data-suggestion="¿Qué trámites están vencidos y con cuántos días de atraso?">⏰ Vencidos</button>
+            <button class="suggestion-btn" data-suggestion="Lista los trámites enviados que todavía no tienen acuse de recepción">✅ Sin acuse</button>
+            <button class="suggestion-btn" data-suggestion="¿Cuántos trámites se registraron cada mes de este año?">📊 Por mes</button>
           </div>
         </div>
       `;
