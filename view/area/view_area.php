@@ -1,6 +1,6 @@
 <?php require_once __DIR__ . '/../../lib/Seguridad.php'; Seguridad::requiereVista([Seguridad::ROL_ADMIN]); ?>
 <script src="../js/console_area.js?rev=<?php echo time();?>"></script>
-<link rel="stylesheet" href="../plantilla/dist/css/modern-admin-theme.css">
+<link rel="stylesheet" href="../plantilla/dist/css/modern-admin-theme.css?v=<?php echo @filemtime(__DIR__ . '/../../plantilla/dist/css/modern-admin-theme.css'); ?>">
 
 <!-- Content Header (Page header) -->
     <div class="content-header">
