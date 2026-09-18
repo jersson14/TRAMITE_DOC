@@ -178,8 +178,9 @@ $html = '
 <table class="final" width="100%" style="margin-top: 6mm;"><tr>
     <td width="24%"><barcode code="' . pdf_e($urlConsulta) . '" type="QR" size="1" error="M" disableborder="1" /></td>
     <td width="76%" class="qr-texto">
-        <b>Consulte el estado de su trámite</b> escaneando el código QR o en la opción «Seguimiento de Trámite»
-        de la Mesa de Partes Virtual, con su N° de expediente y el DNI del remitente.<br><br>
+        <b>Consulte el estado de su trámite</b> escaneando el código QR (lo lleva directo a su trámite; no lo
+        comparta) o en la opción «Seguimiento de Trámite» de la Mesa de Partes Virtual, con su N° de expediente
+        y el DNI del remitente.<br><br>
         ' . ($i['direccion'] !== '' ? pdf_e($i['direccion']) . '<br>' : '') . pdf_e(implode(' · ', $contacto)) . '<br>
         Emitido el ' . pdf_e(pdf_fecha_larga(date('Y-m-d H:i:s'))) . '.
     </td>

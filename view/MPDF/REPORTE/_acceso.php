@@ -1,8 +1,10 @@
 <?php
 // Valida el código del trámite y que quien pide el reporte pueda verlo:
-// personal con sesión activa, o el ciudadano que conoce el código y el DNI del remitente.
+// personal con sesión activa, o el ciudadano que conoce el código y el DNI del remitente
+// (o trae la firma del QR de su ticket, t=...).
 // Requiere que $mysqli ya esté definido (../conexion.php). Deja validado $codigo.
 require_once __DIR__ . '/../../../lib/Seguridad.php';
+require_once __DIR__ . '/../../../lib/EnlaceSeguimiento.php';
 Seguridad::iniciarSesion();
 
 $codigo = strtoupper(trim((string) ($_GET['codigo'] ?? '')));
@@ -11,7 +13,7 @@ if (!preg_match('/^[A-Z0-9-]{1,20}$/', $codigo)) {
     exit('Código de trámite no válido.');
 }
 
-if (!Seguridad::autenticado()) {
+if (!Seguridad::autenticado() && !EnlaceSeguimiento::valido($codigo, (string) ($_GET['t'] ?? ''))) {
     $dni = trim((string) ($_GET['dni'] ?? ''));
     $consulta = $mysqli->prepare('SELECT 1 FROM documento WHERE documento_id = ? AND doc_dniremitente = ?');
     $consulta->bind_param('ss', $codigo, $dni);

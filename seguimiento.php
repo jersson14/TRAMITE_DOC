@@ -1004,6 +1004,7 @@ $e = [Seguridad::class, 'e'];
             // Mismo par con el que consultó: así se identifica sin tener cuenta
             datos.append('numero', document.getElementById('txt_numero').value.trim());
             datos.append('dni', document.getElementById('txt_dni').value.trim());
+            if (usaFirmaQr()) datos.append('t', firmaQr.token);
             datos.append('texto', document.getElementById('sub_texto').value.trim());
             datos.append('archivo', archivo);
 
@@ -1104,9 +1105,25 @@ $e = [Seguridad::class, 'e'];
             resultados.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
+        /*
+         * Firma del QR del ticket (?codigo=...&t=...): con ella el trámite se muestra
+         * sin pedir el DNI. Solo vale para ese código; si el ciudadano escribe otro
+         * número, vuelve a hacer falta el DNI.
+         */
+        var firmaQr = null;
+
+        function usaFirmaQr() {
+            return !!firmaQr && document.getElementById('txt_numero').value.trim().toUpperCase() === firmaQr.codigo;
+        }
+
         function Traer_Datos_Seguimiento() {
             var numero = document.getElementById('txt_numero').value.trim();
             var dni = document.getElementById('txt_dni').value.trim();
+            var datos = { numero: numero, dni: dni };
+            if (usaFirmaQr()) {
+                datos.t = firmaQr.token;
+                return Consultar(datos);
+            }
             if (!numero || !dni) {
                 return Swal.fire({ icon: 'warning', title: 'Faltan datos', text: 'Ingrese el N° de expediente (o código) y el DNI del remitente.', confirmButtonColor: '#1E3A5F' });
             }
@@ -1114,6 +1131,10 @@ $e = [Seguridad::class, 'e'];
                 return Swal.fire({ icon: 'warning', title: 'DNI no válido', text: 'El DNI debe tener 8 dígitos.', confirmButtonColor: '#1E3A5F' });
             }
 
+            Consultar(datos);
+        }
+
+        function Consultar(datos) {
             $('#loading').addClass('show');
             $('#div_buscador').removeClass('show').hide();
 
@@ -1121,7 +1142,7 @@ $e = [Seguridad::class, 'e'];
                 url: 'controller/tramite/controlador_consulta_publica.php',
                 type: 'POST',
                 dataType: 'json',
-                data: { numero: numero, dni: dni }
+                data: datos
             }).done(function (r) {
                 $('#loading').removeClass('show');
                 if (!r.encontrado) {
@@ -1130,18 +1151,38 @@ $e = [Seguridad::class, 'e'];
                 Pintar_Consulta(r);
             }).fail(function (xhr) {
                 $('#loading').removeClass('show');
+                if (datos.t && xhr.status === 422) {
+                    // Firma vencida o alterada (p. ej. QR de un ticket antiguo): se sigue con el DNI
+                    Quitar_Firma_Qr();
+                    return Swal.fire({ icon: 'info', title: 'Falta un dato', text: 'Ingrese el DNI del remitente para ver su trámite.', confirmButtonColor: '#1E3A5F' })
+                        .then(function () { document.getElementById('txt_dni').focus(); });
+                }
                 var mensaje = (xhr.responseJSON && xhr.responseJSON.mensaje) || 'No se pudo realizar la búsqueda. Intente nuevamente.';
                 Swal.fire({ icon: xhr.status === 422 || xhr.status === 429 ? 'warning' : 'error', title: 'No se pudo consultar', text: mensaje, confirmButtonColor: '#1E3A5F' });
             });
         }
 
-        // Si se llega desde el QR o el cargo (?codigo=...), el número ya viene escrito
-        // y el cursor pasa al DNI, que es lo único que falta.
+        function Quitar_Firma_Qr() {
+            firmaQr = null;
+            document.getElementById('txt_dni').required = true;
+        }
+
+        // Si se llega desde el QR del ticket o del cargo (?codigo=...&t=...), el trámite
+        // se muestra de inmediato. Con un enlace sin firma (?codigo=...), el número ya
+        // viene escrito y el cursor pasa al DNI, que es lo único que falta.
         document.addEventListener('DOMContentLoaded', function() {
-            var codigo = (new URLSearchParams(window.location.search).get('codigo') || '').toUpperCase().trim();
+            var parametros = new URLSearchParams(window.location.search);
+            var codigo = (parametros.get('codigo') || '').toUpperCase().trim();
+            var token = (parametros.get('t') || '').toLowerCase().trim();
             if (/^[A-Z0-9-]{1,20}$/.test(codigo)) {
                 document.getElementById('txt_numero').value = codigo;
-                document.getElementById('txt_dni').focus();
+                if (/^[a-f0-9]{20}$/.test(token)) {
+                    firmaQr = { codigo: codigo, token: token };
+                    document.getElementById('txt_dni').required = false;
+                    Traer_Datos_Seguimiento();
+                } else {
+                    document.getElementById('txt_dni').focus();
+                }
             } else {
                 document.getElementById('txt_numero').focus();
             }

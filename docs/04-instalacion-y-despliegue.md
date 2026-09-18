@@ -128,7 +128,8 @@ Estos archivos tienen credenciales: están excluidos del control de versiones y 
 
 1. **Respalde** la base y las carpetas de documentos (ver sección 5).
 2. Reemplace los archivos del sistema, conservando `config/database.php`, `model/model_conexion.php`,
-   `config/config_email.php` si existe, y las carpetas de documentos.
+   `config/config_email.php` si existe, `config/clave_enlaces.php` (sin ella, los QR ya impresos
+   dejan de abrir el trámite directo y piden el DNI) y las carpetas de documentos.
 3. Ejecute `composer install --no-dev`.
 4. Aplique, **en orden**, las migraciones de `database/migraciones/` que aún no tenga, siempre con
    `--default-character-set=utf8mb4`:

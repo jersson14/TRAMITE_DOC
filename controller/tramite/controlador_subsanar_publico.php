@@ -4,8 +4,9 @@
  *
  * No hay sesión: el ciudadano se identifica con su N° de expediente (o código de
  * seguimiento) y el DNI del remitente, el mismo par que usa para consultar en
- * seguimiento.php. Sube lo que le pidieron y el trámite vuelve a la bandeja del
- * área, en el estado en que estaba antes de observarlo.
+ * seguimiento.php (o el código y la firma del QR de su ticket, si llegó por ahí).
+ * Sube lo que le pidieron y el trámite vuelve a la bandeja del área, en el
+ * estado en que estaba antes de observarlo.
  *
  * Es una subida pública, así que:
  *   - tiene límite de intentos por IP;
@@ -18,6 +19,7 @@
  */
 require_once __DIR__ . '/../../lib/Seguridad.php';
 require_once __DIR__ . '/../../lib/Bitacora.php';
+require_once __DIR__ . '/../../lib/EnlaceSeguimiento.php';
 require_once __DIR__ . '/../../model/model_conexion.php';
 require_once __DIR__ . '/../../model/model_tramite.php';
 require_once __DIR__ . '/../../model/model_observacion.php';
@@ -36,8 +38,9 @@ Seguridad::registrarIntento($clave, 600);
 $numero = trim(preg_replace('/[^A-Z0-9]+/', '-', strtoupper((string) ($_POST['numero'] ?? ''))), '-');
 $dni = preg_replace('/\D/', '', (string) ($_POST['dni'] ?? ''));
 $texto = trim((string) ($_POST['texto'] ?? ''));
+$porQr = $numero !== '' && EnlaceSeguimiento::valido($numero, (string) ($_POST['t'] ?? ''));
 
-if ($numero === '' || strlen($dni) !== 8) {
+if (!$porQr && ($numero === '' || strlen($dni) !== 8)) {
     Seguridad::responderError(422, 'Ingrese su N° de expediente y su DNI de 8 dígitos.');
 }
 if (mb_strlen($texto) > 2000) {
@@ -57,8 +60,8 @@ if (preg_match('/^D\d{7}$/', $numero)) {
 
 $pdo = (new conexionBD())->conexionPDO();
 $q = $pdo->prepare("SELECT documento_id, doc_expediente FROM documento
-                     WHERE $campo = ? AND doc_dniremitente = ? LIMIT 1");
-$q->execute([$numero, $dni]);
+                     WHERE $campo = ?" . ($porQr ? '' : ' AND doc_dniremitente = ?') . " LIMIT 1");
+$q->execute($porQr ? [$numero] : [$numero, $dni]);
 $tramite = $q->fetch(PDO::FETCH_ASSOC);
 
 $MOB = new Modelo_Observacion();
@@ -103,7 +106,7 @@ $fueraDePlazo = (int) $observacion['vencida'] === 1;
 Bitacora::registrar(Bitacora::SUBSANACION, 'documento', $documentoId,
     'el ciudadano subsanó la observación' . ($fueraDePlazo ? ' · FUERA DE PLAZO (vencía el ' . $observacion['limite_texto'] . ')' : '')
     . ($texto !== '' ? ' · ' . mb_substr($texto, 0, 120) : ''),
-    'ciudadano DNI ' . $dni);
+    $porQr ? 'ciudadano (enlace QR del ticket)' : 'ciudadano DNI ' . $dni);
 
 if (!empty($observacion['area_id'])) {
     (new Notificacion())->notificarSubsanacion((int) $observacion['area_id'], $tramite['doc_expediente'], $texto);

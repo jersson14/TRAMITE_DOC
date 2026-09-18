@@ -43,7 +43,8 @@ Una instalación nueva no necesita migraciones: use `database/instalacion/`.
 **Portal ciudadano**
 
 - **Cargo de recepción** en PDF con QR.
-- Consulta por N° de expediente y DNI.
+- Consulta por N° de expediente y DNI, o escaneando el **QR del ticket o del cargo**, que abre el
+  seguimiento del trámite al instante, sin pedir el DNI.
 - Correo de confirmación con el N° de expediente y el enlace de seguimiento.
 - Lo presentado fuera del horario de atención cuenta desde el siguiente día hábil.
 

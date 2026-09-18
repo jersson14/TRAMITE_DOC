@@ -3,12 +3,14 @@
  * Consulta pública de un trámite (seguimiento.php).
  *
  * Se busca con el N° de expediente (EXP-2026-000006, o 2026-6) o con el código de
- * seguimiento (D0000041), siempre junto con el DNI del remitente. Solo devuelve
+ * seguimiento (D0000041), siempre junto con el DNI del remitente; o, si se llega
+ * desde el QR del ticket, con el código y su firma (t=...), sin DNI. Solo devuelve
  * lo que el ciudadano necesita: estado, área actual, plazo y el recorrido del
  * envío principal; no incluye nombres de funcionarios ni archivos internos.
  */
 require_once __DIR__ . '/../../lib/Seguridad.php';
 require_once __DIR__ . '/../../lib/Plazos.php';
+require_once __DIR__ . '/../../lib/EnlaceSeguimiento.php';
 require_once __DIR__ . '/../../model/model_conexion.php';
 require_once __DIR__ . '/../../model/model_observacion.php';
 Seguridad::iniciarSesion();
@@ -24,11 +26,15 @@ Seguridad::registrarIntento($clave, 600);
 // "exp 2026 000006", "EXP-2026-000006" y "EXP2026000006" se tratan igual
 $numero = trim(preg_replace('/[^A-Z0-9]+/', '-', strtoupper((string) ($_POST['numero'] ?? ''))), '-');
 $dni = preg_replace('/\D/', '', (string) ($_POST['dni'] ?? ''));
+// Firma del QR: vale solo para el código de seguimiento con el que se generó
+$porQr = $numero !== '' && EnlaceSeguimiento::valido($numero, (string) ($_POST['t'] ?? ''));
 
-if ($numero === '' || $dni === '') {
+if ($porQr) {
+    $dni = '';
+} elseif ($numero === '' || $dni === '') {
     Seguridad::responderError(422, 'Ingrese el N° de expediente (o código de seguimiento) y el DNI del remitente.');
 }
-if (strlen($dni) !== 8) {
+if (!$porQr && strlen($dni) !== 8) {
     Seguridad::responderError(422, 'El DNI debe tener 8 dígitos.');
 }
 
@@ -54,10 +60,10 @@ $consulta = $pdo->prepare(
        FROM documento d
        INNER JOIN tipo_documento td ON td.tipodocumento_id = d.tipodocumento_id
        LEFT JOIN area destino ON destino.area_cod = d.area_destino
-      WHERE d.$campo = ? AND d.doc_dniremitente = ?
+      WHERE d.$campo = ?" . ($porQr ? '' : ' AND d.doc_dniremitente = ?') . "
       LIMIT 1"
 );
-$consulta->execute([$numero, $dni]);
+$consulta->execute($porQr ? [$numero] : [$numero, $dni]);
 $tramite = $consulta->fetch(PDO::FETCH_ASSOC);
 
 if (!$tramite) {
@@ -111,6 +117,11 @@ if ($obs) {
     ];
 }
 
+// Los PDF piden la misma credencial con la que se consultó: el DNI o la firma del QR
+$credencial = $porQr
+    ? '&t=' . EnlaceSeguimiento::token($tramite['documento_id'])
+    : '&dni=' . rawurlencode($dni);
+
 echo json_encode([
     'encontrado' => true,
     'tramite' => [
@@ -135,6 +146,6 @@ echo json_encode([
     ],
     'movimientos' => $movimientos,
     'observacion' => $observacion,
-    'cargo' => 'view/MPDF/REPORTE/cargo_recepcion.php?codigo=' . rawurlencode($tramite['documento_id']) . '&dni=' . rawurlencode($dni),
-    'hoja'  => 'view/MPDF/REPORTE/ficha_seguimiento_automatico.php?codigo=' . rawurlencode($tramite['documento_id']) . '&dni=' . rawurlencode($dni),
+    'cargo' => 'view/MPDF/REPORTE/cargo_recepcion.php?codigo=' . rawurlencode($tramite['documento_id']) . $credencial,
+    'hoja'  => 'view/MPDF/REPORTE/ficha_seguimiento_automatico.php?codigo=' . rawurlencode($tramite['documento_id']) . $credencial,
 ]);

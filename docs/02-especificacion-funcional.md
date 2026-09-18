@@ -94,7 +94,9 @@ debe aceptar el aviso de privacidad; el servidor rechaza el registro sin esa ace
 completan los nombres y apellidos.
 
 **RF-03. Cargo de recepción.** Al registrar, el ciudadano obtiene su N° de expediente y su código de
-seguimiento, y puede descargar un cargo de recepción en PDF con código QR.
+seguimiento, y puede descargar un cargo de recepción en PDF con código QR. El QR lleva al seguimiento
+de ese trámite sin pedir el DNI: incluye una firma del código que solo el servidor puede generar, así
+que conocer o adivinar un código no basta para ver un trámite ajeno.
 
 **RF-04. Aviso por correo.** Si dejó un correo, recibe la confirmación con su N° de expediente y el
 enlace de seguimiento.

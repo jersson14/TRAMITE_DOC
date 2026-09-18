@@ -11,6 +11,7 @@ config/gemini_config.php
 model/model_conexion.php
 config/database.php
 config/firmaperu.php
+config/clave_enlaces.php
 
 # Datos de ejecución (límite de intentos, temporales)
 storage/*

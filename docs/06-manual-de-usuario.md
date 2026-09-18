@@ -286,7 +286,8 @@ si dejó correo, recibe la confirmación.
 
 ### 10.2 Consultar el trámite
 
-Con el **N° de expediente** (o el código de seguimiento) y el **DNI del remitente**. Muestra el
+Con el **N° de expediente** (o el código de seguimiento) y el **DNI del remitente**, o escaneando el
+**QR del ticket o del cargo**, que abre el trámite directamente sin pedir el DNI. Muestra el
 estado, el área donde está, el plazo y el recorrido. No muestra nombres de funcionarios ni documentos
 internos.
 

@@ -88,7 +88,7 @@ $html = '
 
 <div class="qr">
     <barcode code="' . pdf_e($urlConsulta) . '" type="QR" size="0.85" error="M" disableborder="1" />
-    <div class="qr-texto">Escanee para consultar su trámite.<br>Se le pedirá el DNI del remitente.</div>
+    <div class="qr-texto">Escanee para ver el estado y el recorrido<br>de su trámite. No comparta este código.</div>
 </div>
 
 <div class="corte"></div>

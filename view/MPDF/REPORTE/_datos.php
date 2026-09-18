@@ -17,6 +17,7 @@ if (!isset($mysqli, $codigo)) {
 }
 
 require_once __DIR__ . '/../../../lib/Institucion.php';
+require_once __DIR__ . '/../../../lib/EnlaceSeguimiento.php';
 
 $institucion = Institucion::datos();
 $raizSistema = realpath(__DIR__ . '/../../..');
@@ -110,7 +111,9 @@ $consulta->execute();
 $totalAnexos = (int) $consulta->get_result()->fetch_row()[0];
 
 // --- Dirección pública de consulta, calculada desde donde está instalado el sistema ---
+// Lleva la firma del trámite (t=...): al escanear el QR se abre el seguimiento directo, sin pedir el DNI.
 $protocolo = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
 $raizWeb = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'], 4)), '/');
 $urlConsulta = $protocolo . '://' . ($_SERVER['HTTP_HOST'] ?? 'localhost') . $raizWeb
-    . '/seguimiento.php?codigo=' . rawurlencode($tramite['documento_id']);
+    . '/seguimiento.php?codigo=' . rawurlencode($tramite['documento_id'])
+    . '&t=' . EnlaceSeguimiento::token($tramite['documento_id']);
