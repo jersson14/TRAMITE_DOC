@@ -7,6 +7,7 @@
 require_once __DIR__ . '/../_guard_admin.php';
 require_once __DIR__ . '/../../lib/Configuracion.php';
 require_once __DIR__ . '/../../lib/Institucion.php';
+require_once __DIR__ . '/../../lib/AvisoPrivacidad.php';
 require_once __DIR__ . '/../../model/model_conexion.php';
 
 header('Content-Type: application/json; charset=utf-8');
@@ -66,5 +67,10 @@ echo json_encode([
         'activo'      => Configuracion::obtener('dni_activo') === '1',
         'tiene_token' => Configuracion::obtener('dni_token') !== '',
         'token'       => Configuracion::claveEnmascarada('dni_token'),
+    ],
+    // Aviso de privacidad del portal: el propio o, si no hay, el texto base
+    'privacidad' => [
+        'texto'  => AvisoPrivacidad::texto(),
+        'propio' => AvisoPrivacidad::esPropio(),
     ],
 ], JSON_UNESCAPED_UNICODE);

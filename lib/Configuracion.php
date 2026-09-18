@@ -33,6 +33,9 @@ class Configuracion
         // Consulta de DNI (RENIEC) a través de apis.net.pe (migración 027)
         'dni_activo' => '1',
         'dni_token'  => '',
+
+        // Aviso de privacidad del portal. Vacío = texto base (lib/AvisoPrivacidad.php)
+        'privacidad_texto' => '',
     ];
 
     /** Ajustes que son secretos: nunca salen enteros del servidor. */

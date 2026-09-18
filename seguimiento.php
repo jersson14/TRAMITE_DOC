@@ -870,6 +870,7 @@ $e = [Seguridad::class, 'e'];
                 </p>
                 <p style="margin: 0.5rem 0 0 0; color: #718096;">
                     <em>Mesa de Partes Virtual · SISTRAMITE</em>
+                    · <a href="privacidad.php" target="_blank" rel="noopener" style="color: inherit;">Aviso de privacidad</a>
                 </p>
             </div>
         </div>

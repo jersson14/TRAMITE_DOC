@@ -155,7 +155,7 @@ detecta HTTPS solo y marca la cookie de sesión como segura.
 - [ ] Se cambió la contraseña del usuario `admin`.
 - [ ] Se retiraron los archivos de prueba de la raíz (ver [Documento técnico](03-documento-tecnico.md#10-archivos-que-no-deben-ir-a-producción)).
 - [ ] No hay volcados `.sql` con datos en carpetas públicas.
-- [ ] `storage/`, `config/database.php` y `database/` responden «acceso denegado» (403) desde el navegador: prueba de que Apache respeta los `.htaccess`.
+- [ ] `storage/`, `config/database.php`, `database/` y un PDF de `controller/tramite/documentos/` responden «acceso denegado» (403) desde el navegador: prueba de que Apache respeta los `.htaccess`.
 - [ ] Las carpetas de documentos no permiten listar su contenido.
 - [ ] `display_errors = Off` en `php.ini`; los errores van al registro del servidor.
 - [ ] Respaldos automáticos programados y probados (sección 5).

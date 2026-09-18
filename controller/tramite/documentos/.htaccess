@@ -1,7 +1,10 @@
-# Solo se sirven archivos; nunca se ejecuta código subido.
-<FilesMatch "\.(php\d?|phtml|phar|pht|cgi|pl|py|sh|htaccess)$">
-    Require all denied
-</FilesMatch>
+# Carpeta cerrada al acceso web. Los archivos los entrega
+# controller/tramite/controlador_ver_archivo.php, que exige sesión y comprueba
+# que el área del usuario pueda ver el trámite. Así, conocer la dirección de un
+# PDF ya no basta para descargarlo.
+Require all denied
+
+# Por si el bloqueo anterior se desactivara: nunca se ejecuta código subido.
 <IfModule php_module>
     php_flag engine off
 </IfModule>

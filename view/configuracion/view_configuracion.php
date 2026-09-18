@@ -330,6 +330,36 @@
         </div>
       </div>
 
+      <!-- AVISO DE PRIVACIDAD DEL PORTAL (Ley N° 29733) -->
+      <div class="col-12">
+        <div class="card card-modern">
+          <div class="card-header">
+            <h3 class="card-title"><i class="nav-icon fas fa-user-shield"></i>&nbsp;&nbsp;<b>Aviso de privacidad</b></h3>
+          </div>
+          <div class="card-body">
+            <small class="text-muted d-block mb-2">
+              <i class="fas fa-info-circle"></i>
+              Se muestra en la mesa de partes virtual y el ciudadano debe aceptarlo para registrar su trámite.
+              Debe decir quién trata los datos, para qué, con quién se comparten, cuánto tiempo se guardan y cómo
+              ejercer los derechos ARCO. <b>Pida a su área legal que lo revise.</b> Deje una línea en blanco entre párrafos.
+            </small>
+            <div class="mb-2"><span class="badge" id="cfg_privacidad_estado"></span></div>
+            <textarea class="form-control" id="cfg_privacidad_texto" rows="14" maxlength="15000"></textarea>
+          </div>
+          <div class="card-footer text-right">
+            <a class="btn btn-secondary" href="../privacidad.php" target="_blank" rel="noopener">
+              <i class="fas fa-external-link-alt"></i> Ver en el portal
+            </a>
+            <button type="button" class="btn btn-secondary" onclick="Guardar_Privacidad(true)">
+              <i class="fas fa-undo"></i> Volver al texto base
+            </button>
+            <button type="button" class="btn btn-gradient-success" onclick="Guardar_Privacidad(false)">
+              <i class="fas fa-save"></i> Guardar aviso
+            </button>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>

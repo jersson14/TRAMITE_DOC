@@ -13,8 +13,33 @@
  */
 class EsquemaConsulta
 {
-    /** Columnas que nunca se consultan, ni siquiera el administrador. */
-    const COLUMNAS_VETADAS = ['usu_contra'];
+    /**
+     * Columnas que el asistente nunca lee, ni siquiera para el administrador.
+     *
+     * La contraseña, y los identificadores y datos de contacto de las personas:
+     * las filas que devuelve una consulta se le envían al proveedor de IA (OpenAI
+     * o Google, fuera del Perú) para que redacte la respuesta. Estos datos no le
+     * hacen falta para contestar sobre trámites, así que no salen del servidor.
+     * Siguen visibles en las pantallas del sistema, que no pasan por la IA.
+     *
+     * ConsultaSegura rechaza la consulta que las nombre y, además, las quita del
+     * resultado, por si llegaran con un SELECT *.
+     */
+    const COLUMNAS_VETADAS = [
+        'usu_contra',
+        'doc_dniremitente', 'doc_celularremitente', 'doc_emailremitente', 'doc_direccionremitente',
+        'emple_nrodocumento', 'emple_email', 'emple_movil', 'emple_direccion', 'emple_fotoperfil',
+        'firmante_dni', 'bit_ip', 'sub_ip',
+    ];
+
+    /**
+     * Nombres de personas: se pueden consultar (quien pregunta los ve en la tabla
+     * del chat), pero se ocultan en lo que se envía a la IA para redactar. Se
+     * reconocen por el nombre de la columna o de su alias; PATRON_NO_PERSONA
+     * excluye las columnas que se parecen pero no nombran a nadie.
+     */
+    const PATRON_NOMBRE_PERSONA = '/remit|nombre|apellido|apepat|apemat|ciudadano|solicitante|firmante|emple|persona|usuario|razon|responsable|quien/i';
+    const PATRON_NO_PERSONA = '/area|tipo|tipodo|anexo|archivo|_id$|^id_|cantidad|total/i';
 
     /**
      * Tablas disponibles con su descripción y columnas.
@@ -225,6 +250,9 @@ class EsquemaConsulta
             }
             $texto .= "TABLA $nombre — {$datos['que']}\n";
             foreach ($datos['columnas'] as $columna => $detalle) {
+                if (in_array($columna, self::COLUMNAS_VETADAS, true)) {
+                    continue; // no se le describe lo que no puede consultar
+                }
                 $texto .= "  - $columna: $detalle\n";
             }
             $texto .= "\n";

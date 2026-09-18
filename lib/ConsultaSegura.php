@@ -7,7 +7,8 @@
  *   - una sola sentencia SELECT, sin punto y coma ni comentarios;
  *   - ninguna palabra que escriba, borre o lea fuera de la lista blanca;
  *   - todas las tablas de FROM/JOIN están en EsquemaConsulta;
- *   - ninguna columna vetada (la contraseña);
+ *   - ninguna columna vetada (la contraseña y los datos de identificación y
+ *     contacto de las personas), que además se quitan del resultado;
  *   - un LIMIT propio o el que se le impone.
  *
  * Además se ejecuta en una transacción de solo lectura con tiempo máximo, así
@@ -73,6 +74,17 @@ class ConsultaSegura
             throw new RuntimeException('La consulta no se pudo ejecutar: ' . $e->getMessage());
         }
         $pdo->exec('ROLLBACK');
+
+        // La revisión del texto no ve lo que trae un SELECT * o t.*: las columnas
+        // vetadas se quitan también del resultado.
+        $vetadas = array_flip(array_map('strtolower', EsquemaConsulta::COLUMNAS_VETADAS));
+        foreach ($filas as $i => $fila) {
+            foreach (array_keys($fila) as $columna) {
+                if (isset($vetadas[strtolower($columna)])) {
+                    unset($filas[$i][$columna]);
+                }
+            }
+        }
 
         return [
             'columnas'  => $filas ? array_keys($filas[0]) : [],

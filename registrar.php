@@ -849,6 +849,13 @@ $e = [Seguridad::class, 'e'];
                                                 es correcta y verídica.
                                             </label>
                                         </div>
+                                        <div class="checkbox-custom mt-2">
+                                            <input type="checkbox" id="chk_privacidad" onclick="Validar_Informacion()">
+                                            <label for="chk_privacidad" style="margin: 0; cursor: pointer;">
+                                                He leído el <a href="privacidad.php" target="_blank" rel="noopener">aviso de privacidad</a>
+                                                y acepto que mis datos se usen para registrar y atender mi trámite.
+                                            </label>
+                                        </div>
                                     </div>
 
                                     <div class="col-12 text-center mt-3">
@@ -874,6 +881,7 @@ $e = [Seguridad::class, 'e'];
                 </p>
                 <p style="margin: 0.5rem 0 0 0; color: #718096;">
                     <em>Mesa de Partes Virtual · SISTRAMITE</em>
+                    · <a href="privacidad.php" target="_blank" rel="noopener" style="color: inherit;">Aviso de privacidad</a>
                 </p>
             </div>
         </div>
@@ -992,7 +1000,8 @@ $e = [Seguridad::class, 'e'];
         // Validación de checkbox
         Validar_Informacion();
         function Validar_Informacion() {
-            if(document.getElementById('checkboxSuccess1').checked == false) {
+            if(document.getElementById('checkboxSuccess1').checked == false
+               || document.getElementById('chk_privacidad').checked == false) {
                 $("#btn_registro").addClass("disabled");
             } else {
                 $("#btn_registro").removeClass("disabled");

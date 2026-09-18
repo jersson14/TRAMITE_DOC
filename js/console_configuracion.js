@@ -23,6 +23,7 @@ function Cargar_Configuracion() {
     Pintar_Asistente(r.asistente);
     if (r.correo) Pintar_Correo(r.correo);
     if (r.dni) Pintar_Dni(r.dni);
+    if (r.privacidad) Pintar_Privacidad(r.privacidad);
   }).fail(function () {
     Swal.fire("Mensaje de Error", "No se pudo leer la configuración", "error");
   });
@@ -414,4 +415,40 @@ function Probar_Dni() {
     Caja_Resultado("cfg_dni_resultado", "danger", "fa-times-circle",
       "<b>No se pudo consultar</b><br>" + escaparConfig((x.responseJSON && x.responseJSON.mensaje) || "La prueba falló"));
   });
+}
+
+/* ---------- Aviso de privacidad del portal ---------- */
+
+function Pintar_Privacidad(p) {
+  document.getElementById("cfg_privacidad_texto").value = p.texto || "";
+  var estado = document.getElementById("cfg_privacidad_estado");
+  estado.className = "badge " + (p.propio ? "badge-success" : "badge-warning");
+  estado.textContent = p.propio
+    ? "Texto propio de la institución"
+    : "Texto base del sistema: revíselo con su área legal y guárdelo";
+}
+
+function Guardar_Privacidad(restablecer) {
+  var enviar = function () {
+    $.ajax({
+      url: "../controller/configuracion/controlador_guardar_privacidad.php",
+      type: "POST", dataType: "json",
+      data: {
+        texto: document.getElementById("cfg_privacidad_texto").value,
+        restablecer: restablecer ? 1 : "",
+      },
+    }).done(function () {
+      Swal.fire("Mensaje de Confirmación", restablecer ? "Se volvió al texto base" : "Aviso de privacidad guardado", "success");
+      Cargar_Configuracion();
+    }).fail(function (x) {
+      Swal.fire("Mensaje de Advertencia", (x.responseJSON && x.responseJSON.mensaje) || "No se pudo guardar", "warning");
+    });
+  };
+  if (!restablecer) return enviar();
+  Swal.fire({
+    title: "¿Volver al texto base?",
+    text: "Se perderá el texto propio guardado.",
+    icon: "warning", showCancelButton: true,
+    confirmButtonText: "Sí, volver", cancelButtonText: "Cancelar",
+  }).then(function (r) { if (r.isConfirmed || r.value) enviar(); });
 }

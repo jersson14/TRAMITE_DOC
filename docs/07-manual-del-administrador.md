@@ -25,7 +25,7 @@ El administrador ve **toda la institución**, no solo un área. Su menú:
 | Comunicados | Avisos al personal |
 | Reporte de Trámites | Los mismos reportes que las áreas, para toda la institución |
 | Usuario | Cuentas de acceso y roles |
-| Institución y asistente | Datos de la institución y servicios externos |
+| Institución y asistente | Datos de la institución, servicios externos y aviso de privacidad del portal |
 
 ## 2. Usuarios y roles
 

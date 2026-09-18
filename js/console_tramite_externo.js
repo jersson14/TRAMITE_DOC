@@ -304,6 +304,15 @@ function Registrar_Tramite(){
         return Swal.fire("Mensaje de Advertencia","El documento y los anexos no deben superar los 35 MB en total.","warning")
     }
 
+    // Declaración de veracidad y aviso de privacidad (Ley N° 29733): el servidor
+    // también rechaza el registro si no se aceptó el aviso
+    if(!$("#checkboxSuccess1").is(":checked")){
+        return Swal.fire("Mensaje de Advertencia","Marque la declaración de que la información es correcta y verídica.","warning")
+    }
+    if(!$("#chk_privacidad").is(":checked")){
+        return Swal.fire("Mensaje de Advertencia","Lea y acepte el aviso de privacidad para registrar su trámite.","warning")
+    }
+
     let formData = new FormData();
     let achivoobj = $("#txt_archivo")[0].files[0];//El objeto del archivo adjuntado
 
@@ -318,6 +327,7 @@ function Registrar_Tramite(){
     formData.append("vpresentacion",vpresentacion);
     formData.append("ruc",ruc);
     formData.append("raz",raz);
+    formData.append("privacidad", "1");
     ///////DATOS DEL DOCUMENTO//////
 
     formData.append("tip",tip);
@@ -337,7 +347,7 @@ function Registrar_Tramite(){
     $.ajax({
       url:"controller/tramite/controlador_registro_tramite_externo.php",
       error:function(xhr){
-        $("#btn_registro").prop("disabled", !$("#checkboxSuccess1").is(":checked"));
+        $("#btn_registro").prop("disabled", !($("#checkboxSuccess1").is(":checked") && $("#chk_privacidad").is(":checked")));
         let mensaje = (xhr.responseJSON && xhr.responseJSON.mensaje) || "No se pudo registrar el trámite. Intente nuevamente.";
         Swal.fire("No se pudo registrar", mensaje, "error");
       },

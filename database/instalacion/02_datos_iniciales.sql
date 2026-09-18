@@ -122,4 +122,5 @@ INSERT INTO configuracion (conf_clave, conf_valor) VALUES
   ('ia_limite_minuto', '10'), ('ia_limite_dia', '100'),
   ('smtp_activo', ''), ('smtp_host', ''), ('smtp_puerto', ''), ('smtp_seguridad', ''),
   ('smtp_usuario', ''), ('smtp_clave', ''), ('smtp_remitente_nombre', ''), ('smtp_remitente_correo', ''),
-  ('dni_activo', '1'), ('dni_token', '');
+  ('dni_activo', '1'), ('dni_token', ''),
+  ('privacidad_texto', '');

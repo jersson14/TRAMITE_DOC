@@ -104,7 +104,7 @@ Para que la entidad decida con información completa:
 - **Consulta de RUC (SUNAT)**: no está disponible; el RUC y la razón social se escriben a mano.
 - **Documentos generados en el sistema**: el sistema no redacta oficios a partir de plantillas; se sube el PDF ya redactado.
 - **Aplicación móvil**: no hay aplicación nativa; el sistema web se adapta al celular.
-- **Seguridad y datos personales**: los PDF pueden descargarse por su dirección directa sin iniciar sesión, el portal no muestra todavía un aviso de privacidad y no hay segundo factor de autenticación. El detalle está en [Seguridad y datos personales](08-seguridad-y-datos-personales.md#6-limitaciones-conocidas).
+- **Seguridad**: no hay segundo factor de autenticación ni política de contraseñas, y el aviso de privacidad trae un texto base que el área legal de la entidad debe revisar. El detalle está en [Seguridad y datos personales](08-seguridad-y-datos-personales.md#6-limitaciones-conocidas).
 
 ## Condiciones comerciales
 

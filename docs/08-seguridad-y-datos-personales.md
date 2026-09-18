@@ -34,14 +34,23 @@ Los datos salen del servidor de la institución **solo** si se activa el servici
 | --- | --- | --- | --- |
 | **apis.net.pe** (consulta de DNI) | El número de DNI consultado | Al buscar un DNI al registrar | Desactivar la consulta automática |
 | **Servidor de correo** configurado | Correo del destinatario, N° de expediente, asunto, texto de la observación | En cada aviso | Desactivar **Enviar correos** |
-| **OpenAI** o **Google** (asistente) | La pregunta y **hasta 40 filas** del resultado de la consulta | En cada pregunta al asistente | Desactivar el asistente |
+| **OpenAI** o **Google** (asistente) | La pregunta y hasta 40 filas del resultado, **sin identificadores, datos de contacto ni nombres de personas** (ver abajo) | En cada pregunta al asistente | Desactivar el asistente |
 
-> **Atención con el asistente de IA.** Las filas enviadas al proveedor pueden incluir datos de los
-> remitentes: nombres, DNI, correo, celular y dirección. OpenAI y Google procesan esos datos en
-> servidores fuera del Perú, lo que constituye un **flujo transfronterizo** de datos personales.
-> Antes de activar el asistente, el área legal debe evaluarlo y, si corresponde, informarlo a los
-> titulares y a la Autoridad Nacional de Protección de Datos Personales. Si no se autoriza, el
-> asistente se deja desactivado: el chat sigue respondiendo lo básico sin enviar nada afuera.
+**Qué protege el asistente de IA.** OpenAI y Google procesan los datos en servidores fuera del Perú.
+Para que los datos personales no salgan del servidor:
+
+- **Nunca se leen** el DNI, el celular, el correo ni la dirección de los remitentes; el DNI, el correo
+  y el celular del personal; el DNI de los firmantes; las direcciones IP ni las contraseñas. Una
+  consulta que los nombre se rechaza, y si llegaran por un `SELECT *` se quitan del resultado antes
+  de usarlo.
+- **Los nombres de personas se reemplazan** por `[persona 1]`, `[persona 2]`… en lo que se envía a
+  la IA para redactar. Quien preguntó sí ve los nombres en la tabla del chat, que se arma en el
+  servidor de la institución.
+- Lo que el propio usuario **escriba en su pregunta** sí se envía. Si pregunta por el nombre de una
+  persona, ese nombre llega al proveedor.
+
+Aun así, el área legal debe evaluar el uso del asistente antes de activarlo. Si no se autoriza, se
+deja desactivado: el chat sigue respondiendo lo básico sin enviar nada afuera.
 
 ## 3. Medidas de seguridad implementadas
 
@@ -64,6 +73,7 @@ Los datos salen del servidor de la institución **solo** si se activa el servici
 | Consulta del trámite | Exige N° de expediente **y** DNI del remitente. No muestra nombres de funcionarios ni documentos internos |
 | Límites por dirección IP | Consulta de DNI: 20 cada 10 min · Consulta de trámite: 30 cada 10 min · Registro: 10 por hora · Subsanación: 10 cada 10 min · Validación de firma: 40 cada 10 min |
 | Validación de firmas | Muestra quién firmó y cuándo, pero **no** el documento |
+| Aviso de privacidad | Enlazado en el registro y el seguimiento. Sin aceptarlo no se puede registrar un trámite |
 
 ### 3.3 Archivos
 
@@ -71,9 +81,8 @@ Los datos salen del servidor de la institución **solo** si se activa el servici
 | --- | --- |
 | Validación de tipo | Por el contenido real del archivo, no por su extensión |
 | Nombre del archivo | Lo genera el servidor; no se usa el nombre que envía el usuario |
-| Carpetas de documentos | No permiten ejecutar código ni listar su contenido |
-| Listado de archivos | En el sistema, los archivos de un trámite solo se muestran al administrador y a las áreas por las que pasó |
-| Descarga directa | **Limitación:** quien conozca la dirección exacta de un PDF puede descargarlo sin iniciar sesión (ver sección 6) |
+| Carpetas de documentos | Cerradas al acceso web: no se pueden abrir, listar ni ejecutar |
+| Acceso a los archivos | Cada archivo lo entrega el sistema tras comprobar la sesión y que el área del usuario haya intervenido en el trámite (el administrador ve todos). Conocer la dirección de un PDF no basta para descargarlo |
 
 ### 3.4 Claves de servicios
 
@@ -106,7 +115,7 @@ El sistema aporta medidas técnicas. Estas le corresponden a la institución:
 
 | Obligación | Qué hacer |
 | --- | --- |
-| **Informar a los titulares** | El portal actualmente pide una declaración de veracidad, pero **no muestra un aviso de privacidad**. La institución debe redactar el aviso (finalidad, destinatarios, transferencias, plazo de conservación, cómo ejercer los derechos ARCO) para incluirlo en el portal. Incorporarlo es un cambio menor |
+| **Informar a los titulares** | El portal muestra un **aviso de privacidad** que el ciudadano debe aceptar para registrar (el servidor lo exige). Trae un texto base armado con los datos de la institución; **el área legal debe revisarlo** y guardar su versión en Institución y asistente → Aviso de privacidad |
 | Banco de datos | Evaluar la inscripción del banco de datos de trámites ante la Autoridad Nacional de Protección de Datos Personales |
 | Derechos ARCO | Definir quién atiende las solicitudes de acceso, rectificación, cancelación y oposición |
 | Plazo de conservación | Definir cuánto tiempo se conservan los expedientes según las normas de archivo aplicables. El sistema no borra nada automáticamente |
@@ -125,15 +134,10 @@ Para una evaluación honesta, estas son las limitaciones actuales:
 - **Sin política de contraseñas.** El sistema no exige longitud ni complejidad mínimas; el
   administrador debe asignar contraseñas robustas. Los usuarios no pueden cambiar su propia
   contraseña.
-- **Los PDF se descargan por su dirección directa, sin sesión.** El control por área se aplica al
-  mostrar los archivos, pero la carpeta de documentos es pública. Los archivos nuevos llevan un
-  sufijo aleatorio difícil de adivinar; los **anteriores a esta versión** tienen nombres predecibles
-  (fecha y hora). Corregirlo requiere servir los archivos a través de un controlador que verifique
-  la sesión y el área. **Se recomienda hacerlo antes de exponer el sistema a internet.**
 - **Documentos sin cifrar en disco.** Los PDF se guardan tal como se subieron; su protección depende
   del acceso al servidor y de los respaldos.
-- **Sin aviso de privacidad en el portal** (ver sección 5).
-- **El asistente de IA puede enviar datos de remitentes a terceros** (ver sección 2).
+- **El aviso de privacidad trae un texto base**, no uno revisado por un abogado (ver sección 5).
+- **Lo que se escribe en la pregunta al asistente llega al proveedor de IA** (ver sección 2).
 - **Sin pruebas de penetración independientes.** Se recomienda una antes de exponer el sistema a
   internet.
 

@@ -15,6 +15,12 @@
         Seguridad::responderError(422, 'Los archivos superan el tamaño permitido. El documento y los anexos no deben pasar de 35 MB en total.');
     }
 
+    // Ley N° 29733: el ciudadano debe conocer el aviso de privacidad antes de
+    // entregar sus datos. No basta con la casilla de la pantalla: se exige aquí.
+    if (($_POST['privacidad'] ?? '') !== '1') {
+        Seguridad::responderError(422, 'Lea y acepte el aviso de privacidad para registrar su trámite.');
+    }
+
     // Registro público: máximo 10 trámites por hora desde una misma IP
     $clave = 'registro_externo|' . Seguridad::ipCliente();
     if (Seguridad::esperaIntentos($clave, 10, 3600) > 0) {

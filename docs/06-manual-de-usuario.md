@@ -274,8 +274,9 @@ El ciudadano **no necesita cuenta**. Estas páginas son públicas:
 1. Datos del remitente: DNI, nombres y apellidos, celular y correo. Si presenta por una empresa o
    entidad, marque **persona jurídica** y agregue RUC y razón social.
 2. Datos del documento: tipo, número, folios y asunto.
-3. Documento principal en PDF y hasta 10 anexos en PDF.
-4. Acepte las condiciones y pulse **Registrar**.
+3. Documento principal en PDF y hasta 5 anexos en PDF, con 35 MB en total.
+4. Marque la declaración de veracidad y la aceptación del **aviso de privacidad** (se puede leer
+   desde el enlace), y pulse **Registrar Trámite**.
 
 El ciudadano recibe su **N° de expediente**, puede descargar su **cargo de recepción** en PDF con QR y,
 si dejó correo, recibe la confirmación.

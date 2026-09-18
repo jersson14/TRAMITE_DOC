@@ -97,13 +97,17 @@ Una instalación nueva no necesita migraciones: use `database/instalacion/`.
 - Carpetas de documentos sin ejecución de código.
 - Las claves de servicios externos no salen del servidor.
 - Retirados los scripts de consulta de DNI/RUC y de prueba de correo que quedaban expuestos.
+- Los PDF de los trámites ya no se descargan por su dirección directa: el sistema los entrega solo
+  con sesión y a las áreas que intervinieron.
+- El asistente de IA no lee DNI, correos, celulares ni direcciones, y los nombres de personas se
+  ocultan antes de enviar datos al proveedor. Tampoco puede leer las contraseñas con un `SELECT *`.
+- **Aviso de privacidad** en el portal, obligatorio para registrar y editable desde el panel.
 
 ### Limitaciones conocidas
 
 Detalladas en [Seguridad y datos personales](08-seguridad-y-datos-personales.md#6-limitaciones-conocidas):
 
-- Los PDF pueden descargarse por su dirección directa sin iniciar sesión.
-- Sin aviso de privacidad en el portal.
+- El aviso de privacidad trae un texto base que el área legal debe revisar.
 - Sin segundo factor de autenticación ni política de contraseñas.
 - La firma con DNI electrónico (Firma Perú) está preparada pero no habilitada.
 - Solo compatible con MariaDB.

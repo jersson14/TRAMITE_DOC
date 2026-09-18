@@ -68,6 +68,7 @@ SISTRAMITEDOC/
 ├── registrar.php              Portal: mesa de partes virtual
 ├── seguimiento.php            Portal: consulta y subsanación
 ├── validar_firma.php          Portal: validación de firmas
+├── privacidad.php             Portal: aviso de privacidad
 ├── consulta-dni-ajax.php      Consulta de DNI (portal y mesa de partes)
 ├── config/                    Credenciales de base de datos y archivos *.example.php
 ├── controller/                Controladores, por módulo
@@ -181,6 +182,9 @@ El detalle para el área legal está en [Seguridad y datos personales](08-seguri
 | Token CSRF en todas las operaciones internas | `controller/_guard.php`; el panel lo envía en la cabecera `X-CSRF-Token` |
 | Permisos por rol | `Seguridad::PERMISOS` y `Seguridad::exigirPermiso()` |
 | Acceso a trámites por área | `Modelo_Tramite::Area_Puede_Ver()` en cada controlador de archivos |
+| Archivos solo a través del sistema: las carpetas `controller/*/documentos/` niegan todo acceso web y cada PDF lo entrega un controlador que exige sesión y aplica `Area_Puede_Ver()` a los trámites que usan ese archivo | `controller/tramite/controlador_ver_archivo.php`, `Modelo_Tramite::Documentos_De_Archivo()`, `urlArchivo()` en `js/anexos.js` |
+| Datos personales fuera del alcance de la IA: columnas vetadas (rechazadas en la consulta y quitadas del resultado) y nombres reemplazados por `[persona N]` antes de redactar | `EsquemaConsulta::COLUMNAS_VETADAS`, `AsistenteBD::ocultarPersonas()` |
+| Aviso de privacidad del portal, exigido también en el servidor | `lib/AvisoPrivacidad.php`, `privacidad.php` |
 | Subidas validadas por contenido real (no por la extensión) y con nombre generado por el servidor | `Seguridad::guardarArchivo()` |
 | Límite de intentos por IP | `Seguridad::esperaIntentos()`, con archivos en `storage/intentos` |
 | Consultas de la IA restringidas a lectura | `lib/ConsultaSegura.php` |
@@ -189,7 +193,7 @@ El detalle para el área legal está en [Seguridad y datos personales](08-seguri
 
 **Consultas del asistente de IA.** La IA traduce la pregunta a una consulta SQL. Esa consulta se trata
 como texto no confiable: se acepta solo si es un único `SELECT`, sin palabras de escritura, sobre
-tablas de una lista blanca y sin la columna de contraseña; se le impone un `LIMIT`, se ejecuta en una
+tablas de una lista blanca y sin columnas vetadas (contraseña, DNI, datos de contacto, IP), que además se quitan del resultado; se le impone un `LIMIT`, se ejecuta en una
 transacción de solo lectura con tiempo máximo y, para el personal de área, se restringe a los trámites
 de su área **en el servidor**, no en el texto que escribió la IA.
 
@@ -240,8 +244,6 @@ repositorio todavía.** Incorporarlas es la mejora de mantenimiento más importa
 
 | Punto | Efecto | Recomendación |
 | --- | --- | --- |
-| Los PDF se sirven directo desde `controller/*/documentos/`, sin pasar por PHP | Quien conozca la URL descarga el archivo sin sesión. Los nombres antiguos (`ARCH<fecha>-<hora>-<n>.PDF`) son adivinables | Mover los archivos fuera de la raíz pública (o denegar el acceso directo) y servirlos con un controlador que aplique `Area_Puede_Ver()`. **Prioritario antes de exponer a internet** |
-| El asistente envía al proveedor de IA hasta 40 filas, que pueden traer datos personales de remitentes | Flujo transfronterizo de datos | Vetar en `EsquemaConsulta` las columnas personales que no hagan falta, o seudonimizarlas antes de enviar |
 | Lectura por posición de los procedimientos | Un cambio de columnas rompe pantallas | Migrar las pantallas a nombres de columna |
 | El disparador `actualizar` recalcula `dias_pasados` de todos los trámites pendientes en cada movimiento | Costo creciente con el volumen | Eliminarlo: el plazo real ya lo calcula `lib/Plazos.php` |
 | Sin pruebas automatizadas en el repositorio | Cambios sin red de seguridad | Incorporar la batería de pruebas |

@@ -132,12 +132,38 @@ class AsistenteBD
         return $texto;
     }
 
+    /**
+     * Cambia los nombres de personas por [persona N] antes de enviar las filas a
+     * la IA. El mismo nombre recibe siempre el mismo número, así la IA puede
+     * decir «tres trámites del mismo remitente» sin conocerlo. La tabla que ve
+     * quien preguntó no pasa por aquí y conserva los nombres.
+     */
+    public static function ocultarPersonas(array $filas): array
+    {
+        $alias = [];
+        foreach ($filas as $i => $fila) {
+            foreach ($fila as $columna => $valor) {
+                if ($valor === null || $valor === '' || is_numeric($valor)
+                    || !preg_match(EsquemaConsulta::PATRON_NOMBRE_PERSONA, $columna)
+                    || preg_match(EsquemaConsulta::PATRON_NO_PERSONA, $columna)) {
+                    continue;
+                }
+                $clave = mb_strtoupper(trim((string) $valor));
+                if (!isset($alias[$clave])) {
+                    $alias[$clave] = '[persona ' . (count($alias) + 1) . ']';
+                }
+                $filas[$i][$columna] = $alias[$clave];
+            }
+        }
+        return $filas;
+    }
+
     /** Le pide redactar la respuesta a partir de las filas obtenidas. */
     private function redactar(string $pregunta, array $resultado): string
     {
         $filas = $resultado['filas'];
         $total = count($filas);
-        $muestra = array_slice($filas, 0, self::FILAS_AL_MODELO);
+        $muestra = self::ocultarPersonas(array_slice($filas, 0, self::FILAS_AL_MODELO));
 
         $prompt = "Eres el asistente del sistema de trámite documentario de " . Institucion::datos()['sigla'] . ".\n"
             . "Responde en español, claro y breve, a quien preguntó. Usa los datos tal como están.\n\n"
@@ -147,6 +173,9 @@ class AsistenteBD
             . "- Para pocas filas, redacta; para varias, usa una lista corta con lo esencial.\n"
             . "- No repitas la tabla completa: debajo de tu respuesta ya se muestra al usuario.\n"
             . "- No menciones SQL ni nombres de tablas o columnas internas.\n"
+            . "- Los nombres de personas llegan ocultos como [persona 1], [persona 2]: el mismo número es\n"
+            . "  la misma persona. No los repitas; di «el remitente», «el firmante» o «esa persona».\n"
+            . "  Quien pregunta ve los nombres en la tabla debajo de tu respuesta.\n"
             . ($this->esAdmin ? '' :
                 "- Solo se consultan los trámites en que participó el área \"" . $this->areaNombre . "\":\n"
                 . "  si preguntaron por otra área y no hay filas, dilo así, no como si esa área no tuviera nada.\n")

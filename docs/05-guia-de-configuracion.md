@@ -15,6 +15,7 @@ rol **Administrador**, salvo la firma con DNI electrónico (sección 7).
 6. [Consulta de DNI](#6-consulta-de-dni-reniec)
 7. [Firma digital](#7-firma-digital)
 8. [Asistente con inteligencia artificial](#8-asistente-con-inteligencia-artificial)
+9. [Aviso de privacidad](#9-aviso-de-privacidad)
 
 Ninguno de los servicios externos (5, 6 y 8) es obligatorio. Sin ellos el sistema funciona igual:
 no se envían correos, el nombre del remitente se escribe a mano y el chat responde lo básico.
@@ -202,6 +203,10 @@ El asistente responde preguntas del personal sobre los trámites («¿cuántos e
 pendientes?», «¿dónde está el EXP-2026-000048?») con los datos del sistema. Solo lee: no puede
 modificar nada, y cada usuario solo obtiene respuestas sobre lo que su área puede ver.
 
+El asistente **no lee** DNI, celulares, correos, direcciones ni contraseñas, y cambia los nombres de
+personas por `[persona 1]`, `[persona 2]`… en lo que envía al proveedor. El detalle está en
+[Seguridad y datos personales](08-seguridad-y-datos-personales.md#2-servicios-de-terceros).
+
 ### 8.1 Obtener la clave
 
 **ChatGPT (OpenAI)**, el proveedor predeterminado:
@@ -228,7 +233,25 @@ modificar nada, y cada usuario solo obtiene respuestas sobre lo que su área pue
 
 Pulse **Probar conexión** y luego **Guardar asistente**.
 
-## 9. Cómo se protegen las claves
+## 9. Aviso de privacidad
+
+Ruta: **Menú → Institución y asistente → Aviso de privacidad**
+
+La Ley N° 29733 obliga a informar al ciudadano qué se hará con sus datos antes de que los entregue.
+El portal muestra el aviso en la página `privacidad.php`, lo enlaza en el registro y el seguimiento,
+y **no deja registrar un trámite sin aceptarlo**.
+
+El sistema trae un **texto base** armado con el nombre, la dirección y el correo de la institución.
+Mientras no se guarde uno propio, la pantalla lo marca en amarillo: *Texto base del sistema*.
+
+1. Pida a su área legal que revise el texto. Debe indicar quién trata los datos, para qué, si son
+   obligatorios, con quién se comparten, cuánto tiempo se guardan y cómo ejercer los derechos ARCO.
+2. Escriba o pegue el texto aprobado. Deje una línea en blanco entre párrafos.
+3. Pulse **Guardar aviso** y revíselo con **Ver en el portal**.
+
+**Volver al texto base** descarta el texto propio. Cada cambio queda en la bitácora.
+
+## 10. Cómo se protegen las claves
 
 La clave del asistente, la contraseña del correo y el token del DNI:
 
@@ -241,7 +264,7 @@ La clave del asistente, la contraseña del correo y el token del DNI:
 
 Si una clave pudo filtrarse, regenérela en el proveedor, pegue la nueva y guarde.
 
-## 10. Mensajes de error frecuentes
+## 11. Mensajes de error frecuentes
 
 | Mensaje | Qué hacer |
 | --- | --- |

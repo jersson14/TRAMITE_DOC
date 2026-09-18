@@ -233,6 +233,22 @@
             return (bool) $query->fetchColumn();
         }
 
+        /**
+         * Trámites a los que pertenece un archivo, buscándolo en todos los lugares
+         * donde el sistema guarda rutas: documento principal, anexos, documento de
+         * cada envío, respuesta de una atención, copias firmadas y subsanaciones.
+         */
+        public function Documentos_De_Archivo($ruta){
+            $c = conexionBD::conexionPDO();
+            $query = $c->prepare("SELECT documento_id FROM documento WHERE doc_archivo = ?
+                                  UNION SELECT documento_id FROM documento_anexo WHERE anexo_ruta = ?
+                                  UNION SELECT documento_id FROM movimiento WHERE mov_archivo = ? OR mov_respuesta_archivo = ?
+                                  UNION SELECT documento_id FROM firma WHERE archivo_firmado = ? OR archivo_origen = ?
+                                  UNION SELECT documento_id FROM observacion WHERE sub_archivo = ?");
+            $query->execute([$ruta, $ruta, $ruta, $ruta, $ruta, $ruta, $ruta]);
+            return array_column($query->fetchAll(PDO::FETCH_ASSOC), 'documento_id');
+        }
+
         public function Listar_Anexos($documento_id){
             $c = conexionBD::conexionPDO();
             $query = $c->prepare("CALL SP_LISTAR_ANEXOS(?)");

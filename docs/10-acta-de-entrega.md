@@ -43,14 +43,15 @@ corchetes `[COMPLETAR]` se llenan con los de cada cliente.
 | 1 | El sistema abre por **HTTPS** con certificado válido | ☐ |
 | 2 | Se cambió la contraseña del usuario `admin` | ☐ |
 | 3 | La base de datos usa un usuario propio, no `root` | ☐ |
-| 4 | `storage/`, `config/database.php` y `database/` responden «acceso denegado» (403) | ☐ |
+| 4 | `storage/`, `config/database.php`, `database/` y los PDF de `controller/tramite/documentos/` responden «acceso denegado» (403) | ☐ |
 | 5 | Datos de la institución, logo y horario configurados | ☐ |
 | 6 | Áreas con siglas, empleados y usuarios cargados | ☐ |
 | 7 | Feriados del año en curso y del siguiente cargados | ☐ |
 | 8 | Correo de prueba enviado y recibido | ☐ / No aplica |
 | 9 | Consulta de DNI probada | ☐ / No aplica |
 | 10 | Asistente de IA probado, con la evaluación del área legal | ☐ / No aplica |
-| 11 | Respaldo automático programado y **restauración probada** | ☐ |
+| 11 | Aviso de privacidad revisado por el área legal y guardado en el panel | ☐ |
+| 12 | Respaldo automático programado y **restauración probada** | ☐ |
 
 ## 4. Pruebas funcionales
 

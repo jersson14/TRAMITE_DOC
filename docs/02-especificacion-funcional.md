@@ -87,7 +87,8 @@ stateDiagram-v2
 
 **RF-01. Mesa de partes virtual.** El ciudadano registra su trámite sin cuenta: datos del remitente
 (a nombre propio o como persona jurídica, con RUC y razón social), tipo y número de documento,
-folios, asunto, documento principal en PDF y hasta 10 anexos en PDF.
+folios, asunto, documento principal en PDF y hasta 5 anexos en PDF (35 MB en total). Para registrar
+debe aceptar el aviso de privacidad; el servidor rechaza el registro sin esa aceptación.
 
 **RF-02. Consulta de DNI al registrar.** Con la consulta configurada, al escribir el DNI se
 completan los nombres y apellidos.
@@ -166,7 +167,9 @@ informe en PDF opcional que puede firmar antes de enviarlo. El área responsable
 **RF-24.** El expediente muestra juntos el documento principal y los anexos, con su tamaño, fecha y
 quién los subió, para ver y descargar.
 
-**RF-25.** Los archivos de un trámite solo los ven el administrador y las áreas por las que pasó.
+**RF-25.** Los archivos de un trámite solo los ven el administrador y las áreas por las que pasó. El
+sistema entrega cada archivo tras comprobar la sesión y el área: las carpetas de documentos no son
+accesibles desde el navegador.
 
 ### 5.5 Firma digital
 
@@ -201,7 +204,8 @@ plazos y productividad por área. Exportables a PDF, Excel y CSV.
 
 **RF-34. Asistente con IA.** Responde en lenguaje natural preguntas sobre los trámites, con los datos
 del sistema y dentro de lo que el usuario puede ver. Apagado o sin clave, responde lo básico:
-pendientes, resumen del área y búsqueda de un expediente.
+pendientes, resumen del área y búsqueda de un expediente. No lee DNI, datos de contacto ni
+contraseñas, y oculta los nombres de personas en lo que envía al proveedor de IA.
 
 **RF-35. Notificaciones.** Avisos en pantalla de los trámites pendientes, con enlace.
 
@@ -218,7 +222,8 @@ o a áreas específicas, con vigencia opcional, imagen y acuse de lectura. Se mu
 **RF-39. Bitácora.** Consulta de todas las acciones registradas, con filtros por fecha y acción.
 
 **RF-40. Configuración.** Datos de la institución (nombre, sigla, logo, color, contacto y horario de
-atención), asistente de IA, correo saliente y consulta de DNI, con prueba antes de guardar.
+atención), asistente de IA, correo saliente y consulta de DNI, con prueba antes de guardar, y el
+aviso de privacidad del portal.
 
 ## 6. Reglas de negocio
 
@@ -271,7 +276,7 @@ copia no deciden sobre el trámite; las áreas de atención responden, pero no d
 | --- | --- |
 | RNF-01 | Acceso por navegador web, sin instalar programas en las computadoras. |
 | RNF-02 | La interfaz se adapta al celular. |
-| RNF-03 | Solo se aceptan archivos PDF, validados por su contenido: hasta 20 MB por archivo y 10 anexos por envío. |
+| RNF-03 | Solo se aceptan archivos PDF, validados por su contenido: hasta 20 MB por archivo y 10 anexos por envío (5 en el portal ciudadano, con 35 MB en total). |
 | RNF-04 | La sesión se cierra tras 2 horas sin actividad. |
 | RNF-05 | El ingreso se bloquea 15 minutos tras 5 intentos fallidos. |
 | RNF-06 | Todas las operaciones internas exigen sesión y un token contra falsificación de solicitudes (CSRF). |

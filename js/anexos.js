@@ -14,6 +14,15 @@ function escaparTexto(valor) {
     .replace(/'/g, "&#39;");
 }
 
+/**
+ * Dirección para abrir un archivo del trámite. Las carpetas de documentos están
+ * cerradas al acceso directo: el archivo lo entrega un controlador que exige
+ * sesión y comprueba que el área pueda ver ese trámite.
+ */
+function urlArchivo(ruta) {
+  return "../controller/tramite/controlador_ver_archivo.php?ruta=" + encodeURIComponent(ruta || "");
+}
+
 function tamanoLegible(bytes) {
   var n = parseInt(bytes, 10) || 0;
   if (n <= 0) return "";
@@ -29,7 +38,7 @@ function tamanoLegible(bytes) {
  */
 function filaArchivo(datos) {
   var clases = "archivo-item" + (datos.principal ? " es-principal" : "") + (datos.existe ? "" : " no-disponible");
-  var url = "../" + escaparTexto(datos.ruta);
+  var url = escaparTexto(urlArchivo(datos.ruta));
   var firmas = datos.firmas || 0;
 
   /*
@@ -245,7 +254,7 @@ function Render_Archivos_Movimiento(data, type, row) {
 
   if (data) {
     html +=
-      '<a class="btn btn-sm btn-primary" href="../' + escaparTexto(data) + '" target="_blank" rel="noopener" ' +
+      '<a class="btn btn-sm btn-primary" href="' + escaparTexto(urlArchivo(data)) + '" target="_blank" rel="noopener" ' +
       'title="Ver documento"><i class="fas fa-file-download"></i></a>';
   } else {
     html +=
@@ -262,7 +271,7 @@ function Render_Archivos_Movimiento(data, type, row) {
 
   for (var j = 0; j < anexos.length; j++) {
     html +=
-      '<a class="btn btn-sm btn-anexo" href="../' + escaparTexto(anexos[j].ruta) + '" target="_blank" rel="noopener" ' +
+      '<a class="btn btn-sm btn-anexo" href="' + escaparTexto(urlArchivo(anexos[j].ruta)) + '" target="_blank" rel="noopener" ' +
       'title="Anexo: ' + escaparTexto(anexos[j].nombre) + '" aria-label="Anexo: ' + escaparTexto(anexos[j].nombre) + '">' +
       '<i class="fas fa-paperclip"></i>' + (anexos.length > 1 ? '<span class="anexo-numero">' + (j + 1) + "</span>" : "") +
       "</a>";
@@ -349,7 +358,7 @@ function Cargar_Atenciones(documentoId) {
       var respuesta = a.respuesta
         ? '<div class="atencion-respuesta">' + escaparTexto(a.respuesta) +
           (a.respuesta_archivo
-            ? '<div class="mt-2"><a class="btn btn-archivo" href="../' + escaparTexto(a.respuesta_archivo) + '" target="_blank" rel="noopener"><i class="fas fa-file-pdf"></i> Ver archivo de la respuesta</a></div>'
+            ? '<div class="mt-2"><a class="btn btn-archivo" href="' + escaparTexto(urlArchivo(a.respuesta_archivo)) + '" target="_blank" rel="noopener"><i class="fas fa-file-pdf"></i> Ver archivo de la respuesta</a></div>'
             : "") + "</div>"
         : "";
 
