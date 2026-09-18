@@ -16,6 +16,10 @@ class conexionBD {
             $this->pdo->exec("set names utf8");
             // Meses y días en español en DATE_FORMAT/MONTHNAME ("septiembre", no "September")
             $this->pdo->exec("SET lc_time_names = 'es_PE'");
+            // Hora de Perú para NOW() y CURDATE() de los procedimientos, sea cual sea la
+            // zona del servidor (un hosting suele estar en UTC: sin esto, fechas y plazos
+            // se correrían 5 horas). Perú no tiene horario de verano: el desfase es fijo.
+            $this->pdo->exec("SET time_zone = '-05:00'");
             return $this->pdo;
         } catch (PDOException $e) {
             error_log('[BD] ' . $e->getMessage());
