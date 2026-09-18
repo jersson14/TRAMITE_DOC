@@ -691,6 +691,27 @@ $e = [Seguridad::class, 'e'];
                 font-size: 0.9rem;
             }
         }
+
+        /* Observación y subsanación (migración 025) */
+        .observacion-caja { border: 2px solid #B45309; background: #FFFBEB; border-radius: 14px; padding: 1.1rem 1.25rem; margin-bottom: 1.25rem; }
+        .observacion-caja h3 { color: #B45309; font-size: 1.1rem; font-weight: 700; margin: 0 0 .5rem; }
+        .observacion-caja p { margin: .5rem 0; color: #1f2937; }
+        .observacion-motivo { background: #fff; border-left: 4px solid #B45309; padding: .75rem 1rem; margin: .75rem 0; white-space: pre-wrap; overflow-wrap: break-word; }
+        .observacion-plazo { font-size: .95rem; }
+        .observacion-plazo.vencida { color: #B91C1C; }
+        .observacion-form { display: flex; flex-direction: column; gap: .4rem; margin-top: 1rem; }
+        .observacion-form label { font-weight: 600; font-size: .9rem; margin-top: .4rem; }
+        .observacion-form label small { font-weight: 400; color: #6b7280; }
+        .observacion-form input[type=file], .observacion-form textarea {
+            width: 100%; box-sizing: border-box; border: 1px solid #d1d5db; border-radius: 8px; padding: .5rem; font: inherit; background: #fff;
+        }
+        .observacion-form textarea { resize: vertical; }
+        .observacion-form button {
+            align-self: flex-start; margin-top: .6rem; background: #1E3A5F; color: #fff; border: 0; border-radius: 8px;
+            padding: .65rem 1.2rem; font-weight: 600; cursor: pointer;
+        }
+        .observacion-form button:hover { background: #16304E; }
+        .observacion-form button:disabled { opacity: .7; cursor: wait; }
     </style>
 </head>
 
@@ -911,7 +932,9 @@ $e = [Seguridad::class, 'e'];
             ACEPTADO:   { color: '#15803D', icono: 'fas fa-check', texto: 'Aceptado por el área' },
             DERIVADO:   { color: '#1E3A5F', icono: 'fas fa-share', texto: 'Derivado a otra área' },
             FINALIZADO: { color: '#2C5282', icono: 'fas fa-flag-checkered', texto: 'Finalizado' },
-            RECHAZADO:  { color: '#B91C1C', icono: 'fas fa-times-circle', texto: 'Observado / rechazado' }
+            RECHAZADO:  { color: '#B91C1C', icono: 'fas fa-times-circle', texto: 'Rechazado' },
+            // Migración 025: observado se puede subsanar desde aquí mismo; rechazado no
+            OBSERVADO:  { color: '#B45309', icono: 'fas fa-exclamation-circle', texto: 'Observado: debe subsanar' }
         };
 
         function textoPlazo(t) {
@@ -920,6 +943,96 @@ $e = [Seguridad::class, 'e'];
             if (t.plazo_semaforo === 'ROJO') return { clase: 'rojo', texto: 'Plazo vencido el ' + t.plazo_limite };
             if (t.plazo_restante === 0) return { clase: 'ambar', texto: 'Vence hoy (' + t.plazo_limite + ')' };
             return { clase: t.plazo_semaforo === 'AMBAR' ? 'ambar' : 'verde', texto: 'Plazo hasta el ' + t.plazo_limite };
+        }
+
+        /*
+         * Si el trámite está observado, el ciudadano ve qué le piden y hasta cuándo,
+         * y puede subsanar aquí mismo sin acudir a la entidad (migración 025).
+         * Se identifica con el mismo N° de expediente y DNI que usó para consultar.
+         */
+        function Pintar_Observacion(r) {
+            var caja = document.getElementById('div_observacion');
+            if (!caja) {
+                caja = document.createElement('div');
+                caja.id = 'div_observacion';
+                document.getElementById('div_resumen').after(caja);
+            }
+            var o = r.observacion;
+            if (!o) { caja.innerHTML = ''; return; }
+
+            caja.innerHTML =
+                '<div class="observacion-caja">' +
+                    '<h3><i class="fas fa-exclamation-circle"></i> Su trámite fue observado</h3>' +
+                    '<p>' + textoSeguro(o.area || 'La entidad') + ' revisó su documento el ' + textoSeguro(o.fecha) +
+                    ' y necesita que corrija o complete lo siguiente:</p>' +
+                    '<div class="observacion-motivo">' + textoSeguro(o.motivo) + '</div>' +
+                    '<p class="observacion-plazo' + (o.vencida ? ' vencida' : '') + '">' +
+                        (o.vencida
+                            ? '<i class="fas fa-hourglass-end"></i> El plazo venció el <b>' + textoSeguro(o.limite) + '</b>. ' +
+                              'Puede subsanar igual, pero la entidad decidirá si continúa con su trámite.'
+                            : '<i class="far fa-calendar-alt"></i> Tiene plazo hasta el <b>' + textoSeguro(o.limite) + '</b>.') +
+                    '</p>' +
+                    '<form id="form_subsanar" class="observacion-form" novalidate>' +
+                        '<label for="sub_archivo">Documento que le pidieron (PDF, hasta 20 MB) *</label>' +
+                        '<input type="file" id="sub_archivo" accept=".pdf,application/pdf" required>' +
+                        '<label for="sub_texto">Comentario <small>(opcional)</small></label>' +
+                        '<textarea id="sub_texto" rows="3" maxlength="2000" placeholder="Explique brevemente lo que está adjuntando"></textarea>' +
+                        '<button type="submit"><i class="fas fa-paper-plane"></i> Enviar subsanación</button>' +
+                    '</form>' +
+                '</div>';
+
+            document.getElementById('form_subsanar').addEventListener('submit', function (e) {
+                e.preventDefault();
+                Enviar_Subsanacion(this);
+            });
+        }
+
+        function Enviar_Subsanacion(form) {
+            var archivo = document.getElementById('sub_archivo').files[0];
+            if (!archivo) {
+                return Swal.fire({ icon: 'warning', title: 'Falta el documento', text: 'Adjunte en PDF el documento que le pidieron.', confirmButtonColor: '#1E3A5F' });
+            }
+            if (!/\.pdf$/i.test(archivo.name)) {
+                return Swal.fire({ icon: 'warning', title: 'Formato no válido', text: 'El documento debe estar en PDF.', confirmButtonColor: '#1E3A5F' });
+            }
+            if (archivo.size > 20 * 1048576) {
+                return Swal.fire({ icon: 'warning', title: 'Archivo muy pesado', text: 'El documento no debe pasar de 20 MB.', confirmButtonColor: '#1E3A5F' });
+            }
+
+            var datos = new FormData();
+            // Mismo par con el que consultó: así se identifica sin tener cuenta
+            datos.append('numero', document.getElementById('txt_numero').value.trim());
+            datos.append('dni', document.getElementById('txt_dni').value.trim());
+            datos.append('texto', document.getElementById('sub_texto').value.trim());
+            datos.append('archivo', archivo);
+
+            var boton = form.querySelector('button[type=submit]');
+            boton.disabled = true;
+            boton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+
+            $.ajax({
+                url: 'controller/tramite/controlador_subsanar_publico.php',
+                type: 'POST',
+                data: datos,
+                processData: false,
+                contentType: false,
+                dataType: 'json'
+            }).done(function (r) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Subsanación enviada',
+                    html: 'Recibimos su documento. Su expediente <b>' + textoSeguro(r.expediente) + '</b> volvió a la bandeja del área para continuar su atención.' +
+                          (r.fuera_de_plazo ? '<br><br><small style="color:#B45309;">Se envió fuera del plazo: la entidad decidirá si continúa con su trámite.</small>' : ''),
+                    confirmButtonColor: '#1E3A5F'
+                }).then(function () {
+                    Traer_Datos_Seguimiento();   // refresca: ya no debe aparecer como observado
+                });
+            }).fail(function (xhr) {
+                var mensaje = (xhr.responseJSON && xhr.responseJSON.mensaje) || 'No se pudo enviar la subsanación. Intente nuevamente.';
+                Swal.fire({ icon: 'warning', title: 'No se pudo enviar', text: mensaje, confirmButtonColor: '#1E3A5F' });
+                boton.disabled = false;
+                boton.innerHTML = '<i class="fas fa-paper-plane"></i> Enviar subsanación';
+            });
         }
 
         function Pintar_Consulta(r) {
@@ -950,6 +1063,8 @@ $e = [Seguridad::class, 'e'];
                     '<div><dt>Remitente</dt><dd>' + textoSeguro(t.remitente) + '</dd></div>' +
                     '<div><dt>Archivos</dt><dd>' + (1 + t.anexos) + ' (' + (t.anexos === 1 ? '1 anexo' : t.anexos + ' anexos') + ')</dd></div>' +
                 '</dl>';
+
+            Pintar_Observacion(r);
 
             var cadena = '<div class="timeline">' +
                 '<div class="timeline-item"><div class="timeline-icon" style="background:#2C5282;"><i class="fas fa-inbox"></i></div>' +

@@ -18,6 +18,13 @@
         Seguridad::responderError(422, 'Estado no permitido.');
     }
 
+    // Este endpoint también finaliza. Era un segundo camino para cerrar el
+    // expediente que se saltaba el control por rol de la derivación (migración
+    // 024). Aceptar es solo acusar recibo y lo puede hacer cualquiera del área.
+    if ($estatus === 'FINALIZADO') {
+        Seguridad::exigirPermiso('finalizar');
+    }
+
     // Solo el área a la que va dirigido puede aceptarlo; un área que lo recibió en
     // copia lo ve para conocimiento, pero no decide sobre él.
     if (!Seguridad::esAdmin() && !$MTR->Es_Area_Destino($id, Seguridad::areaId())) {

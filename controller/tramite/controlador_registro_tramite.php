@@ -1,10 +1,13 @@
 <?php
     require_once __DIR__ . '/../_guard.php';
     require_once __DIR__ . '/../../lib/Bitacora.php';
+    require_once __DIR__ . '/../../lib/Correlativo.php';
     require '../../model/model_tramite.php';
     require '../../model/model_firma.php';
     require_once __DIR__ . '/../../lib/FirmaDigital.php';
     require '../../utilitario/class_notificacion.php';
+    Seguridad::exigirPermiso('registrar');
+
     $MTR = new Modelo_Tramite();
     $NTF = new Notificacion();
 
@@ -75,6 +78,32 @@
             $dni, false, $MFI->Remitente_Es_Juridica($ruc, $raz, $vpresentacion)
         );
         $MFI->Marcar_Procedencia($consulta, $procedencia);
+
+        /*
+         * Número del documento (migración 026). Solo para documentos internos: uno
+         * externo ya trae el número que le puso quien lo envía.
+         *
+         * Si el usuario dejó el número automático, se GASTA aquí de forma atómica y
+         * se usa ese, aunque en pantalla hubiera visto otro (si alguien registró a la
+         * vez, a cada uno le toca uno distinto). Si lo cambió a mano, se respeta y no
+         * se gasta ningún número de la secuencia.
+         *
+         * Siempre se reescribe desde aquí porque el procedimiento de registro recibe
+         * el número en 15 caracteres y un número completo no cabe.
+         */
+        $numeroFinal = $ndo;
+        if ($procedencia === 'INTERNO' && ($_POST['correlativo_auto'] ?? '0') === '1') {
+            $pdoNum = (new conexionBD())->conexionPDO();
+            $areaNum = Correlativo::datosArea($pdoNum, (int) $arp);
+            if ($areaNum) {
+                $anioNum = (int) date('Y');
+                $numeroFinal = Correlativo::formatear(
+                    Correlativo::consumir($pdoNum, (int) $arp, (int) $tip, $anioNum), $anioNum, $areaNum['sigla']
+                );
+            }
+        }
+        $MTR->Actualizar_Nro_Documento($consulta, mb_substr($numeroFinal, 0, 80));
+
 
         // Queda constancia de con qué firma llegó el documento
         $detalleFirma = '';

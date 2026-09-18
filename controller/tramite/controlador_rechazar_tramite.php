@@ -15,6 +15,12 @@
         Seguridad::responderError(422, 'Indique el motivo del rechazo.');
     }
 
+    // Rechazar cierra el expediente igual que finalizarlo, así que exige el mismo
+    // permiso (migración 024). Sin esto un Especialista podía cerrar un trámite
+    // rechazándolo. Para algo incompleto de un ciudadano, lo que corresponde es
+    // observarlo, no rechazarlo.
+    Seguridad::exigirPermiso('finalizar');
+
     // Solo el área de destino (o el administrador) puede rechazar el trámite.
     if (!Seguridad::esAdmin() && !$MTR->Es_Area_Destino($id2, Seguridad::areaId())) {
         Seguridad::responderError(403, 'Solo el área de destino puede rechazar este trámite.');

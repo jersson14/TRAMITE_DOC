@@ -116,7 +116,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <?php
     }
     ?>
-    <?php if ($_SESSION['S_ROL'] == "Secretario (a)") { ?>
+    <?php if ($_SESSION['S_ROL'] != "Administrador") { /* todo el personal de área, sea cual sea su rol (migración 024) */ ?>
       <!-- Navbar -->
       <nav class="main-header navbar navbar-expand navbar-white navbar-light">
         <!-- Left navbar links -->
@@ -368,7 +368,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             <?php
             }
             ?>
-            <?php if ($_SESSION['S_ROL'] == "Secretario (a)") { ?>
+            <?php if ($_SESSION['S_ROL'] != "Administrador") { /* todo el personal de área, sea cual sea su rol (migración 024) */ ?>
               <li class="nav-item">
                 <a href="#"
                   onclick="cargar_contenido(
@@ -501,7 +501,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <?php
       }
       ?>
-      <?php if ($_SESSION['S_ROL'] == "Secretario (a)") { ?>
+      <?php if ($_SESSION['S_ROL'] != "Administrador") { /* todo el personal de área, sea cual sea su rol (migración 024) */ ?>
 
         <!-- Tablero del área (js/console_indicadores.js) -->
         <div class="content">
@@ -778,6 +778,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
   <!-- AdminLTE App -->
   <script src="../plantilla/dist/js/adminlte.min.js"></script>
   <script>
+    /*
+     * Lo que el rol de esta sesión puede hacer (migración 024). La pantalla lo usa
+     * para no ofrecer botones que el servidor va a rechazar; la decisión real la
+     * toma el servidor con Seguridad::exigirPermiso(), esto es solo cortesía.
+     */
+    var PERMISOS = <?php echo json_encode(Seguridad::permisosActuales(), JSON_UNESCAPED_UNICODE); ?>;
+    var ROL_ACTUAL = <?php echo json_encode(Seguridad::rol(), JSON_UNESCAPED_UNICODE); ?>;
+    function puede(accion) { return PERMISOS.indexOf(accion) !== -1; }
+
     // Todas las peticiones AJAX llevan el token CSRF; los errores de acceso se tratan en un solo lugar
     $.ajaxSetup({ headers: { 'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content } });
     $(document).ajaxError(function (evento, xhr) {
@@ -813,7 +822,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 
 </html>
 <script>
-  <?php if ($_SESSION['S_ROL'] == "Secretario (a)") { ?>
+  <?php if ($_SESSION['S_ROL'] != "Administrador") { /* todo el personal de área, sea cual sea su rol (migración 024) */ ?>
   <?php
   }
   ?>

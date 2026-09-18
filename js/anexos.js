@@ -150,7 +150,9 @@ function Cargar_Anexos(documentoId) {
       var anexos = (respuesta && respuesta.data) || [];
       var filas = "";
       if (typeof FIRMA_PERU_CONFIGURADO !== "undefined") FIRMA_PERU_CONFIGURADO = !!(respuesta && respuesta.firma_peru);
-      var puedeFirmar = typeof Formulario_Firma === "function";
+      // Además de que la pantalla sepa firmar, el rol tiene que poder (migración 024)
+      var puedeFirmar = typeof Formulario_Firma === "function"
+        && (typeof puede !== "function" || puede("firmar"));
       var esExterno = !!(respuesta && respuesta.procedencia === "EXTERNO");
       // Archivos que aún se pueden firmar: PDF de un trámite interno, sin firmas
       // propias todavía y sin una copia firmada ya creada.

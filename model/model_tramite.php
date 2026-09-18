@@ -183,6 +183,28 @@
             return (bool) $query->fetchColumn();
         }
 
+        /**
+         * Guarda el número completo del documento (migración 026). Los procedimientos
+         * de registro lo reciben en 15 caracteres y "001-2026-DIRESA-APURÍMAC/CONT" no
+         * cabe, así que se reescribe aquí justo después de insertar.
+         */
+        public function Actualizar_Nro_Documento($documento_id, $numero){
+            $c = conexionBD::conexionPDO();
+            $query = $c->prepare("UPDATE documento SET doc_nrodocumento = ? WHERE documento_id = ?");
+            $query->execute([$numero, $documento_id]);
+            return $query->rowCount();
+        }
+
+        /** Nombre, correo y expediente del remitente, para avisarle por correo. */
+        public function Traer_Datos_Ciudadano($documento_id){
+            $c = conexionBD::conexionPDO();
+            $query = $c->prepare("SELECT doc_emailremitente AS email, doc_expediente AS expediente,
+                                         CONCAT_WS(' ', doc_nombreremitente, doc_apepatremitente, doc_apematremitente) AS nombre
+                                  FROM documento WHERE documento_id = ?");
+            $query->execute([$documento_id]);
+            return $query->fetch(PDO::FETCH_ASSOC) ?: null;
+        }
+
         /** Documento principal del trámite (el archivo con que se registró). */
         public function Traer_Archivo_Principal($documento_id){
             $c = conexionBD::conexionPDO();

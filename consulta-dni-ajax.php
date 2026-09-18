@@ -1,34 +1,39 @@
 <?php
-// Datos
-$token = 'apis-token-16988.bodzv5ui8jY073LvP7Hbx2UD7dEKMYhD';
-$dni = $_POST['dni'];
+/**
+ * Consulta de DNI para autocompletar el nombre del remitente.
+ *
+ * La usan el portal ciudadano (registrar.php, sin sesión) y el registro de mesa
+ * de partes. Por eso es pública, y por eso:
+ *   - tiene límite de consultas por IP: cada consulta cuesta saldo del token, y
+ *     antes cualquiera podía usar este archivo como proxy gratuito;
+ *   - valida el DNI antes de enviarlo (antes se pegaba tal cual a la URL);
+ *   - el token sale del panel de configuración, no del código (antes estaba
+ *     escrito aquí y se subió al repositorio).
+ *
+ * Si hay datos, devuelve el JSON de apis.net.pe tal cual (las pantallas leen
+ * nombres, apellidoPaterno y apellidoMaterno). Si no, un 422 con el motivo.
+ */
+require_once __DIR__ . '/lib/Seguridad.php';
+require_once __DIR__ . '/lib/ConsultaDni.php';
+Seguridad::iniciarSesion();
 
-// Iniciar llamada a API
-$curl = curl_init();
+header('Content-Type: application/json; charset=utf-8');
 
-// Buscar dni
-curl_setopt_array($curl, array(
-  CURLOPT_URL => 'https://api.apis.net.pe/v2/reniec/dni?numero=' . $dni,
-  CURLOPT_RETURNTRANSFER => true,
-  CURLOPT_SSL_VERIFYPEER => 0,
-  CURLOPT_ENCODING => '',
-  CURLOPT_MAXREDIRS => 2,
-  CURLOPT_TIMEOUT => 0,
-  CURLOPT_FOLLOWLOCATION => true,
-  CURLOPT_CUSTOMREQUEST => 'GET',
-  CURLOPT_HTTPHEADER => array(
-    'Referer: https://apis.net.pe/consulta-dni-api',
-    'Authorization: Bearer ' . $token
-  ),
-));
+// 20 consultas cada 10 minutos por IP: de sobra para registrar, no para abusar
+$clave = 'consulta_dni|' . Seguridad::ipCliente();
+if (Seguridad::esperaIntentos($clave, 20, 600) > 0) {
+    Seguridad::responderError(429, 'Demasiadas consultas de DNI seguidas. Espere unos minutos o escriba los datos a mano.');
+}
+Seguridad::registrarIntento($clave, 600);
 
-$response = curl_exec($curl);
-if(curl_errno($curl)){
-    echo 'Error del scraper:'.curl_error($curl);
-    exit;
+$dni = preg_replace('/\D/', '', (string) ($_POST['dni'] ?? ''));
+
+if (!ConsultaDni::disponible()) {
+    Seguridad::responderError(422, 'La consulta automática de DNI no está disponible. Escriba los datos a mano.');
 }
 
-curl_close($curl);
-
-// Datos listos para usar
-echo $response;
+try {
+    echo json_encode(ConsultaDni::consultar($dni), JSON_UNESCAPED_UNICODE);
+} catch (RuntimeException $e) {
+    Seguridad::responderError(422, $e->getMessage());
+}

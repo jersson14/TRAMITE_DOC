@@ -38,6 +38,7 @@
                       <tr>
                           <th style="text-align:center">Nro.</th>
                           <th style="text-align:center">Área</th>
+                          <th style="text-align:center">Sigla</th>
                           <th style="text-align:center">Fecha de Registro</th>
                           <th style="text-align:center">Estado</th>
                           <th style="text-align:center">Acción</th>
@@ -73,6 +74,13 @@
             <label for="">Área(*):</label>
             <input type="text" autocomplete="on" class="form-control" id="txt_area" onkeypress="return sololetras(event)">
           </div>
+          <div class="col-12 form-group">
+            <label for="">Sigla <small class="text-muted">(para numerar sus documentos)</small>:</label>
+            <input type="text" class="form-control" id="txt_sigla" maxlength="20" placeholder="Ej.: OGA, RRHH, CONT"
+                   style="text-transform:uppercase;">
+            <small class="text-muted">Va al final del número: OFICIO N° 001-2026-.../<b>OGA</b>.
+            Si la deja vacía, el sistema la deduce del nombre del área.</small>
+          </div>
         </div>
       </div>
       <div class="modal-footer">
@@ -100,6 +108,13 @@
             <label for="">Área(*):</label>
             <input type="text" autocomplete="on" class="form-control" id="txt_area_editar" onkeypress="return sololetras(event)">
             <input type="text" id="txt_idarea" hidden>
+          </div>
+          <div class="col-12 form-group">
+            <label for="">Sigla <small class="text-muted">(para numerar sus documentos)</small>:</label>
+            <input type="text" class="form-control" id="txt_sigla_editar" maxlength="20" placeholder="Ej.: OGA, RRHH, CONT"
+                   style="text-transform:uppercase;">
+            <small class="text-muted">Va al final del número: OFICIO N° 001-2026-.../<b>OGA</b>.
+            Si la deja vacía, el sistema la deduce del nombre del área.</small>
           </div>
           <div class="col-12 form-group">
             <label for="">Estado(*):</label>

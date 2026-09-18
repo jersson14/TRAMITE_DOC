@@ -5,7 +5,10 @@
  * =====================================================
  */
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../config/config_email.php';
+// La configuración del correo sale del panel (migración 027). Si todavía no se
+// cargó ahí, Configuracion::smtp() usa config/config_email.php. Antes este archivo
+// se exigía siempre: una instalación nueva sin él tiraba error al registrar.
+require_once __DIR__ . '/../lib/Configuracion.php';
 require_once __DIR__ . '/../model/model_conexion.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
@@ -107,16 +110,27 @@ class Notificacion extends conexionBD {
      * Crea y configura PHPMailer con los datos SMTP.
      */
     private function crearMailer() {
+        return self::mailerDesde(Configuracion::smtp());
+    }
+
+    /**
+     * PHPMailer armado con una configuración dada. Es público para que el panel
+     * pueda probar una configuración ANTES de guardarla.
+     */
+    public static function mailerDesde(array $smtp) {
         $mail = new PHPMailer(true);
         $mail->isSMTP();
-        $mail->Host       = EMAIL_HOST;
-        $mail->SMTPAuth   = true;
-        $mail->Username   = EMAIL_USERNAME;
-        $mail->Password   = EMAIL_PASSWORD;
-        $mail->SMTPSecure = EMAIL_SECURE;  // 'ssl' para Hostinger puerto 465
-        $mail->Port       = EMAIL_PORT;
+        $mail->Host       = $smtp['host'];
+        $mail->SMTPAuth   = $smtp['usuario'] !== '';
+        $mail->Username   = $smtp['usuario'];
+        $mail->Password   = $smtp['clave'];
+        // 'ssl' = puerto 465 (SMTPS), 'tls' = puerto 587 (STARTTLS), '' = sin cifrar
+        $mail->SMTPSecure = $smtp['seguridad'];
+        $mail->SMTPAutoTLS = $smtp['seguridad'] !== '';
+        $mail->Port       = (int) $smtp['puerto'];
+        $mail->Timeout    = 15;   // un servidor que no responde no debe colgar el registro
         $mail->CharSet    = 'UTF-8';
-        $mail->setFrom(EMAIL_FROM_EMAIL, EMAIL_FROM_NAME);
+        $mail->setFrom($smtp['correo'] !== '' ? $smtp['correo'] : $smtp['usuario'], $smtp['nombre']);
         return $mail;
     }
 
@@ -148,7 +162,7 @@ class Notificacion extends conexionBD {
      * @param array  $extra            expediente, recibido (fecha y hora) y presentado (si llegó fuera del horario)
      */
     public function notificarCiudadano($email_ciudadano, $nombre_ciudadano, $documento_id, $tipodocumento_id, $nro_documento, $asunto, $id_area_destino, $url_base = '', array $extra = []) {
-        if (!EMAIL_ENABLED) return false;
+        if (!Configuracion::correoActivo()) return false;
         if (empty($email_ciudadano)) return false;
 
         $tipo_doc_texto      = $this->obtenerDescripcionTipoDoc($tipodocumento_id);
@@ -189,6 +203,75 @@ class Notificacion extends conexionBD {
     }
 
     /**
+     * Avisa al ciudadano que su trámite fue observado: qué falta y hasta cuándo
+     * puede subsanarlo desde el portal (migración 025).
+     */
+    public function notificarObservacion($email, $nombre, $expediente, $motivo, $limite, $url_base = '') {
+        if (!Configuracion::correoActivo() || empty($email)) return false;
+        $link = rtrim($url_base, '/') . '/seguimiento.php?codigo=' . rawurlencode($expediente);
+        $e = function ($v) { return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8'); };
+
+        $html = '<div style="font-family:Arial,sans-serif;max-width:560px;color:#1f2937;">'
+            . '<h2 style="color:#B45309;margin-bottom:.5rem;">Su trámite fue observado</h2>'
+            . '<p>Estimado(a) <b>' . $e(strtoupper($nombre)) . '</b>:</p>'
+            . '<p>Revisamos su expediente <b>' . $e($expediente) . '</b> y necesitamos que corrija o complete lo siguiente:</p>'
+            . '<div style="background:#FFFBEB;border-left:4px solid #B45309;padding:.75rem 1rem;margin:1rem 0;white-space:pre-wrap;">'
+            . $e($motivo) . '</div>'
+            . '<p>Tiene plazo <b>hasta el ' . $e($limite) . '</b>. Puede subsanarlo en línea, sin acudir a la entidad:</p>'
+            . '<p><a href="' . $e($link) . '" style="background:#1E3A5F;color:#fff;padding:.6rem 1rem;border-radius:.3rem;text-decoration:none;">'
+            . 'Subsanar mi trámite</a></p>'
+            . '<p style="font-size:.85rem;color:#6b7280;">Ingrese con su N° de expediente y su DNI. '
+            . 'Si no subsana dentro del plazo, el trámite podrá ser rechazado.</p></div>';
+
+        try {
+            $mail = $this->crearMailer();
+            $mail->isHTML(true);
+            $mail->Subject = 'Trámite observado: expediente ' . $expediente;
+            $mail->Body    = $html;
+            $mail->AltBody = "Su trámite $expediente fue observado.\n\nQué debe corregir:\n$motivo\n\n"
+                           . "Plazo: hasta el $limite\nSubsane en línea: $link";
+            $mail->addAddress($email, $nombre);
+            $mail->send();
+            return true;
+        } catch (Exception $ex) {
+            error_log('[NOTIFICACION_OBSERVACION] ' . $ex->getMessage());
+            return false;
+        }
+    }
+
+    /** Avisa al área que el ciudadano subsanó y puede continuar con el trámite. */
+    public function notificarSubsanacion($id_area, $expediente, $texto) {
+        if (!Configuracion::correoActivo()) return false;
+        $correos = $this->obtenerCorreosPorArea($id_area);
+        if (empty($correos)) return false;
+        $e = function ($v) { return htmlspecialchars((string) $v, ENT_QUOTES, 'UTF-8'); };
+
+        $html = '<div style="font-family:Arial,sans-serif;max-width:560px;color:#1f2937;">'
+            . '<h2 style="color:#15803D;margin-bottom:.5rem;">Trámite subsanado</h2>'
+            . '<p>El ciudadano subsanó la observación del expediente <b>' . $e($expediente) . '</b>. '
+            . 'El trámite volvió a su bandeja para que lo continúe.</p>'
+            . ($texto !== '' ? '<div style="background:#F0FDF4;border-left:4px solid #15803D;padding:.75rem 1rem;white-space:pre-wrap;">'
+                               . $e($texto) . '</div>' : '')
+            . '</div>';
+
+        try {
+            $mail = $this->crearMailer();
+            $mail->isHTML(true);
+            $mail->Subject = 'Trámite subsanado: expediente ' . $expediente;
+            $mail->Body    = $html;
+            $mail->AltBody = "El ciudadano subsanó el expediente $expediente.\n$texto";
+            foreach ($correos as $c) {
+                $mail->addAddress(is_array($c) ? ($c['email'] ?? reset($c)) : $c);
+            }
+            $mail->send();
+            return true;
+        } catch (Exception $ex) {
+            error_log('[NOTIFICACION_SUBSANACION] ' . $ex->getMessage());
+            return false;
+        }
+    }
+
+    /**
      * Envía notificación cuando se registra un nuevo documento.
      *
      * @param int    $id_area_destino   ID numérico del área que recibe
@@ -199,7 +282,7 @@ class Notificacion extends conexionBD {
      * @param string $remitente         Nombre del ciudadano/remitente
      */
     public function notificarRegistro($id_area_destino, $id_area_origen, $numero, $tipo_doc, $asunto, $remitente) {
-        if (!EMAIL_ENABLED) return false;
+        if (!Configuracion::correoActivo()) return false;
         $correos = $this->obtenerCorreosPorArea($id_area_destino);
         if (empty($correos)) return false;
 
@@ -256,7 +339,7 @@ class Notificacion extends conexionBD {
      * @param string $tipo_accion       DERIVAR, CONTESTAR, etc.
      */
     public function notificarDerivacion($id_area_destino, $id_area_origen, $id_usuario, $numero, $tipo_doc, $asunto, $tipo_accion = 'DERIVAR') {
-        if (!EMAIL_ENABLED) return false;
+        if (!Configuracion::correoActivo()) return false;
         $correos = $this->obtenerCorreosPorArea($id_area_destino);
         if (empty($correos)) return false;
 

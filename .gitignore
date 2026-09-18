@@ -2,6 +2,8 @@ sistema_tramite.sql
 *.sql
 # Las migraciones de estructura sí se versionan (no contienen datos)
 !database/migraciones/*.sql
+# El instalador tampoco trae datos personales: esquema y datos iniciales de ejemplo
+!database/instalacion/*.sql
 
 # Archivos de configuración con credenciales reales
 config/config_email.php

@@ -55,7 +55,7 @@
         <!-- /.row -->
       </div><!-- /.container-fluid -->
 <div class="modal fade" id="modal_registro" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header" style="background: #1E3A5F; color: white;">
         <h5 class="modal-title" id="exampleModalLabel"><b>REGISTRO DE USUARIO</b></h5>
@@ -89,8 +89,12 @@
           <div class="col-6 form-group">
             <label for="">Rol(*):</label>
               <select class="js-example-basic-single" id="select_rol" style="width:100%">
-                <option value="Secretario (a)">SECRETARIO(A)</option>
-                <option value="Administrador">ADMINISTRADOR</option>
+                <!-- Migración 024: cada rol puede cosas distintas (ver Seguridad::PERMISOS) -->
+                <option value="Secretario (a)">SECRETARIO(A) — registra, deriva y finaliza</option>
+                <option value="Mesa de Partes">MESA DE PARTES — registra y deriva</option>
+                <option value="Jefe de Área">JEFE DE ÁREA — además finaliza y firma</option>
+                <option value="Especialista">ESPECIALISTA — atiende y firma, no deriva</option>
+                <option value="Administrador">ADMINISTRADOR — todo, más los mantenimientos</option>
               </select>          
           </div>
         </div>
@@ -103,7 +107,7 @@
   </div>
 </div>
 <div class="modal fade" id="modal_editar" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header" style="background: #1E3A5F; color: white;">
         <h5 class="modal-title" id="exampleModalLabel"><b>EDITAR DATOS DE USUARIO</b></h5>
@@ -134,8 +138,12 @@
           <div class="col-6">
             <label for="">Rol(*):</label>
               <select class="js-example-basic-single" id="select_rol_editar" style="width:100%">
-                <option value="Secretario (a)">SECRETARIO(A)</option>
-                <option value="Administrador">ADMINISTRADOR</option>
+                <!-- Migración 024: cada rol puede cosas distintas (ver Seguridad::PERMISOS) -->
+                <option value="Secretario (a)">SECRETARIO(A) — registra, deriva y finaliza</option>
+                <option value="Mesa de Partes">MESA DE PARTES — registra y deriva</option>
+                <option value="Jefe de Área">JEFE DE ÁREA — además finaliza y firma</option>
+                <option value="Especialista">ESPECIALISTA — atiende y firma, no deriva</option>
+                <option value="Administrador">ADMINISTRADOR — todo, más los mantenimientos</option>
               </select>          
           </div>
         </div>

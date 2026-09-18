@@ -45,4 +45,26 @@ echo json_encode([
         'limite_dia'     => Configuracion::entero('ia_limite_dia', 100),
         'proveedores'    => Configuracion::PROVEEDORES,
     ],
+    // Correo saliente (migración 027). La contraseña nunca viaja al navegador.
+    'correo' => (function () {
+        $smtp = Configuracion::smtp();
+        return [
+            'origen'      => $smtp['origen'],   // panel, archivo (config_email.php) o ninguno
+            'activo'      => $smtp['activo'],
+            'host'        => $smtp['host'],
+            'puerto'      => $smtp['puerto'],
+            'seguridad'   => $smtp['seguridad'],
+            'usuario'     => $smtp['usuario'],
+            'nombre'      => $smtp['nombre'],
+            'correo'      => $smtp['correo'],
+            'tiene_clave' => $smtp['clave'] !== '',
+            'clave'       => $smtp['clave'] !== '' ? str_repeat('•', 8) : '',
+        ];
+    })(),
+    // Consulta de DNI (migración 027). El token sale enmascarado.
+    'dni' => [
+        'activo'      => Configuracion::obtener('dni_activo') === '1',
+        'tiene_token' => Configuracion::obtener('dni_token') !== '',
+        'token'       => Configuracion::claveEnmascarada('dni_token'),
+    ],
 ], JSON_UNESCAPED_UNICODE);

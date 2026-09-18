@@ -1,4 +1,70 @@
 var tbl_tramite;
+/*
+ * Botón "Observar" (migración 025). Solo para trámites EXTERNOS, que son los que el
+ * ciudadano subsana desde el portal, y solo si el rol puede observar.
+ */
+function Boton_Observar(row){
+  if (row.procedencia !== "EXTERNO") return "";
+  if (typeof puede === "function" && !puede("observar")) return "";
+  return "<button class='observar btn btn-warning btn-sm' title='Pedir al ciudadano que corrija o complete'>" +
+         "<i class='fas fa-exclamation-circle'></i> Observar</button>&nbsp;";
+}
+
+$(document).on('click', '#tabla_tramite .observar', function(){
+  var tr = $(this).closest('tr');
+  if(tr.hasClass('child')){ tr = tr.prev(); }
+  var data = tbl_tramite.row(tr).data();
+  if(!data){ return; }
+
+  Swal.fire({
+    title: "Observar trámite",
+    html: "<div style='text-align:left'>" +
+      "<p class='mb-2'>Expediente <b>"+escaparTexto(data.doc_expediente || data.documento_id)+"</b><br>" +
+      "<small class='text-muted'>El ciudadano verá la observación en el portal y podrá subsanar desde ahí, " +
+      "sin acudir a la entidad. Si dejó correo, se le avisa.</small></p>" +
+      "<label style='font-size:small'>¿Qué debe corregir o completar? (*)</label>" +
+      "<textarea id='txt_obs_motivo' class='form-control' rows='5' maxlength='2000' " +
+        "placeholder='Ej.: Falta adjuntar la copia de DNI del representante y la vigencia de poder.'></textarea>" +
+      "<label class='mt-3' style='font-size:small'>Plazo para subsanar (días hábiles)</label>" +
+      "<input type='number' id='txt_obs_plazo' class='form-control' min='1' max='30' value='2'>" +
+      "<small class='text-muted'>Se cuentan solo días hábiles: sin fines de semana ni feriados.</small>" +
+      "</div>",
+    showCancelButton: true,
+    confirmButtonText: "Observar",
+    confirmButtonColor: "#B45309",
+    cancelButtonText: "Cancelar",
+    focusConfirm: false,
+    preConfirm: function(){
+      var motivo = document.getElementById('txt_obs_motivo').value.trim();
+      var plazo = parseInt(document.getElementById('txt_obs_plazo').value, 10);
+      if(motivo.length < 10){ Swal.showValidationMessage("Explique qué debe corregir (mínimo 10 caracteres)"); return false; }
+      if(!(plazo >= 1 && plazo <= 30)){ Swal.showValidationMessage("El plazo debe estar entre 1 y 30 días hábiles"); return false; }
+      return $.ajax({
+        url:"../controller/tramite/controlador_observar_tramite.php", type:"POST", dataType:"json",
+        data:{ id: data.documento_id, motivo: motivo, plazo: plazo }
+      }).then(function(r){ return r; }, function(xhr){
+        Swal.showValidationMessage((xhr.responseJSON && xhr.responseJSON.mensaje) || "No se pudo observar el trámite");
+        return false;
+      });
+    }
+  }).then(function(res){
+    if(res.isConfirmed && res.value){
+      var r = res.value;
+      Swal.fire({
+        icon: "success",
+        title: "Trámite observado",
+        html: "El ciudadano tiene plazo hasta el <b>"+escaparTexto(r.limite)+"</b> para subsanar." +
+              (r.avisado
+                ? "<br><small class='text-muted'>Se le avisó por correo.</small>"
+                : "<br><small style='color:#B45309;'>" + (r.tiene_correo
+                    ? "No se pudo enviar el correo: avísele por otro medio."
+                    : "El ciudadano no dejó correo: avísele por teléfono o al atenderlo.") + "</small>")
+      });
+      tbl_tramite.ajax.reload(null,false);
+    }
+  });
+});
+
 function listar_tramite(){
     let idusuario = document.getElementById('txtprincipalid').value;
   tbl_tramite = $("#tabla_tramite").DataTable({
@@ -13,6 +79,16 @@ function listar_tramite(){
       responsive: true,
       "async": false ,
       "processing": true,
+      // Migración 024: no ofrecer lo que el servidor va a rechazar por el rol
+      "drawCallback": function(){
+        if (typeof puede === "function" && !puede("derivar")) {
+          $("#tabla_tramite .derivar").remove();
+        }
+        // Rechazar cierra el expediente: exige el mismo permiso que finalizar
+        if (typeof puede === "function" && !puede("finalizar")) {
+          $("#tabla_tramite .rechazar").remove();
+        }
+      },
       "ajax":{
           "url":"../controller/tramite_area/controlador_listar_tramite.php",
           type:'POST',
@@ -43,6 +119,9 @@ function listar_tramite(){
                     return '<span class="badge bg-success">ACEPTADO</span>';
                 }else if(data=='FINALIZADO'){
                   return '<span class="badge bg-primary">FINALIZADO</span>';
+              }else if(data=='OBSERVADO'){
+                  // Migración 025: espera que el ciudadano subsane desde el portal
+                  return '<span class="badge bg-warning" title="Espera la subsanación del ciudadano"><i class="fas fa-exclamation-circle"></i> OBSERVADO</span>';
               }
             }
              
@@ -69,10 +148,14 @@ function listar_tramite(){
                   }
                   return "<button class='acuse-copia btn btn-sm btn-archivo' title='Confirmar que su área recibió esta copia'><i class='fas fa-inbox'></i> Confirmar recepción</button>";
                 }
+                // Migración 025: mientras el ciudadano no subsane, el trámite queda en espera
+                if(data=='OBSERVADO'){
+                  return "<span class='badge badge-copia' title='El ciudadano debe subsanar desde el portal'><i class='fas fa-hourglass-half'></i> Esperando subsanación</span>";
+                }
                 if(data=='PENDIENTE'){
-                    return "</button>&nbsp;<button  title='Aceptar Documento' class='aceptar btn btn-success  btn-sm'><i class='fa fa-check'></i> Aceptar</button>&nbsp;<button  title='Rechazar Documento' class='rechazar btn btn-danger  btn-sm'><i class='fa fa-search'></i> Rechazar</button>&nbsp;<button hidden class='derivar btn btn-primary  btn-sm' title='Derivar Documento'><i class='fa fa-share-square'></i> Derivar</button>";
+                    return Boton_Observar(row) + "</button>&nbsp;<button  title='Aceptar Documento' class='aceptar btn btn-success  btn-sm'><i class='fa fa-check'></i> Aceptar</button>&nbsp;<button  title='Rechazar Documento' class='rechazar btn btn-danger  btn-sm'><i class='fa fa-search'></i> Rechazar</button>&nbsp;<button hidden class='derivar btn btn-primary  btn-sm' title='Derivar Documento'><i class='fa fa-share-square'></i> Derivar</button>";
                 }else if (data=='ACEPTADO'){
-                  return "</button>&nbsp;<button hidden title='Aceptar Documento' class='aceptar btn btn-success  btn-sm'><i class='fa fa-check'></i> Aceptar</button>&nbsp;<button hidden title='Rechazar Documento' class='rechazar btn btn-danger  btn-sm'><i class='fa fa-search'></i> Rechazar</button>&nbsp;<button class='derivar btn btn-primary  btn-sm' title='Derivar Documento'><i class='fa fa-share-square'></i> Derivar</button>";
+                  return Boton_Observar(row) + "</button>&nbsp;<button hidden title='Aceptar Documento' class='aceptar btn btn-success  btn-sm'><i class='fa fa-check'></i> Aceptar</button>&nbsp;<button hidden title='Rechazar Documento' class='rechazar btn btn-danger  btn-sm'><i class='fa fa-search'></i> Rechazar</button>&nbsp;<button class='derivar btn btn-primary  btn-sm' title='Derivar Documento'><i class='fa fa-share-square'></i> Derivar</button>";
                 }else if (data=='RECHAZADO'){
                   return "</button>&nbsp;<button hidden title='Aceptar Documento' class='aceptar btn btn-success  btn-sm'><i class='fa fa-check'></i> Aceptar</button>&nbsp;<button hidden title='Rechazar Documento' class='rechazar btn btn-danger  btn-sm'><i class='fa fa-search'></i> Rechazar</button>&nbsp;<button hidden class='derivar btn btn-primary  btn-sm' title='Derivar Documento'><i class='fa fa-share-square'></i> Derivar</button>";
                 }else if (data=='FINALIZADO'){
@@ -101,6 +184,11 @@ $('#tabla_tramite').on('click','.derivar',function(){
 
   if(tbl_tramite.row(this).child.isShown()){
       var data = tbl_tramite.row(this).data();
+  }
+  // Migración 024: mesa de partes deriva pero no finaliza
+  if (typeof puede === "function") {
+    $("#select_derivar_de option[value='FINALIZAR']").prop("disabled", !puede("finalizar")).prop("hidden", !puede("finalizar"));
+    if (!puede("finalizar")) { $("#select_derivar_de").val("DERIVAR").trigger("change"); }
   }
   $("#modal_derivar").modal('show');
   document.getElementById('lb_titulo_derivar').innerHTML="<b>DERIVAR O FINALIZAR TRAMITE: </b>"+data.documento_id;
@@ -598,6 +686,9 @@ function Registrar_Tramite(){
     // Procedencia: un trámite externo trae el documento ya firmado de fuera y no se
     // firma en el sistema; uno interno lo produce la entidad y sí se firma (migración 021).
     formData.append("procedencia", esExterno ? "EXTERNO" : "INTERNO");
+    // Migración 026: si el número se dejó automático, el servidor gasta el
+    // siguiente del área al guardar (puede no ser el que se vio, si hubo carrera)
+    formData.append("correlativo_auto", (typeof Correlativo_EsAutomatico === "function" && Correlativo_EsAutomatico()) ? "1" : "0");
 
     /*
      * Firma al registrar: el documento propio sale firmado en vez de enviarse y

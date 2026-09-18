@@ -9,6 +9,34 @@ class Seguridad
 {
     const ROL_ADMIN = 'Administrador';
     const ROL_SECRETARIO = 'Secretario (a)';
+    const ROL_MESA_PARTES = 'Mesa de Partes';
+    const ROL_JEFE = 'Jefe de Área';
+    const ROL_ESPECIALISTA = 'Especialista';
+
+    /**
+     * Qué puede hacer cada rol (migración 024).
+     *
+     * Antes todo el que no era administrador podía hacer TODO dentro de su área:
+     * registrar, derivar, finalizar y firmar. No había forma de que un jefe
+     * aprobara lo que su técnico preparó.
+     *
+     *   - registrar: dar de alta un trámite nuevo.
+     *   - derivar:   mover el expediente a otra área (incluye copias y atenciones).
+     *   - finalizar: cerrar el expediente.
+     *   - firmar:    firmar digitalmente un documento del trámite.
+     *   - observar:  observar un trámite para que el ciudadano subsane.
+     *   - mantener:  los mantenimientos (áreas, empleados, usuarios, configuración).
+     *
+     * El Especialista atiende lo que se le asigna y prepara respuestas, pero no
+     * saca el expediente del área: eso lo hacen el jefe o la secretaria.
+     */
+    const PERMISOS = [
+        self::ROL_ADMIN        => ['registrar', 'derivar', 'finalizar', 'firmar', 'observar', 'mantener'],
+        self::ROL_JEFE         => ['registrar', 'derivar', 'finalizar', 'firmar', 'observar'],
+        self::ROL_SECRETARIO   => ['registrar', 'derivar', 'finalizar', 'observar'],
+        self::ROL_MESA_PARTES  => ['registrar', 'derivar', 'observar'],
+        self::ROL_ESPECIALISTA => ['registrar', 'firmar'],
+    ];
 
     const INACTIVIDAD_MAX = 7200; // segundos sin actividad antes de cerrar la sesión
     const NOMBRE_SESION = 'SISTRAMITE_SID';
@@ -97,6 +125,31 @@ class Seguridad
     public static function esAdmin(): bool
     {
         return self::rol() === self::ROL_ADMIN;
+    }
+
+    /** ¿El rol de la sesión puede hacer esta acción? Ver PERMISOS. */
+    public static function puede(string $accion): bool
+    {
+        $permisos = self::PERMISOS[self::rol()] ?? [];
+        return in_array($accion, $permisos, true);
+    }
+
+    /**
+     * Corta el controlador si el rol no puede hacer la acción.
+     * Un rol desconocido (por ejemplo, uno agregado a mano en la base) no puede
+     * nada: es más seguro dejar fuera a alguien que dejar entrar de más.
+     */
+    public static function exigirPermiso(string $accion): void
+    {
+        if (!self::puede($accion)) {
+            self::responderError(403, 'Su rol (' . self::rol() . ') no puede realizar esta operación.');
+        }
+    }
+
+    /** Los permisos del rol actual, para que la pantalla oculte lo que no aplica. */
+    public static function permisosActuales(): array
+    {
+        return self::PERMISOS[self::rol()] ?? [];
     }
 
     /** Para controladores AJAX: responde JSON 401/403 si no hay sesión o el rol no está permitido. */

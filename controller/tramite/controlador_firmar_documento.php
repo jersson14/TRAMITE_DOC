@@ -60,6 +60,7 @@
     if (!Seguridad::esAdmin() && !$MTR->Area_Puede_Ver($id, Seguridad::areaId())) {
         Seguridad::responderError(403, 'No tiene acceso a los archivos de este trámite.');
     }
+    Seguridad::exigirPermiso('firmar');
 
     // Solo se firma lo que produce la entidad. Un trámite externo trae el documento
     // de un ciudadano u otra entidad: firmarlo sería atribuirse autoría ajena, y

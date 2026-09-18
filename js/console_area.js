@@ -56,6 +56,11 @@ function listar_area(){
       "columns":[
         {"defaultContent":""},
         {"data":"area_nombre"},
+        // Sigla con que se numeran sus documentos; en gris si es deducida del nombre
+        {"data":"sigla_efectiva", render: function(d, t, row){
+          return row.area_sigla ? "<b>"+escaparTexto(d)+"</b>"
+                                : "<span class='text-muted' title='Deducida del nombre'>"+escaparTexto(d)+"</span>";
+        }},
         {"data":"fecha_formateada"},
         {"data":"area_estado",
             render: function(data,type,row){
@@ -90,6 +95,9 @@ $('#tabla_area').on('click','.editar',function(){
   document.getElementById('txt_area_editar').value=data.area_nombre;
   document.getElementById('txt_idarea').value=data.area_cod;
   document.getElementById('txt_estatus').value=data.area_estado;
+  // Vacía si no tiene guardada: el marcador muestra la que el sistema deduce
+  document.getElementById('txt_sigla_editar').value=data.area_sigla || "";
+  document.getElementById('txt_sigla_editar').placeholder="Deducida: " + (data.sigla_efectiva || "");
 })
 
 function AbrirRegistro(){
@@ -106,7 +114,8 @@ function Registrar_Area(){
     "url":"../controller/area/controlador_registro_area.php",
     type:'POST',
     data:{
-      a:area
+      a:area,
+      sigla:document.getElementById('txt_sigla').value   // migración 026
     }
   }).done(function(resp){
     if(resp>0){
@@ -114,6 +123,7 @@ function Registrar_Area(){
         Swal.fire("Mensaje de Confirmación","Nueva Área registrada","success").then((value)=>{
           tbl_area.ajax.reload();
           document.getElementById('txt_area').value="";
+          document.getElementById('txt_sigla').value="";
         $("#modal_registro").modal('hide');
         });
       }else{
@@ -139,7 +149,8 @@ function Modificar_Area(){
     data:{
       id:id,
       are:area,
-      esta:esta
+      esta:esta,
+      sigla:document.getElementById('txt_sigla_editar').value   // migración 026
     }
   }).done(function(resp){
     if(resp>0){

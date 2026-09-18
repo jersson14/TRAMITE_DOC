@@ -7,6 +7,9 @@
     $esta = strtoupper(htmlspecialchars($_POST['esta'],ENT_QUOTES,'UTF-8'));
 
     $consulta = $MA->Modificar_Area($id,$are,$esta);
+    if ((string) $consulta === '1' && isset($_POST['sigla'])) {
+        $MA->Guardar_Sigla((int) $id, $are, (string) $_POST['sigla']);
+    }
     echo $consulta;
 
 

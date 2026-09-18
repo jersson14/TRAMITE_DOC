@@ -140,7 +140,7 @@ class EsquemaConsulta
             'columnas' => [
                 'usu_id' => 'clave',
                 'usu_usuario' => 'nombre de la cuenta',
-                'usu_rol' => 'Administrador o Secretario (a)',
+                'usu_rol' => 'Administrador, Jefe de Área, Secretario (a), Mesa de Partes o Especialista',
                 'usu_estatus' => 'ACTIVO o INACTIVO',
                 'area_id' => 'área de la cuenta (area.area_cod)',
                 'empleado_id' => 'empleado dueño de la cuenta',

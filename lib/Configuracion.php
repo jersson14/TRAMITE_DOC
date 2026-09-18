@@ -18,7 +18,25 @@ class Configuracion
         'ia_clave'         => '',
         'ia_limite_minuto' => '10',
         'ia_limite_dia'    => '100',
+
+        // Correo saliente (migración 027). Vacíos = se usa config/config_email.php,
+        // para que una instalación que ya funcionaba no deje de enviar.
+        'smtp_activo'           => '',
+        'smtp_host'             => '',
+        'smtp_puerto'           => '',
+        'smtp_seguridad'        => '',
+        'smtp_usuario'          => '',
+        'smtp_clave'            => '',
+        'smtp_remitente_nombre' => '',
+        'smtp_remitente_correo' => '',
+
+        // Consulta de DNI (RENIEC) a través de apis.net.pe (migración 027)
+        'dni_activo' => '1',
+        'dni_token'  => '',
     ];
+
+    /** Ajustes que son secretos: nunca salen enteros del servidor. */
+    const SECRETOS = ['ia_clave', 'smtp_clave', 'dni_token'];
 
     /** Proveedores admitidos: clave => [nombre visible, modelo sugerido]. */
     const PROVEEDORES = [
@@ -82,12 +100,65 @@ class Configuracion
     }
 
     /** La clave de la API nunca sale entera del servidor: solo sus últimos 4. */
-    public static function claveEnmascarada(): string
+    public static function claveEnmascarada(string $clave = 'ia_clave'): string
     {
-        $clave = self::obtener('ia_clave');
-        if ($clave === '') {
+        $valor = self::obtener($clave);
+        if ($valor === '') {
             return '';
         }
-        return str_repeat('•', 8) . mb_substr($clave, -4);
+        return str_repeat('•', 8) . mb_substr($valor, -4);
+    }
+
+    /**
+     * Configuración de correo que se usa de verdad.
+     *
+     * Lo que se guardó en el panel manda. Si el panel todavía no se llenó, se usa
+     * config/config_email.php (si existe), para que una instalación que ya enviaba
+     * correos no deje de hacerlo al actualizar. El origen se informa para que la
+     * pantalla pueda decir de dónde sale la configuración.
+     */
+    public static function smtp(): array
+    {
+        if (self::obtener('smtp_host') !== '') {
+            return [
+                'origen'    => 'panel',
+                'activo'    => self::obtener('smtp_activo') === '1',
+                'host'      => self::obtener('smtp_host'),
+                'puerto'    => self::entero('smtp_puerto', 465),
+                'seguridad' => self::obtener('smtp_seguridad'),
+                'usuario'   => self::obtener('smtp_usuario'),
+                'clave'     => self::obtener('smtp_clave'),
+                'nombre'    => self::obtener('smtp_remitente_nombre'),
+                'correo'    => self::obtener('smtp_remitente_correo'),
+            ];
+        }
+
+        $archivo = __DIR__ . '/../config/config_email.php';
+        if (is_file($archivo)) {
+            require_once $archivo;
+        }
+        if (defined('EMAIL_HOST')) {
+            return [
+                'origen'    => 'archivo',
+                'activo'    => defined('EMAIL_ENABLED') ? (bool) EMAIL_ENABLED : true,
+                'host'      => (string) EMAIL_HOST,
+                'puerto'    => defined('EMAIL_PORT') ? (int) EMAIL_PORT : 465,
+                'seguridad' => defined('EMAIL_SECURE') ? (string) EMAIL_SECURE : 'ssl',
+                'usuario'   => defined('EMAIL_USERNAME') ? (string) EMAIL_USERNAME : '',
+                'clave'     => defined('EMAIL_PASSWORD') ? (string) EMAIL_PASSWORD : '',
+                'nombre'    => defined('EMAIL_FROM_NAME') ? (string) EMAIL_FROM_NAME : '',
+                'correo'    => defined('EMAIL_FROM_EMAIL') ? (string) EMAIL_FROM_EMAIL : '',
+            ];
+        }
+
+        return ['origen' => 'ninguno', 'activo' => false, 'host' => '', 'puerto' => 465, 'seguridad' => 'ssl',
+                'usuario' => '', 'clave' => '', 'nombre' => '', 'correo' => ''];
+    }
+
+    /** ¿Se envían correos? Tiene que estar activo y tener servidor configurado. */
+    public static function correoActivo(): bool
+    {
+        $smtp = self::smtp();
+        return $smtp['activo'] && $smtp['host'] !== '';
     }
 }

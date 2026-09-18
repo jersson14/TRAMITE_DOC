@@ -10,6 +10,7 @@
 require_once __DIR__ . '/../../lib/Seguridad.php';
 require_once __DIR__ . '/../../lib/Plazos.php';
 require_once __DIR__ . '/../../model/model_conexion.php';
+require_once __DIR__ . '/../../model/model_observacion.php';
 Seguridad::iniciarSesion();
 
 header('Content-Type: application/json; charset=utf-8');
@@ -87,12 +88,28 @@ $consulta = $pdo->prepare("SELECT COUNT(*) FROM documento_anexo WHERE documento_
 $consulta->execute([$tramite['documento_id']]);
 $anexos = (int) $consulta->fetchColumn();
 
+// Antes RECHAZADO se mostraba como "Observado / rechazado" porque no existía el
+// estado OBSERVADO. Son cosas distintas: observado se puede subsanar; rechazado no.
 $textosEstado = [
     'PENDIENTE'  => 'Recibido, en espera de atención',
     'ACEPTADO'   => 'En atención',
     'FINALIZADO' => 'Atendido y finalizado',
-    'RECHAZADO'  => 'Observado / rechazado',
+    'RECHAZADO'  => 'Rechazado',
+    'OBSERVADO'  => 'Observado: debe subsanar',
 ];
+
+// Si está observado, el ciudadano necesita saber qué le piden y hasta cuándo
+$observacion = null;
+$obs = (new Modelo_Observacion())->Pendiente($tramite['documento_id']);
+if ($obs) {
+    $observacion = [
+        'motivo'  => $obs['obs_motivo'],
+        'fecha'   => $obs['fecha_texto'],
+        'limite'  => $obs['limite_texto'],
+        'vencida' => (int) $obs['vencida'] === 1,
+        'area'    => $obs['area_nombre'],
+    ];
+}
 
 echo json_encode([
     'encontrado' => true,
@@ -117,6 +134,7 @@ echo json_encode([
         'anexos'         => $anexos,
     ],
     'movimientos' => $movimientos,
+    'observacion' => $observacion,
     'cargo' => 'view/MPDF/REPORTE/cargo_recepcion.php?codigo=' . rawurlencode($tramite['documento_id']) . '&dni=' . rawurlencode($dni),
     'hoja'  => 'view/MPDF/REPORTE/ficha_seguimiento_automatico.php?codigo=' . rawurlencode($tramite['documento_id']) . '&dni=' . rawurlencode($dni),
 ]);

@@ -400,6 +400,16 @@
 
     // Al elegir el PDF el servidor comprueba las firmas que trae y las muestra
     // en #firma_del_archivo. Ya no hay casilla que declare la firma sin verificarla.
+    // Número automático del documento interno (migración 026): lo emite el área
+    // del usuario. Un trámite externo trae el número que le puso quien lo envía.
+    if (typeof Correlativo_Enganchar === "function") {
+      var sugerirNumero = Correlativo_Enganchar(
+        function () { return document.getElementById("txtidprincipalarea").value; },
+        function () { var c = document.getElementById("chk_externo"); return !!(c && c.checked); }
+      );
+      $("#chk_externo").on("change", function () { if (sugerirNumero) sugerirNumero(); });
+    }
+
     // Si firma.js no cargó, el registro debe seguir funcionando: sin esta guarda
     // un error aquí cortaría el resto del guion de la vista.
     if (typeof Verificar_PDF_Al_Elegir === "function") {

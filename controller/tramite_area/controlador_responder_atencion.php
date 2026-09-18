@@ -51,7 +51,11 @@
     $ruta = $archivo ? 'controller/tramite_area/documentos/' . $archivo : null;
 
     // --- Firma del informe, antes de enviarlo ---
+    // Responder no exige rol; firmar sí (migración 024)
     $quiereFirmar = !empty($_FILES['certificado']['name']);
+    if ($quiereFirmar) {
+        Seguridad::exigirPermiso('firmar');
+    }
     $firma = null;
     $codigo = null;
     $pdf = '';

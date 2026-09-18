@@ -190,6 +190,147 @@
       </div>
 
     </div>
+
+    <!-- Migración 027: correo saliente y consulta de DNI, que antes solo se
+         cambiaban editando archivos en el servidor (y el token del DNI estaba
+         escrito en el código fuente). -->
+    <div class="row">
+
+      <!-- CORREO SALIENTE (SMTP) -->
+      <div class="col-lg-7">
+        <div class="card card-modern">
+          <div class="card-header">
+            <h3 class="card-title"><i class="nav-icon fas fa-envelope"></i>&nbsp;&nbsp;<b>Correo saliente (SMTP)</b></h3>
+          </div>
+          <div class="card-body">
+            <small class="text-muted">
+              <i class="fas fa-info-circle"></i>
+              Con esto el sistema envía los avisos: al ciudadano cuando registra o le observan un trámite,
+              y a las áreas cuando reciben uno. Los datos los da su proveedor de correo.
+            </small>
+            <div id="cfg_smtp_origen" class="mt-2"></div>
+
+            <div class="custom-control custom-switch mt-3">
+              <input type="checkbox" class="custom-control-input" id="cfg_smtp_activo">
+              <label class="custom-control-label" for="cfg_smtp_activo">Enviar correos</label>
+            </div>
+            <small class="text-muted d-block mb-3">Apagado, el sistema funciona igual pero no avisa a nadie por correo.</small>
+
+            <div class="row">
+              <div class="col-md-6 form-group">
+                <label for="cfg_smtp_host">Servidor SMTP(*):</label>
+                <input type="text" class="form-control" id="cfg_smtp_host" maxlength="120" placeholder="smtp.gmail.com">
+              </div>
+              <div class="col-md-3 form-group">
+                <label for="cfg_smtp_puerto">Puerto(*):</label>
+                <input type="number" class="form-control" id="cfg_smtp_puerto" min="1" max="65535" placeholder="465">
+              </div>
+              <div class="col-md-3 form-group">
+                <label for="cfg_smtp_seguridad">Cifrado(*):</label>
+                <select class="form-control" id="cfg_smtp_seguridad" onchange="Cambio_Cifrado_SMTP()">
+                  <option value="ssl">SSL (465)</option>
+                  <option value="tls">TLS (587)</option>
+                  <option value="">Ninguno</option>
+                </select>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 form-group">
+                <label for="cfg_smtp_usuario">Usuario:</label>
+                <input type="text" class="form-control" id="cfg_smtp_usuario" maxlength="150" autocomplete="off"
+                       placeholder="casi siempre, el mismo correo">
+              </div>
+              <div class="col-md-6 form-group">
+                <label for="cfg_smtp_clave">Contraseña:</label>
+                <input type="password" class="form-control" id="cfg_smtp_clave" autocomplete="new-password"
+                       placeholder="Escriba solo para cambiarla">
+                <small class="text-muted" id="cfg_smtp_clave_estado"></small>
+                <div class="custom-control custom-checkbox mt-1" id="cfg_bloque_quitar_smtp" hidden>
+                  <input type="checkbox" class="custom-control-input" id="cfg_quitar_smtp">
+                  <label class="custom-control-label" for="cfg_quitar_smtp">Quitar la contraseña guardada</label>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6 form-group">
+                <label for="cfg_smtp_nombre">Nombre del remitente(*):</label>
+                <input type="text" class="form-control" id="cfg_smtp_nombre" maxlength="120"
+                       placeholder="Mesa de Partes - DIRESA">
+              </div>
+              <div class="col-md-6 form-group">
+                <label for="cfg_smtp_correo">Correo del remitente(*):</label>
+                <input type="email" class="form-control" id="cfg_smtp_correo" maxlength="150"
+                       placeholder="tramite@institucion.gob.pe">
+              </div>
+            </div>
+            <div class="form-group mb-0">
+              <label for="cfg_smtp_destino">Enviar correo de prueba a:</label>
+              <input type="email" class="form-control" id="cfg_smtp_destino" maxlength="150" placeholder="su correo">
+              <small class="text-muted">La prueba usa lo que está escrito en el formulario, aunque no lo haya guardado.</small>
+            </div>
+
+            <div id="cfg_smtp_resultado" class="mt-3"></div>
+          </div>
+          <div class="card-footer text-right">
+            <button type="button" class="btn btn-secondary" onclick="Probar_Correo()">
+              <i class="fas fa-paper-plane"></i> Enviar prueba
+            </button>
+            <button type="button" class="btn btn-gradient-success" onclick="Guardar_Correo()">
+              <i class="fas fa-save"></i> Guardar correo
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONSULTA DE DNI (RENIEC vía apis.net.pe) -->
+      <div class="col-lg-5">
+        <div class="card card-modern">
+          <div class="card-header">
+            <h3 class="card-title"><i class="nav-icon fas fa-id-card"></i>&nbsp;&nbsp;<b>Consulta de DNI (RENIEC)</b></h3>
+          </div>
+          <div class="card-body">
+            <small class="text-muted">
+              <i class="fas fa-info-circle"></i>
+              Al registrar un trámite, completa el nombre del remitente a partir de su DNI. El sistema no se
+              conecta a RENIEC directamente: usa el servicio <b>apis.net.pe</b>, que cobra por consulta con un token.
+            </small>
+
+            <div class="custom-control custom-switch mt-3">
+              <input type="checkbox" class="custom-control-input" id="cfg_dni_activo">
+              <label class="custom-control-label" for="cfg_dni_activo">Consulta automática activa</label>
+            </div>
+            <small class="text-muted d-block mb-3">Apagada, el nombre del remitente se escribe a mano.</small>
+
+            <div class="form-group">
+              <label for="cfg_dni_token">Token de apis.net.pe:</label>
+              <input type="password" class="form-control" id="cfg_dni_token" autocomplete="new-password"
+                     placeholder="Pegue aquí el token">
+              <small class="text-muted" id="cfg_dni_token_estado"></small>
+              <div class="custom-control custom-checkbox mt-1" id="cfg_bloque_quitar_dni" hidden>
+                <input type="checkbox" class="custom-control-input" id="cfg_quitar_dni">
+                <label class="custom-control-label" for="cfg_quitar_dni">Quitar el token guardado</label>
+              </div>
+            </div>
+            <div class="form-group mb-0">
+              <label for="cfg_dni_prueba">DNI para la prueba:</label>
+              <input type="text" class="form-control" id="cfg_dni_prueba" maxlength="8" placeholder="en blanco: el suyo">
+              <small class="text-muted">Si lo deja en blanco se consulta el DNI de su propia ficha de empleado.</small>
+            </div>
+
+            <div id="cfg_dni_resultado" class="mt-3"></div>
+          </div>
+          <div class="card-footer text-right">
+            <button type="button" class="btn btn-secondary" onclick="Probar_Dni()">
+              <i class="fas fa-plug"></i> Probar consulta
+            </button>
+            <button type="button" class="btn btn-gradient-success" onclick="Guardar_Dni()">
+              <i class="fas fa-save"></i> Guardar
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </div>
 

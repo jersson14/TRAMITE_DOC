@@ -24,6 +24,8 @@ class Bitacora
     const ATENCION_SOLICITADA = 'ATENCION_SOLICITADA';
     const ATENCION_RESPONDIDA = 'ATENCION_RESPONDIDA';
     const FIRMA_DIGITAL    = 'FIRMA_DIGITAL';
+    const OBSERVACION      = 'OBSERVACION';   // el área observa el trámite (migración 025)
+    const SUBSANACION      = 'SUBSANACION';   // el ciudadano subsana desde el portal
 
     // Acciones sobre el mantenimiento
     const REGISTRO         = 'REGISTRO';

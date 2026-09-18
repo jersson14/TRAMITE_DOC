@@ -30,6 +30,10 @@
     if (!preg_match('/^[A-Z0-9\-]{1,15}$/', $iddo)) {
         Seguridad::responderError(422, 'Trámite no válido.');
     }
+
+    // Migración 024: finalizar cierra el expediente y no todos los roles pueden.
+    // El Especialista atiende lo que se le asigna, pero no saca el expediente del área.
+    Seguridad::exigirPermiso($tipo === 'FINALIZAR' ? 'finalizar' : 'derivar');
     if (!in_array($tipo, ['DERIVAR', 'FINALIZAR'], true)) {
         Seguridad::responderError(422, 'Operación no válida.');
     }
@@ -97,7 +101,11 @@
      * constancia en la bitácora.
      */
     $MFI = new Modelo_Firma();
+    // Derivar y firmar son permisos distintos (migración 024)
     $quiereFirmar = FirmaAlRegistrar::solicitada();
+    if ($quiereFirmar) {
+        Seguridad::exigirPermiso('firmar');
+    }
     $preparado = null;
 
     if ($quiereFirmar && !$nombrearchivo) {

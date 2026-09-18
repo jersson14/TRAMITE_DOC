@@ -480,6 +480,8 @@ function Registrar_Tramite(){
     formData.append("ard",ard);
     formData.append("tip",tip);
     formData.append("ndo",ndo);
+    // Migración 026: número automático del área (se gasta al guardar)
+    formData.append("correlativo_auto", (typeof Correlativo_EsAutomatico === "function" && Correlativo_EsAutomatico()) ? "1" : "0");
     formData.append("asu",asu);
     formData.append("nombrearchivo",nombrearchivo);
     formData.append("fol",fol);

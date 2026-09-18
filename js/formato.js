@@ -109,3 +109,84 @@ function Render_Plazo(data, type, row) {
     ' días hábiles · límite ' + escaparTextoFormato(row.plazo_limite) + '">' + detalle + "</span>" +
     '<small class="d-block text-muted" style="white-space:nowrap;">límite ' + escaparTextoFormato(row.plazo_limite) + "</small>";
 }
+
+/**
+ * Número automático del documento interno (migración 026).
+ *
+ * Al elegir el tipo de documento (y el área, donde se elige), se propone el
+ * próximo número del área: "001-2026-DIRESA-APURÍMAC/CONT". El usuario puede
+ * cambiarlo si el documento ya venía numerado en papel.
+ *
+ * El número que se ve NO está reservado: se gasta recién al guardar, y solo si
+ * el usuario lo dejó tal cual (correlativo_auto = 1). Si dos personas registran a
+ * la vez, cada una recibe un número distinto aunque ambas hayan visto el mismo.
+ *
+ * `obtenerArea` = función que devuelve el id del área que emite el documento.
+ * `esExterno`   = función opcional: si devuelve true no se numera, porque un
+ *                 documento externo trae el número que le puso quien lo envía.
+ */
+function Correlativo_Enganchar(obtenerArea, esExterno) {
+  var tipo = document.getElementById("select_tipo");
+  var numero = document.getElementById("txt_ndocumento");
+  if (!tipo || !numero) return;
+
+  // El campo solo aceptaba dígitos: un número como "001-2026-.../CONT" no se
+  // podía escribir ni corregir a mano.
+  numero.removeAttribute("onkeypress");
+  numero.setAttribute("maxlength", "80");
+
+  var pista = document.getElementById("pista_correlativo");
+  if (!pista) {
+    pista = document.createElement("small");
+    pista.id = "pista_correlativo";
+    pista.className = "text-muted d-block";
+    numero.insertAdjacentElement("afterend", pista);
+  }
+
+  // Mientras el valor sea el sugerido, se considera automático
+  numero.dataset.auto = "0";
+  numero.dataset.sugerido = "";
+  numero.addEventListener("input", function () {
+    numero.dataset.auto = (numero.value === numero.dataset.sugerido) ? "1" : "0";
+    pista.textContent = numero.dataset.auto === "1"
+      ? "Número automático del área. Puede cambiarlo si el documento ya venía numerado."
+      : "Número escrito a mano: se guarda tal cual y no se usa la numeración del área.";
+  });
+
+  function sugerir() {
+    if (typeof esExterno === "function" && esExterno()) {
+      // Externo: el número es del remitente. Se limpia si era una sugerencia nuestra.
+      if (numero.dataset.auto === "1") { numero.value = ""; }
+      numero.dataset.auto = "0";
+      numero.dataset.sugerido = "";
+      pista.textContent = "Trámite externo: escriba el número que trae el documento.";
+      return;
+    }
+    var area = obtenerArea();
+    var idTipo = tipo.value;
+    if (!area || !idTipo) { pista.textContent = ""; return; }
+    // No se pisa un número que el usuario ya escribió a mano
+    if (numero.value !== "" && numero.dataset.auto !== "1") return;
+
+    $.ajax({
+      url: "../controller/tramite/controlador_correlativo.php",
+      type: "POST",
+      dataType: "json",
+      data: { area: area, tipo: idTipo },
+    }).done(function (r) {
+      numero.value = r.numero;
+      numero.dataset.sugerido = r.numero;
+      numero.dataset.auto = "1";
+      pista.textContent = "Número automático del área. Puede cambiarlo si el documento ya venía numerado.";
+    });
+  }
+
+  $(tipo).on("change", sugerir);
+  return sugerir;
+}
+
+/** Lo que el registro manda al servidor: si el número se dejó automático. */
+function Correlativo_EsAutomatico() {
+  var numero = document.getElementById("txt_ndocumento");
+  return !!(numero && numero.dataset.auto === "1");
+}

@@ -975,12 +975,14 @@ $e = [Seguridad::class, 'e'];
                         });
                     }
                 },
-                error: function() {
+                error: function(xhr) {
                     $("#prueba").html('<i class="fas fa-search"></i>');
+                    // El servidor explica el motivo (DNI no encontrado, límite de
+                    // consultas, servicio sin configurar): se muestra tal cual
                     Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'No se pudo consultar el DNI',
+                        icon: 'warning',
+                        title: 'No se pudo consultar el DNI',
+                        text: (xhr.responseJSON && xhr.responseJSON.mensaje) || 'Intente nuevamente o escriba los datos a mano.',
                         confirmButtonColor: '#1E3A5F'
                     });
                 }

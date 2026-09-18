@@ -21,6 +21,8 @@ function Cargar_Configuracion() {
   }).done(function (r) {
     Pintar_Institucion(r.institucion);
     Pintar_Asistente(r.asistente);
+    if (r.correo) Pintar_Correo(r.correo);
+    if (r.dni) Pintar_Dni(r.dni);
   }).fail(function () {
     Swal.fire("Mensaje de Error", "No se pudo leer la configuración", "error");
   });
@@ -259,3 +261,157 @@ $(document).on("change", "#cfg_logo", function () {
   var archivo = this.files && this.files[0];
   if (archivo) document.getElementById("cfg_logo_vista").src = URL.createObjectURL(archivo);
 });
+
+/* =====================================================================
+ * Correo saliente y consulta de DNI (migración 027)
+ *
+ * Antes solo se cambiaban editando archivos en el servidor, y el token del
+ * DNI estaba escrito en el código fuente. Los secretos (contraseña SMTP y
+ * token) nunca llegan al navegador: se muestran enmascarados y solo se
+ * reemplazan si se escribe uno nuevo.
+ * ===================================================================== */
+
+function Caja_Resultado(id, clase, icono, html) {
+  document.getElementById(id).innerHTML =
+    '<div class="alert alert-' + clase + ' mb-0"><i class="fas ' + icono + '"></i> ' + html + "</div>";
+}
+
+function Pintar_Correo(c) {
+  document.getElementById("cfg_smtp_activo").checked = !!c.activo;
+  document.getElementById("cfg_smtp_host").value = c.host || "";
+  document.getElementById("cfg_smtp_puerto").value = c.puerto || "";
+  document.getElementById("cfg_smtp_seguridad").value = c.seguridad || "";
+  document.getElementById("cfg_smtp_usuario").value = c.usuario || "";
+  document.getElementById("cfg_smtp_nombre").value = c.nombre || "";
+  document.getElementById("cfg_smtp_correo").value = c.correo || "";
+  document.getElementById("cfg_smtp_clave").value = "";
+  document.getElementById("cfg_quitar_smtp").checked = false;
+  document.getElementById("cfg_bloque_quitar_smtp").hidden = !c.tiene_clave;
+  document.getElementById("cfg_smtp_clave_estado").innerHTML = c.tiene_clave
+    ? "Hay una contraseña guardada. Déjelo vacío para conservarla."
+    : "No hay contraseña guardada.";
+
+  // De dónde sale lo que se ve: si viene del archivo, todavía no se guardó en el panel
+  var origen = document.getElementById("cfg_smtp_origen");
+  if (c.origen === "archivo") {
+    origen.innerHTML = '<div class="alert alert-info py-2 mb-0"><small><i class="fas fa-file-code"></i> ' +
+      "Estos datos vienen del archivo <code>config/config_email.php</code> del servidor. " +
+      "Al guardar aquí pasan al panel y el archivo deja de usarse.</small></div>";
+  } else if (c.origen === "ninguno") {
+    origen.innerHTML = '<div class="alert alert-warning py-2 mb-0"><small><i class="fas fa-exclamation-triangle"></i> ' +
+      "El correo no está configurado: el sistema no está avisando a nadie.</small></div>";
+  } else {
+    origen.innerHTML = "";
+  }
+}
+
+/** Al cambiar el cifrado se propone el puerto habitual, si no se escribió otro. */
+function Cambio_Cifrado_SMTP() {
+  var puerto = document.getElementById("cfg_smtp_puerto");
+  var cifrado = document.getElementById("cfg_smtp_seguridad").value;
+  var habituales = { ssl: "465", tls: "587", "": "25" };
+  if (!puerto.value || ["465", "587", "25"].indexOf(puerto.value) !== -1) {
+    puerto.value = habituales[cifrado];
+  }
+}
+
+function DatosCorreo() {
+  return {
+    activo: document.getElementById("cfg_smtp_activo").checked ? 1 : "",
+    host: document.getElementById("cfg_smtp_host").value.trim(),
+    puerto: document.getElementById("cfg_smtp_puerto").value,
+    seguridad: document.getElementById("cfg_smtp_seguridad").value,
+    usuario: document.getElementById("cfg_smtp_usuario").value.trim(),
+    clave: document.getElementById("cfg_smtp_clave").value,
+    nombre: document.getElementById("cfg_smtp_nombre").value.trim(),
+    correo: document.getElementById("cfg_smtp_correo").value.trim(),
+    quitar_clave: document.getElementById("cfg_quitar_smtp").checked ? 1 : "",
+  };
+}
+
+function Guardar_Correo() {
+  var datos = DatosCorreo();
+  if (!datos.host || !datos.puerto) {
+    return Swal.fire("Mensaje de Advertencia", "Indique el servidor y el puerto", "warning");
+  }
+  $.ajax({
+    url: "../controller/configuracion/controlador_guardar_correo.php",
+    type: "POST", dataType: "json", data: datos,
+  }).done(function () {
+    Swal.fire("Mensaje de Confirmación", "Configuración del correo guardada", "success");
+    document.getElementById("cfg_smtp_resultado").innerHTML = "";
+    Cargar_Configuracion();
+  }).fail(function (x) {
+    Swal.fire("Mensaje de Advertencia", (x.responseJSON && x.responseJSON.mensaje) || "No se pudo guardar", "warning");
+  });
+}
+
+function Probar_Correo() {
+  var datos = DatosCorreo();
+  datos.destino = document.getElementById("cfg_smtp_destino").value.trim();
+  if (!datos.destino) {
+    return Swal.fire("Mensaje de Advertencia", "Escriba a qué correo enviar la prueba", "warning");
+  }
+  Caja_Resultado("cfg_smtp_resultado", "secondary", "fa-spinner fa-spin", "Enviando...");
+  $.ajax({
+    url: "../controller/configuracion/controlador_probar_correo.php",
+    type: "POST", dataType: "json", data: datos,
+  }).done(function (r) {
+    Caja_Resultado("cfg_smtp_resultado", "success", "fa-check-circle",
+      "<b>Correo enviado</b> a " + escaparConfig(r.destino) + ". Revise la bandeja (y la de spam).");
+  }).fail(function (x) {
+    Caja_Resultado("cfg_smtp_resultado", "danger", "fa-times-circle",
+      "<b>No se pudo enviar</b><br>" + escaparConfig((x.responseJSON && x.responseJSON.mensaje) || "La prueba falló"));
+  });
+}
+
+function Pintar_Dni(d) {
+  document.getElementById("cfg_dni_activo").checked = !!d.activo;
+  document.getElementById("cfg_dni_token").value = "";
+  document.getElementById("cfg_quitar_dni").checked = false;
+  document.getElementById("cfg_bloque_quitar_dni").hidden = !d.tiene_token;
+  document.getElementById("cfg_dni_token_estado").innerHTML = d.tiene_token
+    ? "Hay un token guardado (" + escaparConfig(d.token) + "). Déjelo vacío para conservarlo."
+    : "No hay token guardado: el nombre del remitente se escribe a mano.";
+}
+
+function Guardar_Dni() {
+  $.ajax({
+    url: "../controller/configuracion/controlador_guardar_dni.php",
+    type: "POST", dataType: "json",
+    data: {
+      activo: document.getElementById("cfg_dni_activo").checked ? 1 : "",
+      token: document.getElementById("cfg_dni_token").value.trim(),
+      quitar_token: document.getElementById("cfg_quitar_dni").checked ? 1 : "",
+    },
+  }).done(function () {
+    Swal.fire("Mensaje de Confirmación", "Configuración de la consulta de DNI guardada", "success");
+    document.getElementById("cfg_dni_resultado").innerHTML = "";
+    Cargar_Configuracion();
+  }).fail(function (x) {
+    Swal.fire("Mensaje de Advertencia", (x.responseJSON && x.responseJSON.mensaje) || "No se pudo guardar", "warning");
+  });
+}
+
+function Probar_Dni() {
+  Caja_Resultado("cfg_dni_resultado", "secondary", "fa-spinner fa-spin", "Consultando...");
+  $.ajax({
+    url: "../controller/configuracion/controlador_probar_dni.php",
+    type: "POST", dataType: "json",
+    data: {
+      token: document.getElementById("cfg_dni_token").value.trim(),
+      dni: document.getElementById("cfg_dni_prueba").value.trim(),
+    },
+  }).done(function (r) {
+    if (r.encontrado) {
+      Caja_Resultado("cfg_dni_resultado", "success", "fa-check-circle",
+        "<b>Consulta correcta</b><br>" + escaparConfig(r.nombre));
+    } else {
+      Caja_Resultado("cfg_dni_resultado", "success", "fa-check-circle",
+        "<b>Conexión correcta</b><br>" + escaparConfig(r.mensaje));
+    }
+  }).fail(function (x) {
+    Caja_Resultado("cfg_dni_resultado", "danger", "fa-times-circle",
+      "<b>No se pudo consultar</b><br>" + escaparConfig((x.responseJSON && x.responseJSON.mensaje) || "La prueba falló"));
+  });
+}
